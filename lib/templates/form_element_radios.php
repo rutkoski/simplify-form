@@ -1,0 +1,1 @@
+<?= $this->form->radios($name, $options, $value, null, array('itemSeparator' => ' ')) ?>

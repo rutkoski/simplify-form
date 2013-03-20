@@ -1,0 +1,287 @@
+<?php
+
+abstract class Simplify_Form_Component extends Simplify_Renderable
+{
+
+  /**
+   * The action mask is a bit mask for the actions this component belongs to.
+   * @var int
+   */
+  public $actionMask = Simplify_Form::ACTION_ALL;
+
+  /**
+   *
+   * @var Simplify_Form_
+   */
+  public $form;
+
+  /**
+   *
+   * @var string
+   */
+  public $name;
+
+  /**
+   *
+   * @var string
+   */
+  public $fieldName;
+
+  /**
+   *
+   * @var string
+   */
+  public $label;
+
+  /**
+   *
+   * @var string
+   */
+  public $style;
+
+  /**
+   *
+   * @var string
+   */
+  public $id;
+
+  /**
+   *
+   * @var mixed
+   */
+  public $defaultValue;
+
+  /**
+   * Always add the object to these actions
+   *
+   * @var int
+   */
+  protected $add = Simplify_Form::ACTION_NONE;
+
+  /**
+   * Never add the object to these actions
+   *
+   * @var int
+   */
+  protected $remove = Simplify_Form::ACTION_NONE;
+
+  /**
+   *
+   * @return void
+   */
+  public function __construct($name, $label = null)
+  {
+    $this->name = $name;
+    $this->label = $label;
+  }
+
+  /**
+   * Get the html id for this component.
+   *
+   * @return string
+   */
+  public function getId()
+  {
+    if (empty($this->id)) {
+      $this->id = $this->getName();
+    }
+
+    return $this->id;
+  }
+
+  /**
+   * Get the component name.
+   *
+   * @return string
+   */
+  public function getName()
+  {
+    return $this->name;
+  }
+
+  /**
+   * Get the database field name for this component.
+   * If null, the component name is used.
+   *
+   * @return string
+   */
+  public function getFieldName()
+  {
+    if (empty($this->fieldName)) {
+      $this->fieldName = $this->getName();
+    }
+
+    return $this->fieldName;
+  }
+
+  /**
+   * Get the label for the component.
+   *
+   * @return string
+   */
+  public function getLabel()
+  {
+    return $this->label;
+  }
+
+  /**
+   *
+   */
+  public function getTemplateFilename()
+  {
+    if (! empty($this->style)) {
+      return $this->style;
+    }
+
+    return Inflector::underscore(substr(get_class($this), strlen('Simplify_')));
+  }
+
+  /**
+   *
+   */
+  public function getTemplatesPath()
+  {
+    return array(s::config()->get('templates_dir') . '/form', FORM_DIR . '/templates');
+  }
+
+  /**
+   * Get the value for the component passed via GET.
+   *
+   * @return mixed
+   */
+  public function getValue()
+  {
+    return s::request()->get($this->getName(), $this->getDefaultValue());
+  }
+
+  /**
+   * Get the default value for the component.
+   *
+   * @return mixed
+   */
+  public function getDefaultValue()
+  {
+    return $this->defaultValue;
+  }
+
+  /**
+   * On execute callback. Runs on action execute and before render.
+   *
+   * @param Simplify_Form_Action $action current executing action
+   */
+  public function onExecute(Simplify_Form_Action $action)
+  {
+  }
+
+  /**
+   * On execute services callback. Component services called via AJAX.
+   *
+   * @param Simplify_Form_Action $action current executing action
+   * @param string $serviceAction the name of the service in the component being called
+   */
+  public function onExecuteServices(Simplify_Form_Action $action, $serviceAction)
+  {
+  }
+
+  /**
+   * On render callback. Renders the component.
+   *
+   * @param Simplify_Form_Action $action current executing action
+   * @return IView
+   */
+  public function onRender(Simplify_Form_Action $action)
+  {
+    return $this->getView();
+  }
+
+  /**
+   * On validate callback. Validate component value.
+   *
+   * @throws ValidationException on validation errors
+   * @param Simplify_Form_Action $action current executing action
+   * @param array $row form row being validated
+   */
+  public function onValidate(Simplify_Form_Action $action, $data, $index)
+  {
+  }
+
+  /**
+   * On load data callback.
+   *
+   * @param array $row form row
+   * @param array $data database row
+   */
+  public function onLoadData(&$row, $data, $index)
+  {
+  }
+
+  /**
+   * On post data callback.
+   *
+   * @param array $row form row
+   * @param array $data POST data
+   * @param int $index row index
+   */
+  public function onPostData(&$row, $data, $index)
+  {
+  }
+
+  /**
+   * On inject query params callback.
+   *
+   * @param array $params query parameters
+   */
+  public function onInjectQueryParams(&$params)
+  {
+  }
+
+  /**
+   * On collect table data callback.
+   *
+   * @param array $row database row
+   * @param array $data form row
+   */
+  public function onCollectTableData(&$row, $data)
+  {
+  }
+
+  /**
+   * On before delete callback.
+   *
+   * @param Simplify_Form_Action $action current action
+   * @param array $row form row
+   */
+  public function onBeforeDelete(Simplify_Form_Action $action, $row)
+  {
+  }
+
+  /**
+   * On after delete callback.
+   *
+   * @param Simplify_Form_Action $action current action
+   * @param array $row form row
+   */
+  public function onAfterDelete(Simplify_Form_Action $action, $row)
+  {
+  }
+
+  /**
+   * On save callback.
+   *
+   * @param array $row form row
+   */
+  public function onSave(&$row)
+  {
+  }
+
+  /**
+   * Get wheter this component belongs to the given action mask.
+   *
+   * @return boolean
+   */
+  public function show($actionMask)
+  {
+    return ((($this->add | $this->actionMask) ^ $this->remove) & $actionMask) == $actionMask;
+  }
+
+}
