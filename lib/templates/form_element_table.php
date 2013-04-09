@@ -16,7 +16,7 @@
       <?php } ?>
 
       <td>
-        <input type="hidden" name="<?= $row['name'] ?>[_id]" value="<?= $row[Simplify_Form::ID] ?>" />
+        <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
         <a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a>
       </td>
     </tr>
@@ -28,7 +28,7 @@
       <?php } ?>
 
       <td>
-        <input type="hidden" name="<?= $dummy['name'] ?>[_id]" value="" />
+        <input type="hidden" name="<?= $dummy['name'] ?>" value="" />
         <a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a>
       </td>
     </tr>

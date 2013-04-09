@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Form date and time element
+ *
+ */
 class Simplify_Form_Element_Datetime extends Simplify_Form_Element
 {
 
@@ -7,8 +33,12 @@ class Simplify_Form_Element_Datetime extends Simplify_Form_Element
    *
    * @var string
    */
-  public $displaySimplify_Form_at = 'd/m/Y H:i:s';
+  public $displayFormat = 'd/m/Y H:i:s';
 
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Component::onRender()
+   */
   public function onRender(Simplify_Form_Action $action, $data, $index)
   {
     $this->set('formatedValue', $this->getDisplayValue($action, $data, $index));
@@ -16,41 +46,35 @@ class Simplify_Form_Element_Datetime extends Simplify_Form_Element
     return parent::onRender($action, $data, $index);
   }
 
-  public function onPostData(&$row, $data, $index)
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Component::onPostData()
+   */
+  public function onPostData(Simplify_Form_Action $action, &$data, $post)
   {
-    $date = $data[$index][$this->getName()];
+    $date = $post[$this->getName()];
 
-    if (function_exists('date_parse_from_format')) {
-      $dt = date_parse_from_format($this->displaySimplify_Form_at, $date);
-      $dt = mktime($dt['hour'], $dt['minute'], $dt['second'], $dt['month'], $dt['day'], $dt['year']);
+    $dt = date_parse_from_format($this->displayFormat, $date);
+    $dt = mktime($dt['hour'], $dt['minute'], $dt['second'], $dt['month'], $dt['day'], $dt['year']);
 
-      $value = date('Y-m-d H:i:s', $dt);
-    }
-    elseif (function_exists('strptime')) {
-      $dt = strptime($date, $this->displaySimplify_Form_at);
+    $value = date('Y-m-d H:i:s', $dt);
 
-      $value = date('Y-m-d H:i:s', $dt);
-    }
-    else {
-      $parts = explode(' ', $date);
-
-      $date = explode('/', $parts[0]);
-
-      $d = $date[0];
-      $m = $date[1];
-      $Y = $date[2];
-
-      $value = "$Y-$m-$d $parts[1]";
-    }
-
-    $row[$this->getFieldName()] = $value;
+    $data[$this->getName()] = $value;
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Element::getDisplayValue()
+   */
   public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
   {
-    return date($this->displaySimplify_Form_at, strtotime($this->getValue($data, $index)));
+    return date($this->displayFormat, strtotime($this->getValue($data)));
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Component::getDefaultValue()
+   */
   public function getDefaultValue()
   {
     return date('Y-m-d H:i:s');

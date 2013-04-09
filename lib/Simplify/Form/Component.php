@@ -1,17 +1,44 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Provides basic functionality to form components
+ *
+ */
 abstract class Simplify_Form_Component extends Simplify_Renderable
 {
 
   /**
    * The action mask is a bit mask for the actions this component belongs to.
+   *
    * @var int
    */
   public $actionMask = Simplify_Form::ACTION_ALL;
 
   /**
    *
-   * @var Simplify_Form_
+   * @var Simplify_Form
    */
   public $form;
 
@@ -66,8 +93,10 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   protected $remove = Simplify_Form::ACTION_NONE;
 
   /**
+   * Constructor
    *
-   * @return void
+   * @param string $name repository column name
+   * @param string $label element label
    */
   public function __construct($name, $label = null)
   {
@@ -121,15 +150,19 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    */
   public function getLabel()
   {
+    if (empty($this->label)) {
+      $this->label = Inflector::humanize($this->getName());
+    }
     return $this->label;
   }
 
   /**
-   *
+   * (non-PHPdoc)
+   * @see Simplify_Renderable::getTemplateFilename()
    */
   public function getTemplateFilename()
   {
-    if (! empty($this->style)) {
+    if (!empty($this->style)) {
       return $this->style;
     }
 
@@ -137,7 +170,8 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   }
 
   /**
-   *
+   * (non-PHPdoc)
+   * @see Simplify_Renderable::getTemplatesPath()
    */
   public function getTemplatesPath()
   {
@@ -197,41 +231,42 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   /**
    * On validate callback. Validate component value.
    *
-   * @throws ValidationException on validation errors
-   * @param Simplify_Form_Action $action current executing action
-   * @param array $row form row being validated
+   * @param Simplify_Form_Action $action current action
+   * @param Simplify_Validation_DataValidation $rules data validation rules
    */
-  public function onValidate(Simplify_Form_Action $action, $data, $index)
+  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
   }
 
   /**
    * On load data callback.
    *
-   * @param array $row form row
-   * @param array $data database row
+   * @param Simplify_Form_Action $action current action
+   * @param array $data form data
+   * @param array $row database row
    */
-  public function onLoadData(&$row, $data, $index)
+  public function onLoadData(Simplify_Form_Action $action, &$data, $row)
   {
   }
 
   /**
    * On post data callback.
    *
-   * @param array $row form row
-   * @param array $data POST data
-   * @param int $index row index
+   * @param Simplify_Form_Action $action current action
+   * @param array $data form data
+   * @param array $post post data
    */
-  public function onPostData(&$row, $data, $index)
+  public function onPostData(Simplify_Form_Action $action, &$data, $post)
   {
   }
 
   /**
    * On inject query params callback.
    *
+   * @param Simplify_Form_Action $action current action
    * @param array $params query parameters
    */
-  public function onInjectQueryParams(&$params)
+  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
   {
   }
 
@@ -239,7 +274,7 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    * On collect table data callback.
    *
    * @param array $row database row
-   * @param array $data form row
+   * @param array $data form data
    */
   public function onCollectTableData(&$row, $data)
   {
@@ -249,9 +284,9 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    * On before delete callback.
    *
    * @param Simplify_Form_Action $action current action
-   * @param array $row form row
+   * @param array $data form data
    */
-  public function onBeforeDelete(Simplify_Form_Action $action, $row)
+  public function onBeforeDelete(Simplify_Form_Action $action, &$data)
   {
   }
 
@@ -259,18 +294,19 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    * On after delete callback.
    *
    * @param Simplify_Form_Action $action current action
-   * @param array $row form row
+   * @param array $data form data
    */
-  public function onAfterDelete(Simplify_Form_Action $action, $row)
+  public function onAfterDelete(Simplify_Form_Action $action, &$data)
   {
   }
 
   /**
    * On save callback.
    *
-   * @param array $row form row
+   * @param Simplify_Form_Action $action current action
+   * @param array $data form data
    */
-  public function onSave(&$row)
+  public function onSave(Simplify_Form_Action $action, &$data)
   {
   }
 

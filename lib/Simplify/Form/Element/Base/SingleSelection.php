@@ -23,10 +23,10 @@
 
 /**
  *
- * Form filter with select element
+ * Base class for form elements that allow for single selection
  *
  */
-class Simplify_Form_Filter_Select extends Simplify_Form_Filter
+abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_Element
 {
 
   /**
@@ -37,11 +37,17 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
   public $options;
 
   /**
+   *
+   * @var boolean
+   */
+  public $required = true;
+
+  /**
    * Show option for empty value
    *
    * @var boolean
    */
-  public $showEmpty = false;
+  public $showEmpty = true;
 
   /**
    *
@@ -57,56 +63,47 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Filter::onRender()
+   * @see Simplify_Form_Component::onRender()
    */
-  public function onRender(Simplify_Form_Action $action)
+  public function onRender(Simplify_Form_Action $action, $data, $index)
   {
     $this->set('options', $this->getOptions());
     $this->set('showEmpty', $this->showEmpty);
     $this->set('emptyLabel', $this->emptyLabel);
     $this->set('emptyValue', $this->emptyValue);
 
-    return parent::onRender($action);
+    return parent::onRender($action, $data, $index);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getValue()
+   * @see Simplify_Form_Component::onValidate()
    */
-  public function getValue()
+  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
-    $value = s::request()->get($this->getName());
-
-    // if show empty is true, default value makes no sense...
-    if ('' . $value == '' . $this->emptyValue && !$this->showEmpty) {
-      if ('' . $this->getDefaultValue() == '' . $this->emptyValue) {
-        $options = $this->getOptions();
-        $value = array_shift($options);
-      }
-      else {
-        $value = $this->getDefaultValue();
-      }
+    if ($this->required) {
+      $rule = new Simplify_Validation_StrictEqual('Invalid selection', $this->emptyValue);
+      $rules->setRule($this->getName(), $rule);
     }
-
-    return $value;
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
+   * @see Simplify_Form_Component::onPostData()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onPostData(Simplify_Form_Action $action, &$data, $post)
   {
-    parent::onInjectQueryParams($action, $params);
+    $value = sy_get_param($post, $this->getName(), $this->getDefaultValue());
+    $data[$this->getName()] = $value == '' ? null : $value;
+  }
 
-    $value = $this->getValue();
-
-    if ($value != $this->emptyValue) {
-      $name = $this->getFieldName();
-
-      $params[Simplify_Db_QueryParameters::WHERE][] = "{$name} = :{$name}";
-      $params[Simplify_Db_QueryParameters::DATA][$name] = $value;
-    }
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Element::getDisplayValue()
+   */
+  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  {
+    return sy_get_param($this->getOptions(), $this->getValue($data));
   }
 
   /**

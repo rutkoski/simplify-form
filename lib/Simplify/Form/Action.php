@@ -1,15 +1,42 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Abstract class for form actions such as list, edit, create...
+ *
+ */
 abstract class Simplify_Form_Action extends Simplify_Renderable
 {
 
   /**
    *
-   * @var Simplify_Form_
+   * @var Simplify_Form
    */
   public $form;
 
   /**
+   * Action title
    *
    * @var string
    */
@@ -34,7 +61,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   protected $actionMask;
 
   /**
-   * Execute the action.
+   * Execute the action
    *
    * @return void
    */
@@ -52,7 +79,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Render the action.
+   * Render the action
    *
    * @return void
    */
@@ -73,7 +100,21 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Create the action menu.
+   * Load data from repository
+   */
+  protected function onLoadData()
+  {
+  }
+
+  /**
+   * Save data to repository
+   */
+  protected function onSave()
+  {
+  }
+
+  /**
+   * Create the action menu
    *
    * @param Simplify_Menu $menu
    * @param Simplify_Form_Action $action
@@ -83,7 +124,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Create the menu for each row in the form.
+   * Create the menu for each row in the form
    *
    * @param Simplify_Menu $menu
    * @param Simplify_Form_Action $action
@@ -94,7 +135,8 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Add bulk actions to the bulk menu.
+   * Add bulk actions to the bulk menu
+   *
    * Ex.:
    * 	$actions['action_name'] = 'Action Label';
    *
@@ -105,7 +147,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Inject query parameters for loading form data.
+   * Inject query parameters for loading form data
    *
    * @param array $params
    */
@@ -114,47 +156,82 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Fill form data with data sent via POST.
+   * Fill form data with data sent via POST
    */
   public function onPostData()
   {
-    $data = s::request()->post('formData');
-    $id = s::request()->post(Simplify_Form::ID);
+    $post = s::request()->post('formData');
+    $files = s::request()->files('formData');
+
+    $id = $this->form->getId();
 
     $elements = $this->getElements();
     $filters = $this->form->getFilters();
 
-    foreach ($this->formData as $i => &$row) {
-      $row[Simplify_Form::ID] = $id[$i];
+    foreach ($this->formData as $index => &$row) {
+      $row[Simplify_Form::ID] = $id[$index];
+
+      if (! empty($files)) {
+        foreach ($files as $k => $file) {
+          foreach ($file[$index] as $field => $value) {
+            $post[$index][$field][$k] = $value['file'];
+          }
+        }
+      }
 
       foreach ($filters as $filter) {
-        $filter->onPostData($row, $data, $i);
+        $filter->onPostData($this, $row, $post[$index]);
       }
 
       foreach ($elements as $element) {
-        $element->onPostData($row, $data, $i);
+        $element->onPostData($this, $row, $post[$index]);
       }
     }
   }
 
   /**
-   * Validate form data.
+   * Validate form data
    */
   public function onValidate()
   {
+    $rules = new Simplify_Validation_DataValidation();
+
     $elements = $this->getElements();
 
-    foreach ($this->formData as $i => &$row) {
-      $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $row);
+    foreach ($elements as $element) {
+      $element->onValidate($this, $rules);
+    }
+
+    $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $rules);
+
+    foreach ($this->formData as $index => &$data) {
+      $rules->validate($data);
+    }
+
+    /*$errors = array();
+
+    $elements = $this->getElements();
+
+    foreach ($this->formData as $index => &$data) {
+      $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $data);
 
       foreach ($elements as $element) {
-        $element->onValidate($this, $this->formData, $i);
+        try {
+          $element->onValidate($this, $data);
+        }
+        catch (Simplify_ValidationException $e) {
+          $errors = array_merge($errors, (array) $e->getErrors());
+        }
       }
     }
+
+    if (! empty($errors)) {
+      throw new Simplify_ValidationException($errors);
+    }*/
   }
 
   /**
-   * Get the action name.
+   * Get the action name
    *
    * @return string
    */
@@ -168,7 +245,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Get the action title.
+   * Get the action title
    *
    * @return string
    */
@@ -182,7 +259,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Get the action mask.
+   * Get the action mask
    *
    * @return int
    */
@@ -192,7 +269,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Get the elements for this action according to the action mask.
+   * Get the elements for this action according to the action mask
    *
    * @return Simplify_Form_Element[]
    */
@@ -202,7 +279,8 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   *
+   * (non-PHPdoc)
+   * @see Simplify_Renderable::getTemplateFilename()
    */
   public function getTemplateFilename()
   {
@@ -210,7 +288,8 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   *
+   * (non-PHPdoc)
+   * @see Simplify_Renderable::getTemplatesPath()
    */
   public function getTemplatesPath()
   {
@@ -219,7 +298,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
 
   /**
    *
-   * @return IRepository
+   * @return Simplify_Form_Repository
    */
   protected function repository()
   {
@@ -227,7 +306,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   }
 
   /**
-   * Get wheter this action should be shown for a specifig action mask.
+   * Get wheter this action should be shown for a specifig action mask
    *
    * @return boolean
    */

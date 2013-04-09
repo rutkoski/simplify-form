@@ -3,7 +3,7 @@
 class Simplify_Form_Mptt extends Simplify_Form
 {
 
-  const ACTION_SORT = 'sort';
+  const LIST_ACTION_SORT = 'sort';
 
   /**
    *
@@ -24,8 +24,8 @@ class Simplify_Form_Mptt extends Simplify_Form
   public $right;
 
   /**
-   *
-   *
+   * (non-PHPdoc)
+   * @see Simplify_Form::execute()
    */
   public function execute($action = null)
   {
@@ -47,7 +47,7 @@ class Simplify_Form_Mptt extends Simplify_Form
     if ($Action->show(Simplify_Form::ACTION_LIST)) {
       $listAction = s::request()->get('listAction');
 
-      if ($listAction == self::ACTION_SORT) {
+      if ($listAction == self::LIST_ACTION_SORT) {
         $id = s::request()->get(Simplify_Form::ID);
         $index = s::request()->get('index');
 
@@ -71,7 +71,7 @@ class Simplify_Form_Mptt extends Simplify_Form
 
     $parents = sy_array_to_options($data, Simplify_Form::ID, 'label');
 
-    $filter = new Simplify_Form_FilterSelect($parent, 'Parent');
+    $filter = new Simplify_Form_Filter_Select($parent, 'Parent');
     $filter->defaultValue = 0;
     $filter->emptyLabel = 'Root';
     $filter->emptyValue = 0;
@@ -103,7 +103,7 @@ class Simplify_Form_Mptt extends Simplify_Form
 
       $parents = sy_array_to_options($data, Simplify_Form::ID, 'label');
 
-      $parentSelect = new Simplify_Form_ElementSelect($parent, 'Parent');
+      $parentSelect = new Simplify_Form_Element_Select($parent, 'Parent');
       $parentSelect->emptyLabel = 'Root';
       $parentSelect->emptyValue = 0;
       $parentSelect->options = $parents;
@@ -153,37 +153,39 @@ class Simplify_Form_Mptt extends Simplify_Form
     return $this->right;
   }
 
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $row)
+  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data, $index)
   {
     if ($action->show(Simplify_Form::ACTION_LIST)) {
+      $row = $data[$index];
+      
       $children = new Simplify_MenuItem('children', 'Children', null, $this->url()->extend(null, array($this->repository()->parent => $row[Simplify_Form::ID])));
 
       $moveMenu = new Simplify_Menu(null, null, Simplify_Menu::STYLE_DROPDOWN);
-      $moveMenu->addItem(new Simplify_MenuItem('move_top', 'First', 'arrow_top', $this->url()->extend(null, array('listAction' => self::ACTION_SORT, 'index' => 'first', Simplify_Form::ID => $row[Simplify_Form::ID]))));
-      $moveMenu->addItem(new Simplify_MenuItem('move_up', 'Previous', 'arrow_up', $this->url()->extend(null, array('listAction' => self::ACTION_SORT, 'index' => 'previous', Simplify_Form::ID => $row[Simplify_Form::ID]))));
-      $moveMenu->addItem(new Simplify_MenuItem('move_down', 'Next', 'arrow_down', $this->url()->extend(null, array('listAction' => self::ACTION_SORT, 'index' => 'next', Simplify_Form::ID => $row[Simplify_Form::ID]))));
-      $moveMenu->addItem(new Simplify_MenuItem('move_bottom', 'Last', 'arrow_bottom', $this->url()->extend(null, array('listAction' => self::ACTION_SORT, 'index' => 'last', Simplify_Form::ID => $row[Simplify_Form::ID]))));
+      $moveMenu->addItem(new Simplify_MenuItem('move_top', 'First', 'arrow_top', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'first', Simplify_Form::ID => $row[Simplify_Form::ID]))));
+      $moveMenu->addItem(new Simplify_MenuItem('move_up', 'Previous', 'arrow_up', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'previous', Simplify_Form::ID => $row[Simplify_Form::ID]))));
+      $moveMenu->addItem(new Simplify_MenuItem('move_down', 'Next', 'arrow_down', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'next', Simplify_Form::ID => $row[Simplify_Form::ID]))));
+      $moveMenu->addItem(new Simplify_MenuItem('move_bottom', 'Last', 'arrow_bottom', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'last', Simplify_Form::ID => $row[Simplify_Form::ID]))));
 
       $moveItem = new Simplify_MenuItem('move', 'Move', null, null, $moveMenu);
 
       $menu->addItem(new Simplify_Menu('mptt', array($moveItem, $children), Simplify_Menu::STYLE_BUTTON_GROUP));
     }
 
-    parent::onCreateItemMenu($menu, $action, $row);
+    parent::onCreateItemMenu($menu, $action, $data, $index);
   }
 
   /**
    *
-   * @return IRepository
+   * @return Simplify_Form_Repository_Mptt
    */
-  public function repository(IRepository $repository = null)
+  public function repository(Simplify_Form_Repository_Mptt $repository = null)
   {
-    if ($repository instanceof IRepository) {
+    if ($repository instanceof Simplify_Form_Repository_Mptt) {
       $this->repository = $repository;
     }
 
     if (empty($this->repository)) {
-      $this->repository = new Simplify_Form_RepositoryMptt($this->getTable(), $this->getPrimaryKey(), $this->getParent(), $this->getLeft(), $this->getRight());
+      $this->repository = new Simplify_Form_Repository_Mptt($this->getTable(), $this->getPrimaryKey(), $this->getParent(), $this->getLeft(), $this->getRight());
     }
 
     return $this->repository;

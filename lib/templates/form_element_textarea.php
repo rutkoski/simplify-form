@@ -1,1 +1,1 @@
-<textarea name="<?= $name ?>"><?= $value ?></textarea>
+<textarea name="<?= $inputName ?>"><?= $value ?></textarea>

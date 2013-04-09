@@ -1,112 +1,95 @@
-<div class="container-fluid well <?= $class ?>" id="<?= $id ?>">
+<div class="<?= $class ?>" id="<?= $id ?>">
   <div class="row-fluid">
-    <div class="span3">
-      <input id="<?= $id ?>-upload" name="<?= $name ?>[input]" type="file"/>
+    <div class="span12">
+      <div id="<?= $uploaderId ?>"></div>
     </div>
+  </div>
 
-    <div class="span9">
+  <div class="row-fluid">
+    <div class="span12">
       <ul class="thumbnails">
-        <?php foreach ($data as $row) { ?>
-        <li style="width:100px; position:relative;" class="img-polaroid">
-          <input type="hidden" name="<?= $row['name'] ?>[_id]" value="<?= $row['_id'] ?>"/>
-          <input type="hidden" name="<?= $row['name'] ?>[filename]" value="<?= $row['image_filename'] ?>"/>
+        <?php foreach ($data as $i => $row) { ?>
+        <li>
+          <div class="img-polaroid">
+            <img src="<?= $row['thumbUrl'] ?>" />
 
-          <a href="<?= $row['image_src'] ?>" class="lightbox"><img src="<?= $row['thumb_src'] ?>"/></a>
-
-          <a href="#" class="btn-delete"><i class="icon-trash"></i></a>
-          <a href="#<?= $row['_id'] ?>-lightbox" class="btn-edit lightbox"><i class="icon-edit"></i></a>
-
-          <div class="popup-holder" style="display:none;">
-            <div class="popup" id="<?= $row['_id'] ?>-lightbox">
-              <?php foreach ($row['elements'] as $element) { echo $element; } ?>
+            <div class="caption">
+              <p>
+                <a href="<?= $row['imageUrl'] ?>" class="lightbox"><i class="icon-zoom-in"></i></a>
+                <a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a>
+              </p>
             </div>
           </div>
+
+          <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
+          <input type="hidden" name="<?= $row['baseName'] ?>[filename]" value="<?= $row['filename'] ?>"/>
         </li>
         <?php } ?>
+
+        <li class="dummy" style="display: none;">
+          <div class="img-polaroid">
+            <img src="" class="image" style="width: 100px; height: 100px;" />
+
+            <div class="caption">
+              <p>
+                <a href="" class="lightbox"><i class="icon-zoom-in"></i></a>
+                <a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a>
+              </p>
+            </div>
+          </div>
+
+          <input type="hidden" name="<?= $dummy['name'] ?>" value=""/>
+          <input type="hidden" name="<?= $dummy['baseName'] ?>[filename]" value=""/>
+        </li>
       </ul>
     </div>
   </div>
-
-  <div class="dummy" style="display:none;">
-    <li style="width:100px; position:relative;" class="img-polaroid">
-      <input type="hidden" name="<?= $dummy['name'] ?>[_id]" value=""/>
-      <input type="hidden" name="<?= $dummy['name'] ?>[filename]" value=""/>
-
-      <a href="" class="btn-lightbox lightbox"><img src=""/></a>
-
-      <a href="#" class="btn-delete"><i class="icon-trash"></i></a>
-      <a href="#<?= $dummy['id'] ?>-lightbox" class="btn-edit lightbox"><i class="icon-edit"></i></a>
-
-      <div class="popup-holder" style="display:none;">
-        <div class="popup" id="<?= $dummy['id'] ?>-lightbox">
-          <?php foreach ($dummy['elements'] as $element) { echo $element; } ?>
-        </div>
-      </div>
-    </li>
-  </div>
 </div>
 
-<?= $this->html->css('../uploadify/uploadify.css') ?>
-<?= $this->html->js('swfobject') ?>
-<?= $this->html->js('../uploadify/jquery.uploadify.min.js') ?>
+<?= $this->html->js('/fineuploader/jquery.fineuploader-3.4.1.min.js')?>
 
 <script>
-(function() {
-  var id = '<?= $id ?>';
-  var jsonData = '<?= $jsonData ?>';
+$(function() {
+  var _id = '#<?= $id ?>';
   var n = 0;
 
-  $('#'+id+'-upload').uploadify({
-    formData: { sid: '<?= session_id() ?>' },
+  var dummy = $(_id + ' .dummy');
 
-    method: 'get',
+  $(_id + ' .dummy :input').attr('disabled', 'disabled');
 
-    onUploadError: function(file, errorCode, errorMsg, errorString) {
-      alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
-    },
-
-    onUploadSuccess: function(file, data, response) {
-      data = $.parseJSON(data);
-
-      if (data.error) {
-        alert(data.error);
-      } else {
-        addImage(data.image);
-      }
-    },
-
-    swf: '<?= s::config()->get('theme_url') ?>/uploadify/uploadify.swf',
-    uploader: '<?= $uploaderUrl ?>',
+  $(_id).on('click', '.btn-delete', function() {
+    $(this).parents('li').first().remove();
   });
 
-  function addImage(data)
-  {
-    var li = $('#'+id+' .dummy li').clone();
+  $('#<?= $uploaderId ?>').fineUploader({
+    request: {
+      endpoint: '<?= $uploaderUrl ?>',
+      inputName: '<?= $name ?>'
+    }
+  })
+  .on('error', function(event, id, name, reason) {
+     //do something
+  })
+  .on('complete', function(event, id, name, response){
+    var el = dummy.clone().removeClass('dummy');
 
-    n++;
+    $(_id + ' .qq-upload-list > li').eq(id).fadeOut();
 
-    li.find(':input').each(function() {
+    ++n;
+
+    el.find(':input').removeAttr('disabled').each(function() {
       $(this).attr('name', $(this).attr('name').replace(/dummy/, 'new-' + n));
     });
 
-    li.find(':input[name$=\\[_id\\]]').val('new-' + n);
-    li.find(':input[name$=\\[filename\\]]').val(data.image_filename);
+    el.find(':input[name$=\\[_id\\]]').val('new-' + n);
+    el.find(':input[name$=\\[filename\\]]').val(response.image.filename);
 
-    li.find('.btn-lightbox').attr('href', data.image_src).find('img').attr('src', data.thumb_src);
+    el.find('a.lightbox').attr('href', response.image.imageUrl);
+    el.find('img.image').attr('src', response.image.thumbUrl);
 
-    $('#'+id+' .thumbnails').append(li);
+    el.show();
 
-    $('.lightbox').fancybox();
-  }
-
-  $('#' + id + ' .btn-delete').click(function() {
-    $(this).parent().remove();
+    dummy.before(el);
   });
-
-  $('.lightbox').fancybox();
-
-  <?php if ($sortable) { ?>
-  $('#' + id + ' .thumbnails').sortable();
-  <?php } ?>
-})();
+});
 </script>

@@ -23,9 +23,39 @@
 
 /**
  *
- * Multiple selection checkboxes
+ * Base class for form elements composed of other elements
  *
  */
-class Simplify_Form_Element_Checkboxes extends Simplify_Form_Element_Base_MultipleSelection
+class Simplify_Form_Element_Base_Composite extends Simplify_Form_Element
 {
+
+  /**
+   *
+   * @var Simplify_Form_Element[]
+   */
+  protected $elements = array();
+
+  /**
+   *
+   * @param Simplify_Form_Element $element
+   * @return Simplify_Form_Element
+   */
+  public function addElement(Simplify_Form_Element $element)
+  {
+    $element->form = $this->form;
+
+    $this->elements[] = $element;
+
+    return $element;
+  }
+
+  /**
+   *
+   * @return Simplify_Form_Element[]
+   */
+  public function getElements()
+  {
+    return $this->elements;
+  }
+
 }

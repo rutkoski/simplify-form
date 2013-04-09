@@ -1,27 +1,48 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Form element with email validation
+ *
+ */
 class Simplify_Form_Element_Email extends Simplify_Form_Element
 {
 
   /**
    *
+   * @var boolean
    */
-  public function onValidate(Simplify_Form_Action $action, $data, $index)
-  {
-    $rule = new Simplify_Validation_EmailValidator('Invalid email address');
-    $rule->validate($this->getValue($data, $index));
-  }
+  public $required = true;
 
   /**
-   *
+   * (non-PHPdoc)
+   * @see Simplify_Form_Component::onValidate()
    */
-  public function getTemplateFilename()
+  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
-    if (! empty($this->style)) {
-      return $this->style;
-    }
-
-    return 'form_element_text';
+    $rule = new Simplify_Validation_Email('Invalid email address', $this->required);
+    $rules->setRule($this->getName(), $rule);
   }
 
 }

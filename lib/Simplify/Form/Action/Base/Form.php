@@ -23,17 +23,17 @@
 
 /**
  *
- * Form action delete
+ * Base class for create/edit form actions
  *
  */
-class Simplify_Form_Action_Delete extends Simplify_Form_Action
+abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
 {
 
   /**
    *
-   * @var int
+   * @var string
    */
-  protected $actionMask = Simplify_Form::ACTION_DELETE;
+  protected $template = 'form_form';
 
   /**
    * (non-PHPdoc)
@@ -41,16 +41,14 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
    */
   public function onExecute()
   {
+    parent::onExecute();
+
     $this->onLoadData();
 
-    $this->onValidate();
-
-    foreach ($this->formData as $row) {
-      $this->form->dispatch(Simplify_Form::ON_BEFORE_DELETE, $this, $row);
-    }
-
-    if (s::request()->method(Simplify_Request::POST) && s::request()->post('deleteAction') == 'confirm') {
-      $this->onDelete();
+    if (s::request()->method(Simplify_Request::POST)) {
+      $this->onPostData();
+      $this->onValidate();
+      $this->onSave();
 
       return Simplify_Form::RESULT_SUCCESS;
     }
@@ -62,14 +60,31 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
    */
   public function onRender()
   {
-    $this->set(Simplify_Form::ID, (array) $this->form->getId());
+    $elements = $this->getElements();
 
     $data = array();
     foreach ($this->formData as $index => $row) {
       $line = array();
-      $line[Simplify_Form::ID] = $row[Simplify_Form::ID];
       $line['name'] = Simplify_Form::ID . "[]";
-      $line['label'] = $row['label'];
+      $line[Simplify_Form::ID] = $row[Simplify_Form::ID];
+      $line['elements'] = array();
+      $line['index'] = $index;
+      $line['menu'] = new Simplify_Menu('actions', null, Simplify_Menu::STYLE_TOOLBAR);
+      $line['menu']->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
+
+      foreach ($elements as $element) {
+        $_element = array();
+
+        $_element['id'] = $element->getElementId($index);
+        $_element['name'] = $element->getInputName($index);
+        $_element['class'] = $element->getElementClass();
+        $_element['label'] = $element->getLabel();
+        $_element['controls'] = $element->onRender($this, $this->formData[$index], $index)->render();
+
+        $line['elements'][] = $_element;
+      }
+
+      $this->form->onCreateItemMenu($line['menu'], $this, $row);
 
       $data[] = $line;
     }
@@ -81,50 +96,35 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onCreateItemMenu()
+   * @see Simplify_Form_Action::onSave()
    */
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
-  {
-    if (!$action->show(Simplify_Form::ACTION_CREATE)) {
-      $menu->getItemByName('main')->addItem(
-        new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
-          new Simplify_URL(null, array('formAction' => $this->getName(), Simplify_Form::ID => $data[Simplify_Form::ID]))));
-    }
-  }
-
-  /**
-   * (non-PHPdoc)
-   * @see Simplify_Form_Action::onCreateBulkOptions()
-   */
-  public function onCreateBulkOptions(array &$actions)
-  {
-    $actions[$this->getName()] = $this->getTitle();
-  }
-
-  /**
-   * Delete data from repository
-   */
-  protected function onDelete()
+  protected function onSave()
   {
     $elements = $this->getElements();
 
-    foreach ($this->formData as $row) {
-      foreach ($elements as $element) {
-        $element->onBeforeDelete($this, $row);
+    $filters = $this->form->getFilters();
+
+    foreach ($this->formData as $index => &$data) {
+      // $row will be saved in the database
+      $row = array();
+
+      $row[$this->form->getPrimaryKey()] = $data[Simplify_Form::ID];
+
+      foreach ($elements as &$element) {
+        $element->onCollectTableData($row, $data);
       }
-    }
 
-    $id = $this->form->getId();
-    $pk = $this->form->getPrimaryKey();
+      foreach ($filters as &$filter) {
+        $filter->onCollectTableData($row, $data);
+      }
 
-    $params = array();
-    $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($pk, $id);
+      $this->repository()->save($row);
 
-    $this->repository()->deleteAll($params);
+      // fill the primary key if this is a new record
+      $data[Simplify_Form::ID] = $row[$this->form->getPrimaryKey()];
 
-    foreach ($this->formData as $row) {
-      foreach ($elements as $element) {
-        $element->onAfterDelete($this, $row);
+      foreach ($elements as &$element) {
+        $element->onSave($this, $data);
       }
     }
   }
@@ -139,25 +139,26 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
 
     $id = $this->form->getId();
     $pk = $this->form->getPrimaryKey();
-    $label = $this->form->getLabel();
 
     $params = array();
     $params[Simplify_Db_QueryParameters::SELECT][] = $pk;
-    $params[Simplify_Db_QueryParameters::SELECT][] = $label;
     $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($pk, $id);
 
     foreach ($elements as $element) {
       $element->onInjectQueryParams($this, $params);
     }
 
+    foreach ($this->form->getFilters() as $filter) {
+      $filter->onInjectQueryParams($this, $params);
+    }
+
     $data = $this->repository()->findAll($params);
 
     $this->formData = array();
 
-    foreach ($data as $index => $row) {
+    foreach ($data as $index => &$row) {
       $this->formData[$index] = array();
       $this->formData[$index][Simplify_Form::ID] = $row[$pk];
-      $this->formData[$index]['label'] = $row[$label];
 
       foreach ($elements as &$element) {
         $element->onLoadData($this, $this->formData[$index], $row);

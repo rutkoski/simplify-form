@@ -3,7 +3,7 @@
 class Simplify_Form_Sortable extends Simplify_Form
 {
 
-  const ACTION_SORT = 'sort';
+  const LIST_ACTION_SORT = 'sort';
 
   /**
    *
@@ -29,7 +29,7 @@ class Simplify_Form_Sortable extends Simplify_Form
     if ($Action->show(Simplify_Form::ACTION_LIST)) {
       $listAction = s::request()->get('listAction');
 
-      if ($listAction == self::ACTION_SORT) {
+      if ($listAction == self::LIST_ACTION_SORT) {
         $id = s::request()->get(Simplify_Form::ID);
         $index = s::request()->get('index');
 
@@ -72,16 +72,16 @@ class Simplify_Form_Sortable extends Simplify_Form
 
   /**
    *
-   * @return IRepository
+   * @return Simplify_Form_Repository_Sortable
    */
-  public function repository(IRepository $repository = null)
+  public function repository(Simplify_Form_Repository_Sortable $repository = null)
   {
-    if ($repository instanceof IRepository) {
+    if ($repository instanceof Simplify_Form_Repository_Sortable) {
       $this->repository = $repository;
     }
 
     if (empty($this->repository)) {
-      $this->repository = new Simplify_Form_RepositorySortable($this->getTable(), $this->getPrimaryKey(), $this->getSortField());
+      $this->repository = new Simplify_Form_Repository_Sortable($this->getTable(), $this->getPrimaryKey(), $this->getSortField());
     }
 
     return $this->repository;

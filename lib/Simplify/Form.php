@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Form
+ *
+ */
 class Simplify_Form extends Simplify_Renderable
 {
 
@@ -36,12 +62,14 @@ class Simplify_Form extends Simplify_Renderable
   const ID = '_id';
 
   /**
+   * Table name
    *
    * @var string
    */
   public $table;
 
   /**
+   * Primary key column
    *
    * @var string
    */
@@ -54,72 +82,84 @@ class Simplify_Form extends Simplify_Renderable
   public $label;
 
   /**
+   * Primary key value(s)
    *
    * @var int|int[]
    */
   public $id;
 
   /**
+   * Form name
    *
    * @var string
    */
   public $name;
 
   /**
+   * Form title
    *
    * @var string
    */
   public $title;
 
   /**
+   * Form actions
    *
    * @var Simplify_Form_Action[]
    */
   protected $actions = array();
 
   /**
+   * Action mask
    *
    * @var int
    */
   public $actionMask = 0;
 
   /**
+   * Default action name
    *
    * @var string
    */
   protected $defaultAction;
 
   /**
+   * Form elements
    *
    * @var Simplify_FormElement[]
    */
   protected $elements = array();
 
   /**
+   * Form filters
    *
    * @var Simplify_FormFilter[]
    */
   protected $filters = array();
 
   /**
+   * Form repository
    *
-   * @var IRepository
+   * @var Simplify_Form_Repository
    */
   protected $repository;
 
   /**
+   * Form template
    *
    * @var string
    */
   protected $template = 'form_body';
 
   /**
+   * Form url
    *
    * @var Simplify_URL
    */
   protected $url;
 
   /**
+   * Form hooks
    *
    * @var array
    */
@@ -127,7 +167,7 @@ class Simplify_Form extends Simplify_Renderable
 
   /**
    * Construct a new form object
-   * 
+   *
    * @param string $name a $name that identifies the form
    */
   public function __construct($name)
@@ -137,88 +177,88 @@ class Simplify_Form extends Simplify_Renderable
 
   /**
    * Execute the action and return the result
-   * 
+   *
    * @param string $action action name
    * @return mixed
    */
   public function execute($action = null)
   {
     $Action = $this->getAction($action);
-    
+
     $result = $Action->onExecute();
-    
+
     return $result;
   }
 
   /**
    * Render the action and return the result view
-   * 
+   *
    * @param string $action action name
    * @return Simplify_View
    */
   public function render($action = null)
   {
     $Action = $this->getAction($action);
-    
+
     $result = $Action->onRender();
-    
+
     $this->set('actionBody', $result);
-    
+
     if (!s::request()->json()) {
       $this->set('title', $this->getTitle());
       $this->set('menu', $this->createMenu($Action));
     }
-    
+
     return $this->getView();
   }
 
   /**
    * Add an action to the form
-   * 
+   *
    * @param Simplify_Form_Action $action the action
    * @return Simplify_Form
    */
   public function addAction(Simplify_Form_Action $action)
   {
     $action->form = $this;
-    
+
     if (empty($this->actions)) {
       $this->defaultAction = $action->getName();
     }
-    
+
     $this->actions[$action->getName()] = $action;
-    
+
     return $this;
   }
 
   /**
    * Add an element to the form
-   * 
-   * @param Simplify_Form_Element $element the element 
+   *
+   * @param Simplify_Form_Element $element the element
    * @param int $actionMask a bit mask of the actions the element applies to
-   * @param int $index the position where the element will be added, leave blank to add the element at the end 
+   * @param int $index the position where the element will be added, leave blank to add the element at the end
    * @return Simplify_Form_Element the element
    */
   public function addElement(Simplify_Form_Element $element, $actionMask = Simplify_Form::ACTION_ALL, $index = null)
   {
     $element->form = $this;
     $element->actionMask = $actionMask;
-    
+
     $this->actionMask = $this->actionMask | $actionMask;
-    
+
     if (is_null($index)) {
       $this->elements[] = $element;
     }
     else {
       array_splice($this->elements, $index, 0, array($element));
     }
-    
+
     return $element;
   }
 
   /**
    * Add a filter to the form
-   * 
+   *
    * @param Simplify_Form_Filter $filter the filter
    * @param unknown_type $actionMask a bit mask of the actions the filter applies to
    * @return Simplify_Form_Filter
@@ -227,15 +267,15 @@ class Simplify_Form extends Simplify_Renderable
   {
     $filter->form = $this;
     $filter->actionMask = $actionMask;
-    
+
     $this->filters[] = $filter;
-    
+
     return $filter;
   }
 
   /**
-   * Calls each of the form's actions and let's them add itens the the form menu 
-   * 
+   * Calls each of the form's actions and let's them add itens the the form menu
+   *
    * @param Simplify_Form_Action $action current action
    * @return Simplify_Menu the form menu
    */
@@ -243,16 +283,16 @@ class Simplify_Form extends Simplify_Renderable
   {
     $menu = new Simplify_Menu('form', null, Simplify_Menu::STYLE_TOOLBAR);
     $menu->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
-    
+
     foreach ($this->getActions() as $_action) {
       $_action->onCreateMenu($menu, $action);
     }
-    
+
     return $menu;
   }
 
   /**
-   * 
+   *
    * @param string $action
    * @return Simplify_Form_Action
    */
@@ -261,7 +301,7 @@ class Simplify_Form extends Simplify_Renderable
     if (empty($action)) {
       $action = s::request()->get('formAction', $this->defaultAction, true);
     }
-    
+
     return $this->actions[$action];
   }
 
@@ -285,7 +325,7 @@ class Simplify_Form extends Simplify_Renderable
         return $element;
       }
     }
-    
+
     return false;
   }
 
@@ -296,15 +336,15 @@ class Simplify_Form extends Simplify_Renderable
   public function getElements($actionMask)
   {
     $elements = array();
-    
+
     $elements[$actionMask] = array();
-    
+
     foreach ($this->elements as &$element) {
       if ($element->show($actionMask)) {
         $elements[$actionMask][] = &$element;
       }
     }
-    
+
     return $elements[$actionMask];
   }
 
@@ -324,9 +364,10 @@ class Simplify_Form extends Simplify_Renderable
   public function getId()
   {
     if (empty($this->id)) {
-      $this->id = s::request()->method(Simplify_Request::GET) ? s::request()->get(Simplify_Form::ID) : s::request()->post(Simplify_Form::ID);
+      $this->id = s::request()->method(Simplify_Request::GET) ? s::request()->get(Simplify_Form::ID) : s::request()->post(
+        Simplify_Form::ID);
     }
-    
+
     return $this->id;
   }
 
@@ -347,7 +388,7 @@ class Simplify_Form extends Simplify_Renderable
     if (empty($this->title)) {
       $this->title = Inflector::titleize(Inflector::pluralize($this->getName()));
     }
-    
+
     return $this->title;
   }
 
@@ -369,7 +410,7 @@ class Simplify_Form extends Simplify_Renderable
     if (empty($this->table)) {
       $this->table = Inflector::tableize($this->getName());
     }
-    
+
     return $this->table;
   }
 
@@ -382,7 +423,7 @@ class Simplify_Form extends Simplify_Renderable
     if (empty($this->label)) {
       $this->label = $this->getPrimaryKey();
     }
-    
+
     return $this->label;
   }
 
@@ -395,17 +436,27 @@ class Simplify_Form extends Simplify_Renderable
     if (empty($this->primaryKey)) {
       $this->primaryKey = Inflector::singularize($this->getTable()) . Simplify_Form::ID;
     }
-    
+
     return $this->primaryKey;
   }
 
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data, $index)
+  /**
+   *
+   * @param Simplify_Menu $menu menu for form row
+   * @param Simplify_Form_Action $action current action
+   * @param array $data form data
+   */
+  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
   {
     foreach ($this->getActions() as $_action) {
-      $_action->onCreateItemMenu($menu, $action, $data, $index);
+      $_action->onCreateItemMenu($menu, $action, $data);
     }
   }
 
+  /**
+   *
+   * @param array $actions
+   */
   public function onCreateBulkOptions(array &$actions)
   {
     foreach ($this->getActions() as $action) {
@@ -415,18 +466,18 @@ class Simplify_Form extends Simplify_Renderable
 
   /**
    *
-   * @return IRepository
+   * @return Simplify_Form_Repository
    */
-  public function repository(IRepository $repository = null)
+  public function repository(Simplify_Form_Repository $repository = null)
   {
-    if ($repository instanceof IRepository) {
+    if ($repository instanceof Simplify_Form_Repository) {
       $this->repository = $repository;
     }
-    
+
     if (empty($this->repository)) {
       $this->repository = new Simplify_Form_Repository($this->getTable(), $this->getPrimaryKey());
     }
-    
+
     return $this->repository;
   }
 
@@ -448,7 +499,7 @@ class Simplify_Form extends Simplify_Renderable
     if (empty($this->url)) {
       $this->url = new Simplify_URL(null, array('formAction' => s::request()->get('formAction')));
     }
-    
+
     return $this->url;
   }
 
@@ -467,9 +518,9 @@ class Simplify_Form extends Simplify_Renderable
   {
     if (isset($this->hooks[$hook])) {
       $args = func_get_args();
-      
+
       unset($args[0]);
-      
+
       foreach ($this->hooks[$hook] as $listener) {
         call_user_func_array(array($listener, $hook), $args);
       }

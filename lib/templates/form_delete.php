@@ -3,8 +3,8 @@
 <form action="" method="POST">
   <input type="hidden" name="deleteAction" value="confirm" />
 
-  <?php foreach ($id as $_id) { ?>
-  <input type="hidden" name="<?= $name ?>" value="<?= $_id ?>" />
+  <?php foreach ($data as $row) { ?>
+  <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
   <?php } ?>
 
   <p>Do you really want to delete these items?</p>
@@ -15,5 +15,5 @@
     <?php } ?>
   </ul>
 
-  <input type="submit" value="Confirm" />
+  <input type="submit" value="Confirm" class="btn btn-primary" />
 </form>

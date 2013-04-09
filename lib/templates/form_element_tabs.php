@@ -13,7 +13,7 @@
       <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
 
       <?php foreach ($row['elements'] as $element) { ?>
-      <?= $element ?>
+      <?= $element['controls'] ?>
       <?php } ?>
 
       <ul class="nav nav-pills">
@@ -26,7 +26,7 @@
       <input type="hidden" name="<?= $dummy['name'] ?>" value="" />
 
       <?php foreach ($dummy['elements'] as $element) { ?>
-      <?= $element ?>
+      <?= $element['controls'] ?>
       <?php } ?>
 
       <ul class="nav nav-pills">

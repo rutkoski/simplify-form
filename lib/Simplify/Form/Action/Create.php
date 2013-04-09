@@ -1,6 +1,32 @@
 <?php
 
-class Simplify_Form_Action_Create extends Simplify_Form_Action_Form
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Form action create
+ *
+ */
+class Simplify_Form_Action_Create extends Simplify_Form_Action_Base_Form
 {
 
   /**
@@ -9,11 +35,19 @@ class Simplify_Form_Action_Create extends Simplify_Form_Action_Form
    */
   protected $actionMask = Simplify_Form::ACTION_CREATE;
 
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Action::onCreateMenu()
+   */
   public function onCreateMenu(Simplify_Menu $menu)
   {
     $menu->getItemByName('main')->addItem(new Simplify_MenuItem($this->getName(), $this->getTitle(), null, $this->form->url()->extend(null, array('formAction' => $this->getName()))));
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Action_Base_Form::onLoadData()
+   */
   public function onLoadData()
   {
     $this->formData = array(array(Simplify_Form::ID => null));

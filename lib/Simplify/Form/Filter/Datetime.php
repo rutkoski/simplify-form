@@ -7,129 +7,164 @@ class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
    *
    * @var string
    */
-  public $displaySimplify_Form_at = 'd/m/Y H:i:s';
+  public $displayFormat = 'd/m/Y H:i:s';
 
-  public $fromDate;
+  /**
+   * Filter values from this datetime
+   *
+   * @var string
+   */
+  public $since;
 
-  public $toDate;
+  /**
+   * Filter values until this datetime
+   *
+   * @var string|int
+   */
+  public $until;
 
+  /**
+   * Minimum selectable date
+   *
+   * @var string|int
+   */
   public $minDate;
 
+  /**
+   * Maximum  selectable date
+   *
+   * @var string
+   */
   public $maxDate;
 
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Filter::onExecute()
+   */
+  public function onExecute(Simplify_Form_Action $action)
+  {
+    parent::onExecute($action);
+
+    $this->loadDatabaseLimits();
+
+    $name = $this->getName();
+
+    $this->since = $this->getSinceValue($this->minDate);
+    $this->until = $this->getUntilValue($this->maxDate);
+  }
+
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Filter::onRender()
+   */
   public function onRender(Simplify_Form_Action $action)
   {
-    $this->set('formatedFromValue', $this->getSimplify_Form_atedValue($this->getFromValue()));
-    $this->set('formatedToValue', $this->getSimplify_Form_atedValue($this->getToValue()));
-    $this->set('fromEnabled', $this->getFromEnabled());
-    $this->set('toEnabled', $this->getToEnabled());
+    $this->set('formatedSince', Simplify_Form_DateTime::datetime($this->since));
+    $this->set('formatedUntil', Simplify_Form_DateTime::datetime($this->until));
+    $this->set('sinceEnabled', $this->sinceEnabled());
+    $this->set('untilEnabled', $this->untilEnabled());
 
     return parent::onRender($action);
   }
 
-  public function onInjectQueryParams(&$params)
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Component::onInjectQueryParams()
+   */
+  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
   {
-    $value = $this->getValue();
+    if ($this->sinceEnabled()) {
+      $value = $this->getSinceValue();
+      $name = "{$this->getName()}_since";
 
-    if ($this->getFromEnabled()) {
-      $from = $this->getName() . '_from';
-
-      $params['where'][] = "{$this->getName()} >= :{$from}";
-      $params['data'][$from] = $this->getDatabaseValue($this->getFromValue());
+      $params[Simplify_Db_QueryParameters::WHERE][] = "{$this->getFieldName()} >= :{$name}";
+      $params[Simplify_Db_QueryParameters::DATA][$name] = Simplify_Form_DateTime::database($value);
     }
 
-    if ($this->getToEnabled()) {
-      $to = $this->getName() . '_to';
+    if ($this->untilEnabled()) {
+      $value = $this->getUntilValue();
+      $name = "{$this->getName()}_until";
 
-      $params['where'][] = "{$this->getName()} <= :{$to}";
-      $params['data'][$to] = $this->getDatabaseValue($this->getToValue());
-    }
-  }
-
-  public function getSimplify_Form_atedValue($value)
-  {
-    return date($this->displaySimplify_Form_at, strtotime($value));
-  }
-
-  public function getFromEnabled()
-  {
-    return s::request()->get($this->getName() . '_from_enabled');
-  }
-
-  public function getFromValue()
-  {
-    return ! empty($this->fromDate) ? $this->fromDate : ($this->getFromEnabled() ? s::request()->get($this->getName() . '_from') : $this->getMinValue());
-  }
-
-  public function getToEnabled()
-  {
-    return s::request()->get($this->getName() . '_to_enabled');
-  }
-
-  public function getToValue()
-  {
-    return ! empty($this->toDate) ? $this->toDate : ($this->getToEnabled() ? s::request()->get($this->getName() . '_to') : $this->getMaxValue());
-  }
-
-  protected function getMinValue()
-  {
-    $limits = $this->getLimits();
-    return sy_get_param($limits, 'min');
-  }
-
-  protected function getMaxValue()
-  {
-    $limits = $this->getLimits();
-    return sy_get_param($limits, 'max');
-  }
-
-  protected function getLimits()
-  {
-    static $limits;
-
-    if (empty($limits)) {
-      $limits = s::db()->query()->from($this->form->getTable())->select("MIN({$this->getName()}) AS min, MAX({$this->getName()}) AS max")->execute()->fetchRow();
-
-      if (! empty($this->minDate)) {
-        $limits['min'] = $this->minDate;
-      }
-
-      if (! empty($this->maxDate)) {
-        $limits['max'] = $this->maxDate;
-      }
+      $params[Simplify_Db_QueryParameters::WHERE][] = "{$this->getFieldName()} <= :{$name}";
+      $params[Simplify_Db_QueryParameters::DATA][$name] = Simplify_Form_DateTime::database($value);
     }
 
-    return $limits;
+    parent::onInjectQueryParams($action, $params);
   }
 
-  protected function getDatabaseValue($value)
+  /**
+   *
+   * @return boolean
+   */
+  public function sinceEnabled()
   {
-    $date = $value;
+    return $this->getSinceValue() ? true : false;
+  }
 
-    if (function_exists('date_parse_from_format')) {
-      $dt = date_parse_from_format($this->displaySimplify_Form_at, $date);
-      $dt = mktime($dt['hour'], $dt['minute'], $dt['second'], $dt['month'], $dt['day'], $dt['year']);
+  /**
+   *
+   * @return string
+   */
+  public function getSinceValue($default = null)
+  {
+    return s::request()->get($this->getName() . '_since', $default);
+  }
 
-      $value = date('Y-m-d H:i:s', $dt);
+  /**
+   *
+   * @return boolean
+   */
+  public function untilEnabled()
+  {
+    return $this->getUntilValue() ? true : false;
+  }
+
+  /**
+   *
+   * @return string
+   */
+  public function getUntilValue($default = null)
+  {
+    return s::request()->get($this->getName() . '_until', $default);
+  }
+
+  /**
+   *
+   * @return string
+   */
+  protected function getMinDate()
+  {
+    return date('Y-m-d H:i:s', $this->minDate);
+  }
+
+  /**
+   *
+   * @return string
+   */
+  protected function getMaxDate()
+  {
+    return date('Y-m-d H:i:s', $this->maxDate);
+  }
+
+  /**
+   * Get minimum and maximum datetime values from database
+   *
+   * @return string[]
+   */
+  protected function loadDatabaseLimits()
+  {
+    $limits = s::db()->query()->from($this->form->getTable())->select(
+      "MIN({$this->getFieldName()}) AS min, MAX({$this->getFieldName()}) AS max")->execute()->fetchRow();
+
+    $minDate = Simplify_Form_DateTime::timestamp($limits['min']);
+    $maxDate = Simplify_Form_DateTime::timestamp($limits['max']);
+
+    $this->minDate = max(Simplify_Form_DateTime::timestamp($this->minDate), $minDate);
+    $this->maxDate = min(Simplify_Form_DateTime::timestamp($this->maxDate), $maxDate);
+
+    if (empty($this->maxDate)) {
+      $this->maxDate = $maxDate;
     }
-    elseif (function_exists('strptime')) {
-      $dt = strptime($date, $this->displaySimplify_Form_at);
-
-      $value = date('Y-m-d H:i:s', $dt);
-    }
-    else {
-      $parts = explode(' ', $date);
-
-      $date = explode('/', $parts[0]);
-
-      $d = $date[0];
-      $m = $date[1];
-      $Y = $date[2];
-
-      $value = "$Y-$m-$d $parts[1]";
-    }
-
-    return $value;
   }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-class Simplify_Form_RepositorySimplify_FormRepositoryMptt extends Simplify_Form_Repository implements Simplify_Db_SortableInterface
+class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements Simplify_Db_SortableInterface
 {
 
   /**
@@ -78,7 +78,7 @@ class Simplify_Form_RepositorySimplify_FormRepositoryMptt extends Simplify_Form_
       $result = s::db()->update($this->table, $data, "$this->pk = :$this->pk")->execute($data)->numRows();
 
       if ($row[$this->parent] != $data[$this->parent]) {
-        $this->mptt()->move($data[$this->pk], $data[$this->parent], MPTT::LAST_CHILD);
+        $this->mptt()->move($data[$this->pk], $data[$this->parent], Simplify_Db_MPTT::LAST_CHILD);
       }
     }
 
@@ -224,7 +224,7 @@ class Simplify_Form_RepositorySimplify_FormRepositoryMptt extends Simplify_Form_
    */
   public function mptt()
   {
-    return MPTT::getInstance($this->table, $this->pk, $this->parent, $this->left, $this->right);
+    return Simplify_Db_MPTT::getInstance($this->table, $this->pk, $this->parent, $this->left, $this->right);
   }
 
 }

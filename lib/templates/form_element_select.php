@@ -1,4 +1,5 @@
-<select name="<?= $name ?>">
-  <?php if ($showEmpty) { echo "<option value=\"$emptyValue\">$emptyLabel</option>"; } ?>
-  <?= $this->form->options($options, $value) ?>
+<select name="<?= $inputName ?>">
+<?php foreach($options as $option => $label) { ?>
+  <option value="<?= $option ?>"<?= '' . $option == '' . $value ? ' selected' : '' ?>><?= $label ?></option>
+<?php } ?>
 </select>

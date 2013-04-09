@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Image upload form element
+ *
+ */
 class Simplify_Form_Element_Image extends Simplify_Form_Element
 {
 
@@ -7,7 +33,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    *
    * @var boolean
    */
-  public $required = true;
+  public $required = false;
 
   /**
    *
@@ -23,17 +49,48 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
   protected $add = Simplify_Form::ACTION_DELETE;
 
   /**
+   * Validation errors
+   *
+   * @var string[]
+   */
+  protected $errors;
+
+  /**
+   *
+   * @param unknown_type $name
+   * @param unknown_type $label
+   */
+  public function __construct($name, $label = null)
+  {
+    parent::__construct($name, $label);
+
+    $this->path = s::config()->get('files_path');
+  }
+
+  /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * @see Simplify_Form_Element::onRender()
    */
   public function onRender(Simplify_Form_Action $action, $data, $index)
   {
-    $file = $this->getValue($data, $index);
+    $file = $this->getValue($data);
 
-    if (! empty($file)) {
-      $this->set('thumb_src', s::config()->get('www_url') . Thumb::factory()->load($file)->cropResize(100, 100)->getCacheFilename());
-      $this->set('image_src', s::config()->get('www_url') . $file);
+    $thumbUrl = null;
+    $imageUrl = null;
+
+    if (!empty($file)) {
+      if ($this->fileExists($file)) {
+        $thumbUrl = $this->getThumbUrl($file, 100, 100);
+        $imageUrl = $this->getImageUrl($file);
+      }
+      else {
+        $thumbUrl = false;
+        $imageUrl = false;
+      }
     }
+
+    $this->set('thumbUrl', $thumbUrl);
+    $this->set('imageUrl', $imageUrl);
 
     return parent::onRender($action, $data, $index);
   }
@@ -44,68 +101,113 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    */
   public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
   {
-    $file = $this->getValue($data, $index);
+    $file = $this->getValue($data);
 
-    if (! empty($file)) {
-      $value = s::config()->get('www_url') . Thumb::factory()->load($file)->cropResize(50, 50)->getCacheFilename();
-      return "<img src=\"{$value}\" class=\"img-polaroid\"/>";
+    $value = '';
+
+    if (!empty($file)) {
+      if ($this->fileExists($file)) {
+        $thumbUrl = $this->getThumbUrl($file, 50, 50);
+        $imageUrl = $this->getImageUrl($file);
+
+        $value = "<a href=\"{$imageUrl}\" class=\"lightbox\">";
+        $value .= "<img src=\"{$thumbUrl}\" class=\"img-polaroid\"/>";
+        $value .= "</a>";
+      }
+      else {
+        $value = '<i class="icon-warning-sign"></i> File is missing';
+      }
     }
 
-    return '';
+    return $value;
   }
 
   /**
    * (non-PHPdoc)
    * @see Simplify_Form_Element::onPostData()
    */
-  public function onPostData(&$row, $data, $index)
+  public function onPostData(Simplify_Form_Action $action, &$data, $post)
   {
-    $name = $this->getFieldName();
+    $name = $this->getName();
 
-    $_row = $this->getRow($data, $index);
+    $file = $this->getValue($data);
 
-    if (! empty($_FILES['formData']['name'][$index][$name]) || $this->required) {
+    if (!empty($file)) {
+      if (!$this->fileExists($file) || $post[$name]['delete']) {
+        $this->onDelete($data);
+
+        $data[$this->getName()] = '';
+      }
+    }
+
+    if (!empty($post[$name]['name']) || $this->required) {
       try {
-        $_FILES[$name] = array(
-          'name' => array($index => $_FILES['formData']['name'][$index][$name]),
-          'type' => array($index => $_FILES['formData']['type'][$index][$name]),
-          'tmp_name' => array($index => $_FILES['formData']['tmp_name'][$index][$name]),
-          'error' => array($index => $_FILES['formData']['error'][$index][$name]),
-          'size' => array($index => $_FILES['formData']['size'][$index][$name]),
-        );
-
-        $upload = new Upload();
+        $upload = new Simplify_Upload($post[$name]);
         $upload->uploadPath = $this->path;
         $upload->hashFilename = true;
-        $upload->upload($name, $index);
+        $upload->upload();
 
-        $this->onDelete($row);
+        $this->onDelete($data);
 
-        $row[$this->getName()] = $upload->getUploadedPath();
+        $data[$this->getName()] = $upload->getUploadedPath();
       }
-      catch (UploadException $e) {
-        throw new ValidationException($e->getMessage());
+      catch (Simplify_UploadException $e) {
+        $this->errors[] = $e;
       }
-    } elseif (! empty($_row[$name]['delete'])) {
-      $this->onDelete($row);
-      $row[$this->getName()] = '';
+      catch (Simplify_ValidationException $e) {
+        $this->errors[] = $e;
+      }
     }
   }
 
   /**
-   *
+   * (non-PHPdoc)
+   * @see Simplify_Form_Component::onValidate()
    */
-  public function onBeforeDelete(Simplify_Form_Action $action, $row)
+  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
-    $this->onDelete($row);
+    $rules->setRule($this->getName(), new Simplify_Validation_Callback(array($this, 'validate')));
   }
 
-  protected function onDelete($row)
+  /**
+   * Throw validation errors if there are any
+   *
+   * @param string $value
+   */
+  public function validate($value)
   {
-    $filename = $row[$this->getFieldName()];
+    if (!empty($this->errors)) {
+      $error = array_shift($this->errors);
+      throw $error;
+    }
+  }
 
-    if (! empty($filename)) {
-      $file = s::config()->get('www_dir') . $filename;
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Component::onBeforeDelete()
+   */
+  public function onBeforeDelete(Simplify_Form_Action $action, &$data)
+  {
+    $this->onDelete($data);
+  }
+
+  /**
+   * Tries to delete the image file and all related cached thumbnails
+   *
+   * @param array $data form row
+   */
+  protected function onDelete(&$data)
+  {
+    $file = $data[$this->getFieldName()];
+
+    if (!empty($file)) {
+      $this->getThumbComponent($file)->cleanCached();
+
+      $file = $this->path . $file;
+
+      if (!sy_path_is_absolute($file)) {
+        $file = s::config()->get('www_dir') . $file;
+      }
 
       if (file_exists($file)) {
         $this->getThumbComponent($file)->cleanCached();
@@ -116,14 +218,51 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
   }
 
   /**
+   * Get the thumb component
    *
-   * @return Thumb
+   * @param string $file filename
+   * @return Simplify_Thumb
    */
   protected function getThumbComponent($file)
   {
-    $thumb = new Thumb();
-    $thumb->load($file);
-    return $thumb;
+    return Simplify_Thumb::factory()->load($file);
+  }
+
+  /**
+   * Get the url for a zoom cropped version of the imagem
+   *
+   * @param string $file
+   * @param int $width
+   * @param int $height
+   * @return string
+   */
+  protected function getThumbUrl($file, $width, $height)
+  {
+    return s::config()->get('www_url') .
+       Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+  }
+
+  /**
+   * Get the url for the full image
+   *
+   * @param string $file
+   * @return string
+   */
+  protected function getImageUrl($file)
+  {
+    return s::config()->get('www_url') . $this->path . $file;
+  }
+
+  /**
+   * Check if the file exists
+   *
+   * @param string $file
+   * @return string
+   */
+  protected function fileExists($file)
+  {
+    $file = s::config()->get('www_dir') . $this->path . $file;
+    return ! empty($file) && file_exists($file) && ! is_dir($file);
   }
 
 }
