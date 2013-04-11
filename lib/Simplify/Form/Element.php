@@ -73,7 +73,7 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
 
   /**
    *
-   * @param unknown_type $index
+   * @param mixed[] $index
    * @return string
    */
   public function getElementId($index)

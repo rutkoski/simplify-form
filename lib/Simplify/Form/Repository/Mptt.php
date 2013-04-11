@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * MPTT form repository
+ *
+ */
 class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements Simplify_Db_SortableInterface
 {
 
@@ -21,6 +47,14 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
    */
   public $right;
 
+  /**
+   *
+   * @param unknown_type $table
+   * @param unknown_type $pk
+   * @param unknown_type $parent
+   * @param unknown_type $left
+   * @param unknown_type $right
+   */
   public function __construct($table = null, $pk = null, $parent = null, $left = null, $right = null)
   {
     parent::__construct($table, $pk);
@@ -32,7 +66,7 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Datarepository::findAll()
+   * @see Simplify_Form_Repository::findAll()
    */
   public function findAll($params = null)
   {
@@ -40,22 +74,14 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
     $from = $this->mptt()->query()->alias('a');
 
-    $result = s::db()
-      ->query()
-      ->from($from)
-      ->setParams($params)
-      ->select('depth')
-      ->select($this->parent)
-      ->execute($data)
-      ->fetchAll();
+    $result = s::db()->query()->from($from)->setParams($params)->select('depth')->select($this->parent)->execute($data)->fetchAll();
 
     return $result;
   }
 
   /**
-   * Insert one row.
-   *
-   * @param array $data
+   * (non-PHPdoc)
+   * @see Simplify_Form_Repository::insert()
    */
   public function insert(&$data)
   {
@@ -63,35 +89,73 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
   }
 
   /**
-   * Update one row.
-   *
-   * @param array $data
-   * @return number
+   * (non-PHPdoc)
+   * @see Simplify_Form_Repository::update()
    */
   public function update(&$data)
   {
-    $result = 0;
+    $row = $this->find($data[$this->pk]);
 
-    if (count($data) > 1) {
-      $row = $this->find($data[$this->pk]);
-
-      $result = s::db()->update($this->table, $data, "$this->pk = :$this->pk")->execute($data)->numRows();
-
-      if ($row[$this->parent] != $data[$this->parent]) {
-        $this->mptt()->move($data[$this->pk], $data[$this->parent], Simplify_Db_MPTT::LAST_CHILD);
-      }
+    if ($row[$this->parent] != $data[$this->parent]) {
+      $this->mptt()->move($data[$this->pk], $data[$this->parent], Simplify_Db_MPTT::LAST_CHILD);
     }
 
-    return $result;
+    return parent::update($data);
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Repository::delete()
+   */
+  public function delete($id = null, $params = array())
+  {
+    $data = $this->find($id, $params);
+
+    if (empty($data)) {
+      return 0;
+    }
+
+    $this->mptt()->remove($id);
+
+    return 1;
+  }
+
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Repository::deleteAll()
+   */
+  public function deleteAll($params = null)
+  {
+    $params[Simplify_Db_QueryParameters::SELECT][] = $this->pk;
+
+    $data = $this->findAll($params);
+
+    if (empty($data)) {
+      return 0;
+    }
+
+    $rows = 0;
+
+    foreach ($data as $row) {
+      $this->mptt()->remove($row[$this->pk]);
+    }
+
+    return 1;
+  }
+
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Db_SortableInterface::moveTo()
+   */
   public function moveTo($id, $position)
   {
-    if (! is_numeric($position) && ! in_array($position, array('top', 'up', 'down', 'bottom', 'first', 'left', 'right', 'last', 'previous', 'next'))) {
+    if (!is_numeric($position) &&
+       !in_array($position, array('top', 'up', 'down', 'bottom', 'first', 'left', 'right', 'last', 'previous', 'next'))) {
       throw new Exception("Invalid index <b>$position</b>");
     }
 
-    $row = s::db()->query()->from($this->table)->select($this->parent)->select($this->left)->select($this->right)->where("{$this->pk} = ?")->execute($id)->fetchRow();
+    $row = s::db()->query()->from($this->table)->select($this->parent)->select($this->left)->select($this->right)->where(
+      "{$this->pk} = ?")->execute($id)->fetchRow();
 
     if (empty($row)) {
       throw new Exception("Record not found");
@@ -102,19 +166,16 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
     $oldright = $row[$this->right];
     $oldwidth = $oldright - $oldleft + 1;
 
-    $branch = s::db()->query()->select($this->pk)->from($this->table)->where("$this->left BETWEEN $oldleft AND $oldright")->execute()->fetchCol();
+    $branch = s::db()->query()->select($this->pk)->from($this->table)->where(
+      "$this->left BETWEEN $oldleft AND $oldright")->execute()->fetchCol();
     $branch = implode(', ', $branch);
 
-    $q = s::db()->query()->from($this->table)->select($this->left)->select($this->right)->where("$this->parent = $parent");
+    $q = s::db()->query()->from($this->table)->select($this->left)->select($this->right)->where(
+      "$this->parent = $parent");
 
     if (is_numeric($position)) {
-      $pos = s::db()
-        ->query()
-        ->from($this->table)
-        ->select("COUNT({$this->pk})")
-        ->where("{$this->parent} = {$parent}")
-        ->where("{$this->left} < {$oldleft}")
-        ->execute()->fetchOne();
+      $pos = s::db()->query()->from($this->table)->select("COUNT({$this->pk})")->where("{$this->parent} = {$parent}")->where(
+        "{$this->left} < {$oldleft}")->execute()->fetchOne();
 
       if ($position == $pos) {
         return;
@@ -197,8 +258,8 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
       }
     }
 
-    if (! empty($data)) {
-      $olddir = - $dir;
+    if (!empty($data)) {
+      $olddir = -$dir;
 
       $sql = "
         UPDATE {$this->table}
@@ -220,7 +281,7 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
   /**
    *
-   * @return MPTT
+   * @return Simplify_Db_MPTT
    */
   public function mptt()
   {

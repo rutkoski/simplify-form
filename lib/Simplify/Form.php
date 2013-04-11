@@ -364,8 +364,9 @@ class Simplify_Form extends Simplify_Renderable
   public function getId()
   {
     if (empty($this->id)) {
-      $this->id = s::request()->method(Simplify_Request::GET) ? s::request()->get(Simplify_Form::ID) : s::request()->post(
-        Simplify_Form::ID);
+      $this->id = array_filter(
+        (array) (s::request()->method(Simplify_Request::GET) ? s::request()->get(Simplify_Form::ID) : s::request()->post(
+          Simplify_Form::ID)));
     }
 
     return $this->id;

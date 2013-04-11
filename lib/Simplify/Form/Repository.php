@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * SimplifyPHP Framework
+ *
+ * This file is part of SimplifyPHP Framework.
+ *
+ * SimplifyPHP Framework is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SimplifyPHP Framework is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
+ */
+
+/**
+ *
+ * Form repository
+ *
+ */
 class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 {
 
@@ -16,9 +42,15 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
   public $pk;
 
   /**
-   * Constructor.
    *
-   * return void
+   * @var string
+   */
+  /* public $filter; */
+
+  /**
+   *
+   * @param string $table repository table
+   * @param string $pk repository primary key
    */
   public function __construct($table = null, $pk = null)
   {
@@ -27,10 +59,10 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
   }
 
   /**
+   * Get a pager
    *
-   * @param int $offset
-   * @param int $limit
-   * @return Pager
+   * @param array $params query parameters
+   * @return Simplify_Pager
    */
   public function findPager($params = null)
   {
@@ -42,11 +74,12 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see IRepository::find()
+   * @see Simplify_Db_RepositoryInterface::find()
    */
   public function find($id = null, $params = null)
   {
-    $query = s::db()->query()->setParams($params)->from($this->table)->where($this->filter())->where("$this->pk = :$this->pk")->limit(1);
+    $query = s::db()->query()->setParams($params)->from($this->table)/* ->where($this->filter()) */->where(
+      "$this->pk = :$this->pk")->limit(1);
 
     $data = (array) sy_get_param($params, 'data');
     $data[$this->pk] = $id;
@@ -58,11 +91,11 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see IRepository::findAll()
+   * @see Simplify_Db_RepositoryInterface::findAll()
    */
   public function findAll($params = null)
   {
-    $query = s::db()->query()->from($this->table)->where($this->filter())->setParams($params);
+    $query = s::db()->query()->from($this->table)/* ->where($this->filter()) */->setParams($params);
 
     $result = $query->execute(sy_get_param($params, 'data'))->fetchAll();
 
@@ -71,18 +104,19 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see IRepository::findCount()
+   * @see Simplify_Db_RepositoryInterface::findCount()
    */
   public function findCount($params = null)
   {
-    $query = s::db()->query()->setParams($params)->where($this->filter())->from($this->table)->select(false)->limit(false)->offset(false)->select("COUNT($this->pk)");
+    $query = s::db()->query()->setParams($params)/* ->where($this->filter()) */->from($this->table)->select(false)->limit(
+      false)->offset(false)->select("COUNT($this->pk)");
     $result = $query->execute(sy_get_param($params, 'data'))->fetchOne();
     return intval($result);
   }
 
   /**
    * (non-PHPdoc)
-   * @see IRepository::delete()
+   * @see Simplify_Db_RepositoryInterface::delete()
    */
   public function delete($id = null, $params = array())
   {
@@ -93,7 +127,7 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see IRepository::deleteAll()
+   * @see Simplify_Db_RepositoryInterface::deleteAll()
    */
   public function deleteAll($params = null)
   {
@@ -104,7 +138,7 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see IRepository::save()
+   * @see Simplify_Db_RepositoryInterface::save()
    */
   public function save(&$data)
   {
@@ -119,9 +153,9 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
   }
 
   /**
-   * Insert one row.
+   * Insert a new item in the repository
    *
-   * @param array $data
+   * @param array $data item data
    */
   public function insert(&$data)
   {
@@ -131,10 +165,9 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
   }
 
   /**
-   * Update one row.
+   * Update an existing item in the repository
    *
-   * @param array $data
-   * @return number
+   * @param array $data item data
    */
   public function update(&$data)
   {
@@ -143,18 +176,21 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
     if (count($data) > 1) {
       $result = s::db()->update($this->table, $data, "$this->pk = :$this->pk")->execute($data)->numRows();
     }
-
-    return $result;
   }
 
-  protected function filter()
+  /**
+   *
+   *
+   * @return string
+   */
+  /* protected function filter()
   {
-    if (! empty($this->filter)) {
+    if (!empty($this->filter)) {
       return $this->filter;
     }
     else {
       return " TRUE ";
     }
-  }
+  } */
 
 }

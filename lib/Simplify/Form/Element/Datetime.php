@@ -30,12 +30,6 @@ class Simplify_Form_Element_Datetime extends Simplify_Form_Element
 {
 
   /**
-   *
-   * @var string
-   */
-  public $displayFormat = 'd/m/Y H:i:s';
-
-  /**
    * (non-PHPdoc)
    * @see Simplify_Form_Component::onRender()
    */
@@ -54,12 +48,7 @@ class Simplify_Form_Element_Datetime extends Simplify_Form_Element
   {
     $date = $post[$this->getName()];
 
-    $dt = date_parse_from_format($this->displayFormat, $date);
-    $dt = mktime($dt['hour'], $dt['minute'], $dt['second'], $dt['month'], $dt['day'], $dt['year']);
-
-    $value = date('Y-m-d H:i:s', $dt);
-
-    $data[$this->getName()] = $value;
+    $data[$this->getName()] = Simplify_Form_DateTime::database($date);
   }
 
   /**
@@ -68,7 +57,7 @@ class Simplify_Form_Element_Datetime extends Simplify_Form_Element
    */
   public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
   {
-    return date($this->displayFormat, strtotime($this->getValue($data)));
+    return Simplify_Form_DateTime::datetime($this->getValue($data));
   }
 
   /**
@@ -77,7 +66,7 @@ class Simplify_Form_Element_Datetime extends Simplify_Form_Element
    */
   public function getDefaultValue()
   {
-    return date('Y-m-d H:i:s');
+    return Simplify_Form_DateTime::database('now');
   }
 
 }

@@ -23,22 +23,52 @@
 
 /**
  *
- * Data/Time utilies
+ * Data/Time utilities
  *
  */
 class Simplify_Form_DateTime
 {
 
+  /**
+   * Database date format
+   *
+   * @var string
+   */
   const FORMAT_DB_DATE = 'Y-m-d';
 
+  /**
+   * Database time format
+   *
+   * @var string
+   */
   const FORMAT_DB_TIME = 'H:i:s';
 
+  /**
+   * Database datetime format
+   *
+   * @var string
+   */
   const FORMAT_DB_DATETIME = 'Y/m/d H:i:s';
 
+  /**
+   * Application datetime format
+   *
+   * @var string
+   */
   public static $datetimeFormat = 'd/m/Y H:i:s';
 
+  /**
+   * Application date format
+   *
+   * @var string
+   */
   public static $dateFormat = 'd/mY';
 
+  /**
+   * Application time format
+   *
+   * @var string
+   */
   public static $timeFormat = 'H:i:s';
 
   /**

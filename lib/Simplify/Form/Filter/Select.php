@@ -41,7 +41,7 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
    *
    * @var boolean
    */
-  public $showEmpty = false;
+  public $showEmpty = true;
 
   /**
    *
@@ -81,7 +81,7 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
     if ('' . $value == '' . $this->emptyValue && !$this->showEmpty) {
       if ('' . $this->getDefaultValue() == '' . $this->emptyValue) {
         $options = $this->getOptions();
-        $value = array_shift($options);
+        $value = array_shift(array_keys($options));
       }
       else {
         $value = $this->getDefaultValue();
