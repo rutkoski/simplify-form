@@ -387,7 +387,7 @@ class Simplify_Form extends Simplify_Renderable
   public function getTitle()
   {
     if (empty($this->title)) {
-      $this->title = Inflector::titleize(Inflector::pluralize($this->getName()));
+      $this->title = Simplify_Inflector::titleize(Simplify_Inflector::pluralize($this->getName()));
     }
 
     return $this->title;
@@ -409,7 +409,7 @@ class Simplify_Form extends Simplify_Renderable
   public function getTable()
   {
     if (empty($this->table)) {
-      $this->table = Inflector::tableize($this->getName());
+      $this->table = Simplify_Inflector::tableize($this->getName());
     }
 
     return $this->table;
@@ -435,7 +435,7 @@ class Simplify_Form extends Simplify_Renderable
   public function getPrimaryKey()
   {
     if (empty($this->primaryKey)) {
-      $this->primaryKey = Inflector::singularize($this->getTable()) . Simplify_Form::ID;
+      $this->primaryKey = Simplify_Inflector::singularize($this->getTable()) . Simplify_Form::ID;
     }
 
     return $this->primaryKey;

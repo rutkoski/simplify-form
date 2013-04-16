@@ -252,7 +252,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   public function getTitle()
   {
     if (empty($this->title)) {
-      $this->title = Inflector::titleize($this->getName());
+      $this->title = Simplify_Inflector::titleize($this->getName());
     }
 
     return $this->title;

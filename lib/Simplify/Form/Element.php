@@ -68,7 +68,7 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    */
   public function getElementClass()
   {
-    return Inflector::underscore(get_class($this));
+    return Simplify_Inflector::underscore(get_class($this));
   }
 
   /**

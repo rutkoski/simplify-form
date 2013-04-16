@@ -151,7 +151,7 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   public function getLabel()
   {
     if (empty($this->label)) {
-      $this->label = Inflector::humanize($this->getName());
+      $this->label = Simplify_Inflector::humanize($this->getName());
     }
     return $this->label;
   }
@@ -166,7 +166,7 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
       return $this->style;
     }
 
-    return Inflector::underscore(substr(get_class($this), strlen('Simplify_')));
+    return Simplify_Inflector::underscore(substr(get_class($this), strlen('Simplify_')));
   }
 
   /**

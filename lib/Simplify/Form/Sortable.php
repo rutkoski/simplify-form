@@ -73,7 +73,7 @@ class Simplify_Form_Sortable extends Simplify_Form
   public function getSortField()
   {
     if (empty($this->sortField)) {
-      $this->sortField = Inflector::singularize($this->getTable()) . '_order';
+      $this->sortField = Simplify_Inflector::singularize($this->getTable()) . '_order';
     }
 
     return $this->sortField;

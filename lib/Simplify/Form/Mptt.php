@@ -153,7 +153,7 @@ class Simplify_Form_Mptt extends Simplify_Form
   public function getParent()
   {
     if (empty($this->parent)) {
-      $this->parent = Inflector::singularize($this->getTable()) . '_parent_id';
+      $this->parent = Simplify_Inflector::singularize($this->getTable()) . '_parent_id';
     }
 
     return $this->parent;
@@ -166,7 +166,7 @@ class Simplify_Form_Mptt extends Simplify_Form
   public function getLeft()
   {
     if (empty($this->left)) {
-      $this->left = Inflector::singularize($this->getTable()) . '_left';
+      $this->left = Simplify_Inflector::singularize($this->getTable()) . '_left';
     }
 
     return $this->left;
@@ -179,7 +179,7 @@ class Simplify_Form_Mptt extends Simplify_Form
   public function getRight()
   {
     if (empty($this->right)) {
-      $this->right = Inflector::singularize($this->getTable()) . '_right';
+      $this->right = Simplify_Inflector::singularize($this->getTable()) . '_right';
     }
 
     return $this->right;

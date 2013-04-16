@@ -378,7 +378,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
   public function getTable()
   {
     if (empty($this->table)) {
-      $this->table = Inflector::tableize($this->getName());
+      $this->table = Simplify_Inflector::tableize($this->getName());
     }
 
     return $this->table;
@@ -404,7 +404,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
   public function getForeignKey()
   {
     if (empty($this->foreignKey)) {
-      $this->foreignKey = Inflector::singularize($this->getTable()) . '_id';
+      $this->foreignKey = Simplify_Inflector::singularize($this->getTable()) . '_id';
     }
 
     return $this->foreignKey;
@@ -423,7 +423,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
       $name = $this->fields[$name];
     }
     else {
-      $name = Inflector::singularize($this->table) . '_' . $name;
+      $name = Simplify_Inflector::singularize($this->table) . '_' . $name;
     }
 
     return $name;

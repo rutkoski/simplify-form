@@ -249,7 +249,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
   public function getForeignKey()
   {
     if (empty($this->foreignKey)) {
-      $this->foreignKey = Inflector::singularize($this->getTable()) . '_id';
+      $this->foreignKey = Simplify_Inflector::singularize($this->getTable()) . '_id';
     }
 
     return $this->foreignKey;
