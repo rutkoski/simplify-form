@@ -105,6 +105,15 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   }
 
   /**
+   *
+   * @return Simplify_Form_Component
+   */
+  public function getElementByName($name)
+  {
+    return $this->getName() == $name ? $this : null;
+  }
+
+  /**
    * Get the html id for this component.
    *
    * @return string

@@ -29,21 +29,9 @@
 class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 {
 
-  const FIELD_FILENAME = 'filename';
+  const FIELD_FILENAME = 0;
 
-  const FIELD_ORDER = 'order';
-
-  /**
-   *
-   * @var int
-   */
-  protected $remove = Simplify_Form::ACTION_NONE;
-
-  /**
-   *
-   * @var string[string]
-   */
-  public $fields = array(self::FIELD_FILENAME => 'image_filename', self::FIELD_ORDER => 'image_order');
+  const FIELD_THUMB = 1;
 
   /**
    * Path to image files, absolute or relative to web root
@@ -54,9 +42,17 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    *
-   * @var boolean
+   * @var array[]
    */
-  public $sortable = true;
+  protected $fields = array(
+    //array(self::FIELD_FILENAME => 'image_filename')
+  );
+
+  /**
+   *
+   * @var int
+   */
+  protected $remove = Simplify_Form::ACTION_NONE;
 
   /**
    *
@@ -71,6 +67,19 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
   }
 
   /**
+   *
+   * @param string $fieldName
+   * @param Simplify_Thumb $thumb
+   */
+  public function addField($fieldName, Simplify_Thumb $thumb = null)
+  {
+    $this->fields[] = array(
+      self::FIELD_FILENAME => $fieldName,
+      self::FIELD_THUMB => $thumb,
+    );
+  }
+
+  /**
    * (non-PHPdoc)
    * @see Simplify_Form_Element::getDisplayValue()
    */
@@ -81,7 +90,8 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
     $output = array();
     foreach ((array) $files as $file) {
       try {
-        $file = $file[$this->getFieldName(self::FIELD_FILENAME)];
+        //$file = $file[$this->getFieldName(self::FIELD_FILENAME)];
+        $file = $file[$this->fields[0][self::FIELD_FILENAME]];
 
         //$value = s::config()->get('www_url') . Thumb::factory()->load($file)->cropResize(50, 50)->getCacheFilename();
         $imageUrl = $this->getImageUrl($file);
@@ -92,7 +102,8 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
         $value .= "</a>";
 
         $output[] = $value;
-      } catch (Simplify_ThumbException $e) {
+      }
+      catch (Simplify_ThumbException $e) {
         //
       }
     }
@@ -106,11 +117,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   protected function onBeforeLoadData(&$queryParams)
   {
-    $queryParams[Simplify_Db_QueryParameters::SELECT][] = $this->getFieldName(self::FIELD_FILENAME);
-
-    /* if ($this->sortable) {
-      $queryParams['orderBy'][] = $this->getFieldName(self::FIELD_ORDER);
-    } */
+    foreach ($this->fields as $field) {
+      $queryParams[Simplify_Db_QueryParameters::SELECT][] = $field[self::FIELD_FILENAME];
+    }
   }
 
   /**
@@ -119,7 +128,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   protected function onAfterLoadData(&$data, $row, $index)
   {
-    $data[$this->getFieldName(self::FIELD_FILENAME)] = $row[$this->getFieldName(self::FIELD_FILENAME)];
+    foreach ($this->fields as $field) {
+      $data[$field[self::FIELD_FILENAME]] = $row[$field[self::FIELD_FILENAME]];
+    }
   }
 
   /**
@@ -152,7 +163,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   public function onRenderRow(&$row, $data, $index)
   {
-    $file = $data[$this->getFieldName(self::FIELD_FILENAME)];
+    $file = $data[$this->fields[0][self::FIELD_FILENAME]];
 
     $row['filename'] = $file;
 
@@ -180,7 +191,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
     if (!empty($post[$this->getName()])) {
       foreach ($post[$this->getName()] as $index => $row) {
-        $data[$this->getName()][$index][$this->getFieldName(self::FIELD_FILENAME)] = $row['filename'];
+        $data[$this->getName()][$index][$this->fields[0][self::FIELD_FILENAME]] = $row['filename'];
       }
     }
   }
@@ -191,7 +202,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   public function onBeforeSave(Simplify_Form_Action $action, &$row, $data)
   {
-    $row[$this->getFieldName(self::FIELD_FILENAME)] = $data[$this->getFieldName(self::FIELD_FILENAME)];
+    foreach ($this->fields as $field) {
+      $row[$field[self::FIELD_FILENAME]] = $data[$field[self::FIELD_FILENAME]];
+    }
   }
 
   /**
@@ -200,14 +213,16 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   public function onRender(Simplify_Form_Action $action, $data, $index)
   {
-    $this->set('filenameField', $this->getFieldName(self::FIELD_FILENAME));
-    $this->set('orderField', $this->getFieldName(self::FIELD_ORDER));
-
-    $this->set('sortable', $this->sortable);
+    //$this->set('filenameField', $this->fields[0][self::FIELD_FILENAME]);
 
     $this->set('uploaderId', $this->getElementId($index) . '-uploader');
 
-    $this->set('uploaderUrl', Simplify_URL::make(null, array('formAction' => 'services', 'serviceName' => $this->getName(), 'serviceAction' => 'upload'), false, null, Simplify_URL::JSON));
+    $uploaderUrl = Simplify_URL::make(null, null, false, null, Simplify_URL::JSON);
+    $uploaderUrl->set('formAction', 'services');
+    $uploaderUrl->set('serviceName', $this->getName());
+    $uploaderUrl->set('serviceAction', 'upload');
+
+    $this->set('uploaderUrl', $uploaderUrl);
 
     return parent::onRender($action, $data, $index);
   }
@@ -257,21 +272,23 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   protected function onDelete(&$data)
   {
-    $file = $data[$this->getFieldName(self::FIELD_FILENAME)];
+    foreach ($this->fields as $field) {
+      $file = $data[$field[self::FIELD_FILENAME]];
 
-    if (!empty($file)) {
-      $this->getThumbComponent($file)->cleanCached();
-
-      $file = $this->path . $file;
-
-      if (!sy_path_is_absolute($file)) {
-        $file = s::config()->get('www_dir') . $file;
-      }
-
-      if (file_exists($file)) {
+      if (!empty($file)) {
         $this->getThumbComponent($file)->cleanCached();
 
-        @unlink($file);
+        $file = $this->path . $file;
+
+        if (!sy_path_is_absolute($file)) {
+          $file = s::config()->get('www_dir') . $file;
+        }
+
+        if (file_exists($file)) {
+          $this->getThumbComponent($file)->cleanCached();
+
+          @unlink($file);
+        }
       }
     }
   }
@@ -298,7 +315,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
   protected function getThumbUrl($file, $width, $height)
   {
     return s::config()->get('www_url') .
-    Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+       Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
   }
 
   /**
@@ -321,7 +338,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
   protected function fileExists($file)
   {
     $file = s::config()->get('www_dir') . $this->path . $file;
-    return ! empty($file) && file_exists($file) && ! is_dir($file);
+    return !empty($file) && file_exists($file) && !is_dir($file);
   }
 
 }

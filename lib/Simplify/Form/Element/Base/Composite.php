@@ -58,4 +58,25 @@ class Simplify_Form_Element_Base_Composite extends Simplify_Form_Element
     return $this->elements;
   }
 
+  /**
+   *
+   * @return Simplify_Form_Element
+   */
+  public function getElementByName($name)
+  {
+    if ($this->getName() == $name) {
+      return $this;
+    }
+
+    foreach ($this->getElements() as $element) {
+      $found = $element->getElementByName($name);
+
+      if ($found) {
+        return $found;
+      }
+    }
+
+    return null;
+  }
+
 }

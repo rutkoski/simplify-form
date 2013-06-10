@@ -94,7 +94,7 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
 
     $headers = array();
     foreach ($elements as $element) {
-      $headers[] = $element->getLabel();
+      $element->onRenderHeaders($this, $headers);
     }
 
     $data = array();
@@ -107,7 +107,7 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
 
       $line['elements'] = array();
       foreach ($elements as $element) {
-        $line['elements'][$element->getName()] = $element->getDisplayValue($this, $row, $index);
+        $element->onRenderLine($this, $line, $row, $index);
       }
 
       $this->form->onCreateItemMenu($line['menu'], $this, $row);

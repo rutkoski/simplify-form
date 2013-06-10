@@ -2,24 +2,22 @@
 
 <form action="" method="POST" enctype="multipart/form-data" class="form-horizontal">
   <?php foreach ($data as $row) { ?>
-  <fieldset>
-    <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>"/>
+  <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>"/>
 
-    <?php foreach ($row['elements'] as $element) { ?>
-    <?php if ($element['label'] !== false) { ?>
-    <div class="control-group <?= $element['class'] ?>" id="<?= $element['id'] ?>">
-      <label class="control-label" for="<?= $element['name'] ?>"><?= $element['label'] ?></label>
-      <div class="controls">
-        <?= $element['controls'] ?>
-      </div>
+  <?php foreach ($row['elements'] as $element) { ?>
+  <?php if ($element['label'] !== false) { ?>
+  <div class="control-group <?= $element['class'] ?>" id="<?= $element['id'] ?>">
+    <label class="control-label" for="<?= $element['name'] ?>"><?= $element['label'] ?></label>
+    <div class="controls">
+      <?= $element['controls'] ?>
     </div>
-    <?php } else { ?>
-    <?= $element['controls'] ?>
-    <?php } ?>
-    <?php } ?>
+  </div>
+  <?php } else { ?>
+  <?= $element['controls'] ?>
+  <?php } ?>
+  <?php } ?>
 
-    <?= $this->menu->show($row['menu']) ?>
-  </fieldset>
+  <?= $this->menu->show($row['menu']) ?>
   <?php } ?>
 
   <input type="submit" value="Save" class="btn btn-primary" />

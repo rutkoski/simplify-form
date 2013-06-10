@@ -88,6 +88,33 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
+   * @see Simplify_Form_Element::onRenderControls()
+   */
+  public function onRenderControls(Simplify_Form_Action $action, &$line, $data, $index)
+  {
+    $element = array();
+
+    $element['id'] = $this->getElementId($index);
+    $element['name'] = $this->getInputName($index);
+    $element['class'] = $this->getElementClass();
+    $element['label'] = 'Password';
+    $element['controls'] = '<input type="text" name="'.$this->getInputName($index).'[a]" value="" />';
+
+    $line['elements'][$this->getName() . '_a'] = $element;
+
+    $element = array();
+
+    $element['id'] = $this->getElementId($index);
+    $element['name'] = $this->getInputName($index);
+    $element['class'] = $this->getElementClass();
+    $element['label'] = 'Repeat password';
+    $element['controls'] = '<input type="text" name="'.$this->getInputName($index).'[b]" value="" />';
+
+    $line['elements'][$this->getName() . '_b'] = $element;
+  }
+
+  /**
+   * (non-PHPdoc)
    * @see Simplify_Form_Component::onRender()
    */
   public function onRender(Simplify_Form_Action $action, $data, $index)

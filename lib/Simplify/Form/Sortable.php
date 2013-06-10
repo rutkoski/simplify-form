@@ -39,6 +39,17 @@ class Simplify_Form_Sortable extends Simplify_Form
 
   /**
    * (non-PHPdoc)
+   * @see Simplify_Form_Form::setTable()
+   */
+  public function setTable($table, $primaryKey, $sortField = null)
+  {
+    $this->sortField = $sortField;
+
+    return parent::setTable($table, $primaryKey);
+  }
+
+  /**
+   * (non-PHPdoc)
    * @see Simplify_Form::execute()
    */
   public function execute($action = null)

@@ -126,14 +126,14 @@ class Simplify_Form extends Simplify_Renderable
   /**
    * Form elements
    *
-   * @var Simplify_FormElement[]
+   * @var Simplify_Form_Element[]
    */
   protected $elements = array();
 
   /**
    * Form filters
    *
-   * @var Simplify_FormFilter[]
+   * @var Simplify_Form_Filter[]
    */
   protected $filters = array();
 
@@ -173,6 +173,17 @@ class Simplify_Form extends Simplify_Renderable
   public function __construct($name)
   {
     $this->name = $name;
+  }
+
+  /**
+   *
+   * @param string $table
+   * @param string $primaryKey
+   */
+  public function setTable($table, $primaryKey = null)
+  {
+    $this->table = $table;
+    $this->primaryKey = $primaryKey;
   }
 
   /**
@@ -316,22 +327,24 @@ class Simplify_Form extends Simplify_Renderable
 
   /**
    *
-   * @return Simplify_FormElement
+   * @return Simplify_Form_Element
    */
   public function getElementByName($name)
   {
-    foreach ($this->elements as &$element) {
-      if ($element->getName() == $name) {
-        return $element;
+    foreach ($this->elements as $element) {
+      $found = $element->getElementByName($name);
+
+      if ($found) {
+        return $found;
       }
     }
 
-    return false;
+    return null;
   }
 
   /**
    *
-   * @return Simplify_FormElement[]
+   * @return Simplify_Form_Element[]
    */
   public function getElements($actionMask)
   {
@@ -350,7 +363,7 @@ class Simplify_Form extends Simplify_Renderable
 
   /**
    *
-   * @return Simplify_FormFilter[]
+   * @return Simplify_Form_Filter[]
    */
   public function getFilters()
   {

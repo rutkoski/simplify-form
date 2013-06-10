@@ -82,6 +82,50 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
   }
 
   /**
+   *
+   * @param Simplify_Form_Action $action
+   * @param string[] $headers
+   */
+  public function onRenderHeaders(Simplify_Form_Action $action, &$headers)
+  {
+    $headers[$this->getName()] = $this->getLabel();
+  }
+
+  /**
+   * Get the display value for the element.
+   *
+   * @param Simplify_Form_Action $action current action
+   * @param array $line the table row
+   * @param array $data form data
+   * @param mixed $index
+   * @return string the display value
+   */
+  public function onRenderLine(Simplify_Form_Action $action, &$line, $data, $index)
+  {
+    $line['elements'][$this->getName()] = $this->getDisplayValue($action, $data, $index);
+  }
+
+  /**
+   *
+   * @param Simplify_Form_Action $action current action
+   * @param array $line the form line
+   * @param array $data form data
+   * @param mixed $index
+   */
+  public function onRenderControls(Simplify_Form_Action $action, &$line, $data, $index)
+  {
+    $element = array();
+
+    $element['id'] = $this->getElementId($index);
+    $element['name'] = $this->getInputName($index);
+    $element['class'] = $this->getElementClass();
+    $element['label'] = $this->getLabel();
+    $element['controls'] = $this->onRender($action, $data, $index)->render();
+
+    $line['elements'][$this->getName()] = $element;
+  }
+
+  /**
    * (non-PHPdoc)
    * @see Simplify_Form_Component::onRender()
    */

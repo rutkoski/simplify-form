@@ -11,14 +11,37 @@
         <?php foreach ($data as $i => $row) { ?>
         <li>
           <div class="img-polaroid">
-            <img src="<?= $row['thumbUrl'] ?>" />
+            <img src="<?= $row['thumbUrl'] ?>" class="image" />
 
             <div class="caption">
               <p>
                 <a href="<?= $row['imageUrl'] ?>" class="lightbox"><i class="icon-zoom-in"></i></a>
                 <a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a>
+                <?php if (! empty($row['elements'])) { ?>
+                <a href="#" class="btn-edit"><?= $this->icon->show('edit') ?></a>
+                <?php } ?>
               </p>
             </div>
+
+            <?php if (! empty($row['elements'])) { ?>
+            <div style="display:none;">
+              <div class="extra-fields">
+                <?php foreach ($row['elements'] as $i => $element) { ?>
+                  <?php if ($element['label'] !== false) { ?>
+                  <div class="control-group <?= $element['class'] ?>" id="<?= $element['id'] ?>">
+                    <label class="control-label" for="<?= $element['name'] ?>"><?= $element['label'] ?></label>
+                    <div class="controls">
+                      <?= $element['controls'] ?>
+                    </div>
+                  </div>
+                  <?php } else { ?>
+                  <?= $element['controls'] ?>
+                  <?php } ?>
+                <?php } ?>
+                <input type="submit" value="Close" class="btn btn-primary" onclick="$.fancybox.close();" />
+              </div>
+            </div>
+            <?php } ?>
           </div>
 
           <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
@@ -28,14 +51,37 @@
 
         <li class="dummy" style="display: none;">
           <div class="img-polaroid">
-            <img src="" class="image" style="width: 100px; height: 100px;" />
+            <img src="" class="image" />
 
             <div class="caption">
               <p>
                 <a href="" class="lightbox"><i class="icon-zoom-in"></i></a>
                 <a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a>
+                <?php if (! empty($dummy['elements'])) { ?>
+                <a href="#" class="btn-edit"><?= $this->icon->show('edit') ?></a>
+                <?php } ?>
               </p>
             </div>
+
+            <?php if (! empty($dummy['elements'])) { ?>
+            <div style="display:none;">
+              <div class="extra-fields">
+                <?php foreach ($dummy['elements'] as $i => $element) { ?>
+                  <?php if ($element['label'] !== false) { ?>
+                  <div class="control-group <?= $element['class'] ?>" id="<?= $element['id'] ?>">
+                    <label class="control-label" for="<?= $element['name'] ?>"><?= $element['label'] ?></label>
+                    <div class="controls">
+                      <?= $element['controls'] ?>
+                    </div>
+                  </div>
+                  <?php } else { ?>
+                  <?= $element['controls'] ?>
+                  <?php } ?>
+                <?php } ?>
+                <input type="submit" value="Close" class="btn btn-primary" onclick="$.fancybox.close();" />
+              </div>
+            </div>
+            <?php } ?>
           </div>
 
           <input type="hidden" name="<?= $dummy['name'] ?>" value=""/>
@@ -61,6 +107,17 @@ $(function() {
     $(this).parents('li').first().remove();
   });
 
+  $(_id).on('click', '.btn-edit', function() {
+    $.fancybox.open({
+      content: $(this).parents('li').find('.extra-fields'),
+      modal: true
+    });
+  });
+
+  <?php if ($sortable) { ?>
+  $(_id + ' .thumbnails').sortable();
+  <?php } ?>
+
   $('#<?= $uploaderId ?>').fineUploader({
     request: {
       endpoint: '<?= $uploaderUrl ?>',
@@ -77,7 +134,7 @@ $(function() {
 
     ++n;
 
-    el.find(':input').removeAttr('disabled').each(function() {
+    el.find(':input').removeAttr('disabled').not(':submit').each(function() {
       $(this).attr('name', $(this).attr('name').replace(/dummy/, 'new-' + n));
     });
 

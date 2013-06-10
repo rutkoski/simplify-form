@@ -59,6 +59,19 @@ class Simplify_Form_Mptt extends Simplify_Form
 
   /**
    * (non-PHPdoc)
+   * @see Simplify_Form_Form::setTable()
+   */
+  public function setTable($table, $primaryKey, $parent = null, $left = null, $right = null)
+  {
+    $this->parent = $parent;
+    $this->left = $left;
+    $this->right = $right;
+
+    return parent::setTable($table, $primaryKey);
+  }
+
+  /**
+   * (non-PHPdoc)
    * @see Simplify_Form::execute()
    */
   public function execute($action = null)

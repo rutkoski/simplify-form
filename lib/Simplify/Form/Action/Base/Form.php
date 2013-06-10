@@ -73,15 +73,7 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
       $line['menu']->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
 
       foreach ($elements as $element) {
-        $_element = array();
-
-        $_element['id'] = $element->getElementId($index);
-        $_element['name'] = $element->getInputName($index);
-        $_element['class'] = $element->getElementClass();
-        $_element['label'] = $element->getLabel();
-        $_element['controls'] = $element->onRender($this, $this->formData[$index], $index)->render();
-
-        $line['elements'][] = $_element;
+        $element->onRenderControls($this, $line, $this->formData[$index], $index);
       }
 
       $this->form->onCreateItemMenu($line['menu'], $this, $row);
