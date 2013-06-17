@@ -61,6 +61,8 @@ class Simplify_Form extends Simplify_Renderable
 
   const ID = '_id';
 
+  const SERVICE_UPLOAD = 'upload';
+
   /**
    * Table name
    *

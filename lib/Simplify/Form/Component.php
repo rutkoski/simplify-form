@@ -106,6 +106,20 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
 
   /**
    *
+   * @param string $serviceAction
+   * @return Simplify_URL
+   */
+  public function getServiceUrl($serviceAction)
+  {
+    $uploaderUrl = Simplify_URL::make(null, null, false, null, Simplify_URL::JSON);
+    $uploaderUrl->set('formAction', 'services');
+    $uploaderUrl->set('serviceName', $this->getName());
+    $uploaderUrl->set('serviceAction', $serviceAction);
+    return $uploaderUrl;
+  }
+
+  /**
+   *
    * @return Simplify_Form_Component
    */
   public function getElementByName($name)
@@ -188,6 +202,18 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   }
 
   /**
+   * (non-PHPdoc)
+   * @see Simplify_Renderable::getLayoutsPath()
+   */
+  public function getLayoutsPath()
+  {
+    $path = (array) parent::getLayoutsPath();
+    $path[] = AMP_DIR . '/templates/layouts';
+    $path[] = FORM_DIR . '/templates';
+    return $path;
+  }
+
+  /**
    * Get the value for the component passed via GET.
    *
    * @return mixed
@@ -235,16 +261,6 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   public function onRender(Simplify_Form_Action $action)
   {
     return $this->getView();
-  }
-
-  /**
-   * On validate callback. Validate component value.
-   *
-   * @param Simplify_Form_Action $action current action
-   * @param Simplify_Validation_DataValidation $rules data validation rules
-   */
-  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
-  {
   }
 
   /**

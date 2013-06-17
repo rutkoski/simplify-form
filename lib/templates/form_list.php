@@ -5,8 +5,8 @@
   <fieldset>
     <legend>Filters</legend>
 
-    <?php foreach ($filters as $label => $filter) { ?>
-    <?= $filter ?>
+    <?php foreach ($filters as $filter) { ?>
+    <?= $filter['controls'] ?>
     <?php } ?>
 
     <input type="submit" value="Apply" class="btn"/>

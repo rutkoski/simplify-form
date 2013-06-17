@@ -23,44 +23,37 @@
 
 /**
  *
- * Textarea form element
+ * Form filter with hidden element
  *
  */
-class Simplify_Form_Element_Textarea extends Simplify_Form_Element_Text
+class Simplify_Form_Filter_Hidden extends Simplify_Form_Filter
 {
 
   /**
-   * Truncate data on list actions
    *
-   * @var boolean|int
+   * @var boolean
    */
-  public $truncate = 80;
+  public $visible = false;
 
   /**
    *
-   * @var int|boolean
+   * @var boolean
    */
-  public $minLength = false;
-
-  /**
-   *
-   * @var int
-   */
-  public $maxLength = false;
+  public $editable = false;
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see Simplify_Form_Component::onInjectQueryParams()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
   {
-    $value = parent::getDisplayValue($action, $data, $index);
+    parent::onInjectQueryParams($action, $params);
 
-    if ($this->truncate) {
-      $value = sy_truncate($value, $this->truncate);
-    }
+    $value = $this->getValue();
+    $name = $this->getFieldName();
 
-    return $value;
+    $params[Simplify_Db_QueryParameters::WHERE][] = "{$name} = :{$name}";
+    $params[Simplify_Db_QueryParameters::DATA][$name] = $value;
   }
 
 }

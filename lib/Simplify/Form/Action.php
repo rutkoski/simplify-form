@@ -61,6 +61,12 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   protected $actionMask;
 
   /**
+   *
+   * @var string[string]
+   */
+  protected $errors;
+
+  /**
    * Execute the action
    *
    * @return void
@@ -92,7 +98,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
 
     $filters = array();
     foreach ($this->form->getFilters() as $filter) {
-      $filters[$filter->getLabel()] = $filter->onRender($this);
+      $filter->onRenderControls($this, $filters);
     }
     $this->set('filters', $filters);
 
@@ -194,40 +200,33 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
    */
   public function onValidate()
   {
-    $rules = new Simplify_Validation_DataValidation();
+    try {
+      $rules = new Simplify_Validation_DataValidation();
 
-    $elements = $this->getElements();
-
-    foreach ($elements as $element) {
-      $element->onValidate($this, $rules);
-    }
-
-    $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $rules);
-
-    foreach ($this->formData as $index => &$data) {
-      $rules->validate($data);
-    }
-
-    /*$errors = array();
-
-    $elements = $this->getElements();
-
-    foreach ($this->formData as $index => &$data) {
-      $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $data);
+      $elements = $this->getElements();
 
       foreach ($elements as $element) {
-        try {
-          $element->onValidate($this, $data);
-        }
-        catch (Simplify_ValidationException $e) {
-          $errors = array_merge($errors, (array) $e->getErrors());
-        }
+        $element->onValidate($this, $rules);
+      }
+
+      $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $rules);
+
+      foreach ($this->formData as $index => &$data) {
+        $rules->validate($data);
       }
     }
+    catch (Simplify_ValidationException $e) {
+      $this->errors = $e->getErrors();
 
-    if (! empty($errors)) {
-      throw new Simplify_ValidationException($errors);
-    }*/
+      foreach ($elements as $element) {
+        if (isset($this->errors[$element->getName()])) {
+          $element->state = 'error';
+          $element->stateMessage = $this->errors[$element->getName()];
+        }
+      }
+
+      throw $e;
+    }
   }
 
   /**

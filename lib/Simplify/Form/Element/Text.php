@@ -47,11 +47,36 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
    */
   public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
-    $msg = '%s must have between %s and %s characters';
-    $msg = sprintf($msg, $this->getLabel(), $this->minLength, $this->maxLength);
+    if ($this->minLength !== false || $this->maxLength !== false) {
+      if ($this->minLength === $this->maxLength) {
+        $msg = _n('%1$s must have exactly %2$s character', '%1$s must have exactly %2$s characters', $this->minLength);
+      } elseif ($this->minLength !== false) {
+        if ($this->maxLength !== false) {
+          $msg = __('%1$s must have between %2$s and %3$s characters');
+        } else {
+          $msg = __('%1$s must have %2$s or more characters');
+        }
+      } elseif ($this->maxLength !== false) {
+        $msg = __('%1$s must have %3$s or less characters');
+      }
 
-    $rule = new Simplify_Validation_Length($msg, $this->minLength, $this->maxLength);
-    $rules->setRule($this->getName(), $rule);
+      $msg = sprintf($msg, $this->getLabel(), $this->minLength, $this->maxLength);
+
+      $rule = new Simplify_Validation_Length($msg, $this->minLength, $this->maxLength);
+      $rules->setRule($this->getName(), $rule);
+    }
+  }
+
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Form_Element::onRender()
+   */
+  public function onRender(Simplify_Form_Action $action, $data, $index)
+  {
+    $this->set('minLength', $this->minLength);
+    $this->set('maxLength', $this->maxLength);
+
+    return parent::onRender($action, $data, $index);
   }
 
 }

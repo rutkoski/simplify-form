@@ -23,44 +23,9 @@
 
 /**
  *
- * Textarea form element
+ * Form filter with select element
  *
  */
-class Simplify_Form_Element_Textarea extends Simplify_Form_Element_Text
+class Simplify_Form_Filter_Radios extends Simplify_Form_Filter_Select
 {
-
-  /**
-   * Truncate data on list actions
-   *
-   * @var boolean|int
-   */
-  public $truncate = 80;
-
-  /**
-   *
-   * @var int|boolean
-   */
-  public $minLength = false;
-
-  /**
-   *
-   * @var int
-   */
-  public $maxLength = false;
-
-  /**
-   * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
-   */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
-  {
-    $value = parent::getDisplayValue($action, $data, $index);
-
-    if ($this->truncate) {
-      $value = sy_truncate($value, $this->truncate);
-    }
-
-    return $value;
-  }
-
 }

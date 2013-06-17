@@ -6,10 +6,11 @@
 
   <?php foreach ($row['elements'] as $element) { ?>
   <?php if ($element['label'] !== false) { ?>
-  <div class="control-group <?= $element['class'] ?>" id="<?= $element['id'] ?>">
+  <div class="control-group <?= $element['class'] ?><?= $element['state'] ? " {$element['state']}" : '' ?>" id="<?= $element['id'] ?>">
     <label class="control-label" for="<?= $element['name'] ?>"><?= $element['label'] ?></label>
     <div class="controls">
       <?= $element['controls'] ?>
+      <?= $element['stateMessage'] ? "<span class=\"help-inline\">{$element['stateMessage']}</span>" : '' ?>
     </div>
   </div>
   <?php } else { ?>

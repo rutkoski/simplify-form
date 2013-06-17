@@ -30,12 +30,24 @@ abstract class Simplify_Form_Filter extends Simplify_Form_Component
 {
 
   /**
+   *
+   * @var boolean
+   */
+  public $visible = true;
+
+  /**
+   *
+   * @var boolean
+   */
+  public $editable = true;
+
+  /**
    * (non-PHPdoc)
    * @see Simplify_Form_Component::getValue()
    */
   public function getValue()
   {
-    return s::request()->get($this->getName(), $this->getDefaultValue());
+    return $this->editable ? s::request()->get($this->getName(), $this->getDefaultValue()) : $this->getDefaultValue();
   }
 
   /**
@@ -48,6 +60,18 @@ abstract class Simplify_Form_Filter extends Simplify_Form_Component
   }
 
   /**
+   *
+   * @param Simplify_Form_Action $action
+   * @param array $filters
+   */
+  public function onRenderControls(Simplify_Form_Action $action, &$filters)
+  {
+    if ($this->visible) {
+      $filters[$this->getName()]['controls'] = $this->onRender($action);
+    }
+  }
+
+  /**
    * (non-PHPdoc)
    * @see Simplify_Form_Component::onRender()
    */
@@ -56,6 +80,7 @@ abstract class Simplify_Form_Filter extends Simplify_Form_Component
     $this->set('label', $this->getLabel());
     $this->set('name', $this->getName());
     $this->set('value', $this->getValue());
+    $this->set('editable', $this->editable);
 
     return parent::onRender($action);
   }

@@ -1,1 +1,1 @@
-<input type="text" name="<?= $inputName ?>" value="<?= $value ?>" />
+<input type="text" name="<?= $inputName ?>" value="<?= $value ?>"<?= $maxLength !== false ? ' maxlength="'.$maxLength.'"' : '' ?>/>

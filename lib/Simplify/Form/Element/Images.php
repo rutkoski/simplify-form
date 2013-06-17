@@ -44,9 +44,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    *
    * @var array[]
    */
-  protected $fields = array(
-    //array(self::FIELD_FILENAME => 'image_filename')
-  );
+  protected $fields = array();
 
   /**
    *
@@ -90,10 +88,8 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
     $output = array();
     foreach ((array) $files as $file) {
       try {
-        //$file = $file[$this->getFieldName(self::FIELD_FILENAME)];
         $file = $file[$this->fields[0][self::FIELD_FILENAME]];
 
-        //$value = s::config()->get('www_url') . Thumb::factory()->load($file)->cropResize(50, 50)->getCacheFilename();
         $imageUrl = $this->getImageUrl($file);
         $thumbUrl = $this->getThumbUrl($file, 50, 50);
 
@@ -213,16 +209,8 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   public function onRender(Simplify_Form_Action $action, $data, $index)
   {
-    //$this->set('filenameField', $this->fields[0][self::FIELD_FILENAME]);
-
     $this->set('uploaderId', $this->getElementId($index) . '-uploader');
-
-    $uploaderUrl = Simplify_URL::make(null, null, false, null, Simplify_URL::JSON);
-    $uploaderUrl->set('formAction', 'services');
-    $uploaderUrl->set('serviceName', $this->getName());
-    $uploaderUrl->set('serviceAction', 'upload');
-
-    $this->set('uploaderUrl', $uploaderUrl);
+    $this->set('uploaderUrl', $this->getServiceUrl(Simplify_Form::SERVICE_UPLOAD));
 
     return parent::onRender($action, $data, $index);
   }
@@ -234,7 +222,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
   public function onExecuteServices(Simplify_Form_Action $action, $serviceAction)
   {
     switch ($serviceAction) {
-      case 'upload' :
+      case Simplify_Form::SERVICE_UPLOAD :
         $data = array();
 
         $file = s::request()->files($this->getName());
@@ -315,7 +303,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
   protected function getThumbUrl($file, $width, $height)
   {
     return s::config()->get('www_url') .
-       Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+       $this->getThumbComponent($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
   }
 
   /**

@@ -29,17 +29,8 @@
       }
     }).trigger('change');
 
-    since.datetimepicker({
-      timeFormat:'hh:mm:ss',
-      pickerTimeFormat:'hh:mm:ss',
-      showSecond:true
-    });
-
-    until.datetimepicker({
-      timeFormat:'HH:mm:ss',
-      pickerTimeFormat:'HH:mm:ss',
-      showSecond:true
-    });
+    since.datetimepicker();
+    until.datetimepicker();
   });
   </script>
 </div>

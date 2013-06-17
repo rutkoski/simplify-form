@@ -30,6 +30,18 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
 {
 
   /**
+   *
+   * @var string
+   */
+  public $state;
+
+  /**
+   *
+   * @var string
+   */
+  public $stateMessage;
+
+  /**
    * (non-PHPdoc)
    * @see Simplify_Form_Component::getValue()
    */
@@ -82,6 +94,16 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
   }
 
   /**
+   * On validate callback.
+   *
+   * @param Simplify_Form_Action $action current action
+   * @param Simplify_Validation_DataValidation $rules data validation rules
+   */
+  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
+  {
+  }
+
+  /**
    *
    * @param Simplify_Form_Action $action
    * @param string[] $headers
@@ -122,6 +144,9 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
     $element['label'] = $this->getLabel();
     $element['controls'] = $this->onRender($action, $data, $index)->render();
 
+    $element['state'] = $this->state;
+    $element['stateMessage'] = $this->stateMessage;
+
     $line['elements'][$this->getName()] = $element;
   }
 
@@ -133,6 +158,8 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
   {
     $exists = (!empty($data[Simplify_Form::ID]));
 
+    $this->set('state', $this->state);
+    $this->set('stateMessage', $this->stateMessage);
     $this->set('exists', $exists);
     $this->set(Simplify_Form::ID, $data[Simplify_Form::ID]);
     $this->set('id', $this->getElementId($index));

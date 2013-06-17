@@ -151,6 +151,7 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
     foreach ($data as $index => &$row) {
       $this->formData[$index] = array();
       $this->formData[$index][Simplify_Form::ID] = $row[$pk];
+      $this->formData[$index][$pk] = $row[$pk];
 
       foreach ($elements as &$element) {
         $element->onLoadData($this, $this->formData[$index], $row);

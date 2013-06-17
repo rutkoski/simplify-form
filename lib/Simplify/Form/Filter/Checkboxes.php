@@ -26,7 +26,7 @@
  * Form filter with select element
  *
  */
-class Simplify_Form_Filter_Select extends Simplify_Form_Filter
+class Simplify_Form_Filter_Checkboxes extends Simplify_Form_Filter
 {
 
   /**
@@ -37,46 +37,12 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
   public $options = false;
 
   /**
-   * Show option for empty value
-   *
-   * @var boolean
-   */
-  public $showEmpty = false;
-
-  /**
-   *
-   * @var string
-   */
-  public $emptyLabel = '';
-
-  /**
-   *
-   * @var mixed
-   */
-  public $emptyValue = '';
-
-  /**
-   *
-   * @param string|boolean $label
-   * @param mixed $value
-   */
-  public function showEmpty($label = '', $value = '')
-  {
-    $this->showEmpty = $label !== false;
-    $this->emptyLabel = $label;
-    $this->emptyValue = $value;
-  }
-
-  /**
    * (non-PHPdoc)
    * @see Simplify_Form_Filter::onRender()
    */
   public function onRender(Simplify_Form_Action $action)
   {
     $this->set('options', $this->getOptions());
-    $this->set('showEmpty', $this->showEmpty);
-    $this->set('emptyLabel', $this->emptyLabel);
-    $this->set('emptyValue', $this->emptyValue);
 
     return parent::onRender($action);
   }
@@ -87,20 +53,7 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
    */
   public function getValue()
   {
-    $value = s::request()->get($this->getName());
-
-    // if show empty is true, default value makes no sense...
-    if ('' . $value == '' . $this->emptyValue && !$this->showEmpty) {
-      if ('' . $this->getDefaultValue() == '' . $this->emptyValue) {
-        $options = $this->getOptions();
-        $value = array_shift(array_keys($options));
-      }
-      else {
-        $value = $this->getDefaultValue();
-      }
-    }
-
-    return $value;
+    return (array) parent::getValue();
   }
 
   /**
@@ -113,11 +66,10 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
 
     $value = $this->getValue();
 
-    if ($value != $this->emptyValue) {
+    if (! empty($value)) {
       $name = $this->getFieldName();
 
-      $params[Simplify_Db_QueryParameters::WHERE][] = "{$name} = :{$name}";
-      $params[Simplify_Db_QueryParameters::DATA][$name] = $value;
+      $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($name, $value);
     }
   }
 
@@ -139,11 +91,6 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
       $options = array_combine($options, $options);
     } else {
       $options = (array) $this->options;
-    }
-
-    if ($this->showEmpty) {
-      $empty = array($this->emptyValue => $this->emptyLabel);
-      $options = $empty + $options;
     }
 
     return $options;

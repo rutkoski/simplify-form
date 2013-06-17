@@ -11,20 +11,34 @@ class Simplify_Form_Action_Services extends Simplify_Form_Action
 
   /**
    *
+   * @var Simplify_Form_Element
+   */
+  protected $service;
+
+  /**
+   *
+   * @var Simplify_Form_Element
+   */
+  protected $response;
+
+  /**
+   *
    */
   public function onExecute()
   {
     $serviceName = s::request()->get('serviceName');
     $serviceAction = s::request()->get('serviceAction');
 
-    $element = $this->form->getElementByName($serviceName);
+    $this->service = $this->form->getElementByName($serviceName);
 
-    $this->set($serviceName, $element->onExecuteServices($this, $serviceAction));
+    $this->response = $this->service->onExecuteServices($this, $serviceAction);
+
+    $this->set($serviceName, $this->response);
   }
 
   public function onRender()
   {
-    return $this->getView();
+    return $this->response;
   }
 
 }

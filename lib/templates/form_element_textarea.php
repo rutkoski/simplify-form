@@ -1,1 +1,1 @@
-<textarea name="<?= $inputName ?>"><?= $value ?></textarea>
+<textarea name="<?= $inputName ?>"<?= $maxLength !== false ? ' maxlength="'.$maxLength.'"' : '' ?>><?= $value ?></textarea>
