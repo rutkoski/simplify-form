@@ -22,9 +22,7 @@
  */
 
 /**
- *
  * Base class for miltiple selection elements
- *
  */
 abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_Form_Element
 {
@@ -73,6 +71,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
+   *
    * @see Simplify_Form_Component::onExecuteServices()
    */
   public function onExecuteServices(Simplify_Form_Action $action, $serviceAction)
@@ -84,7 +83,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
         $pid = $this->form->getId();
         $fid = s::request()->post($this->getName());
 
-        $this->set('value', $this->toggleValue($pid, $fid));
+        $this->set('value', $this->toggleValue($pid[0], $fid));
 
         break;
     }
@@ -124,6 +123,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
+   *
    * @see Simplify_Form_Element::onRender()
    */
   public function onRender(Simplify_Form_Action $action, $data, $index)
@@ -135,6 +135,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
+   *
    * @see Simplify_Form_Component::onPostData()
    */
   public function onPostData(Simplify_Form_Action $action, &$data, $post)
@@ -144,6 +145,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
+   *
    * @see Simplify_Form_Element::onCollectTableData()
    */
   public function onCollectTableData(&$row, $data)
@@ -152,6 +154,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
+   *
    * @see Simplify_Form_Component::onSave()
    */
   public function onSave(Simplify_Form_Action $action, &$data)
@@ -186,6 +189,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
+   *
    * @see Simplify_Form_Element::onInjectQueryParams()
    */
   public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
@@ -194,6 +198,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
+   *
    * @see Simplify_Form_Element::getDisplayValue()
    */
   public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
@@ -204,7 +209,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
   /**
    *
    * @param array $data
-   * @return multitype:multitype:Ambigous <unknown, ArrayAccess>  multitype:unknown
+   * @return multitype:multitype:Ambigous <unknown, ArrayAccess> multitype:unknown
    */
   public function getOptions($data)
   {

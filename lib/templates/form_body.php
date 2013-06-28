@@ -1,5 +1,3 @@
 <h2><?= $title ?></h2>
-
-<?= $this->menu->show($menu) ?>
-
+<?= $showMenu ? $this->menu->show($menu) : '' ?>
 <?= $actionBody ?>

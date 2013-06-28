@@ -9,7 +9,7 @@
 $(document).ready(function() {
   var name = '<?= str_replace(array('[', ']'), array('\\\[', '\\\]'), "{$inputName}[]") ?>';
   $(':checkbox[name=' + name + ']').change(function() {
-    var url = '<?= Simplify_URL::make(null, array('formAction' => 'services', 'serviceName' => $name, 'serviceAction' => 'toggle'))->format(Simplify_URL::JSON) ?>';
+    var url = '<?= Simplify_URL::make(null, array('formAction' => 'services', 'serviceName' => $name, 'serviceAction' => 'toggle', Simplify_Form::ID => ${Simplify_Form::ID}))->format(Simplify_URL::JSON) ?>';
 
     var data = {
       '<?= Simplify_Form::ID ?>' : '<?= ${Simplify_Form::ID} ?>',

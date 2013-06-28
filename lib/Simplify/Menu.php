@@ -91,5 +91,3 @@ class Simplify_Menu extends Simplify_MenuItem
   }
 
 }
-
-class Simplify_MenuException extends Exception {}

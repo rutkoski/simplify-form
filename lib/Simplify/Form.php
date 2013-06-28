@@ -119,6 +119,18 @@ class Simplify_Form extends Simplify_Renderable
   public $actionMask = 0;
 
   /**
+   *
+   * @var boolean
+   */
+  public $showMenu = true;
+
+  /**
+   *
+   * @var boolean
+   */
+  public $showItemMenu = true;
+
+  /**
    * Default action name
    *
    * @var string
@@ -222,6 +234,8 @@ class Simplify_Form extends Simplify_Renderable
       $this->set('menu', $this->createMenu($Action));
     }
 
+    $this->set('showMenu', $this->showMenu);
+
     return $this->getView();
   }
 
@@ -294,14 +308,17 @@ class Simplify_Form extends Simplify_Renderable
    */
   protected function createMenu(Simplify_Form_Action $action)
   {
-    $menu = new Simplify_Menu('form', null, Simplify_Menu::STYLE_TOOLBAR);
-    $menu->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
+    if ($this->showMenu) {
+      $menu = new Simplify_Menu('form', null, Simplify_Menu::STYLE_TOOLBAR);
 
-    foreach ($this->getActions() as $_action) {
-      $_action->onCreateMenu($menu, $action);
+      $menu->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
+
+      foreach ($this->getActions() as $_action) {
+        $_action->onCreateMenu($menu, $action);
+      }
+
+      return $menu;
     }
-
-    return $menu;
   }
 
   /**
@@ -464,8 +481,10 @@ class Simplify_Form extends Simplify_Renderable
    */
   public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
   {
-    foreach ($this->getActions() as $_action) {
-      $_action->onCreateItemMenu($menu, $action, $data);
+    if ($this->showItemMenu) {
+      foreach ($this->getActions() as $_action) {
+        $_action->onCreateItemMenu($menu, $action, $data);
+      }
     }
   }
 
