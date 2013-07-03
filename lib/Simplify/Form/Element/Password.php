@@ -98,7 +98,7 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
     $element['name'] = $this->getInputName($index);
     $element['class'] = $this->getElementClass();
     $element['label'] = 'Password';
-    $element['controls'] = '<input type="text" name="'.$this->getInputName($index).'[a]" value="" />';
+    $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[a]" value="" />';
 
     $line['elements'][$this->getName() . '_a'] = $element;
 
@@ -108,7 +108,7 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
     $element['name'] = $this->getInputName($index);
     $element['class'] = $this->getElementClass();
     $element['label'] = 'Repeat password';
-    $element['controls'] = '<input type="text" name="'.$this->getInputName($index).'[b]" value="" />';
+    $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[b]" value="" />';
 
     $line['elements'][$this->getName() . '_b'] = $element;
   }

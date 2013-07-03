@@ -237,11 +237,24 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
     return array($options, $checked);
   }
 
+  /**
+   * Get the related table name. By default, it's the element's name.
+   *
+   * @return string
+   */
   public function getTable()
   {
+    if (empty($this->table)) {
+      $this->table = $this->getName();
+    }
     return $this->table;
   }
 
+  /**
+   * Get the key on the main table. By default, it's the form's primary key.
+   *
+   * @return string
+   */
   public function getPrimaryKey()
   {
     if (empty($this->primaryKey)) {
@@ -251,6 +264,11 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
     return $this->primaryKey;
   }
 
+  /**
+   * Get the key on the related table. By default, it's the table's primary key (<table>_id).
+   *
+   * @return string
+   */
   public function getForeignKey()
   {
     if (empty($this->foreignKey)) {
@@ -260,15 +278,28 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
     return $this->foreignKey;
   }
 
+  /**
+   * Get the association table. By default, it's the names of the main and related tables,
+   * sorted alphabeticaly, separated by _ (<atable>_<btable>).
+   *
+   * @return string
+   */
   public function getAssociationTable()
   {
     if (empty($this->associationTable)) {
-      $this->associationTable = implode('_', array($this->form->getTable(), $this->getTable()));
+      $tables = array($this->form->getTable(), $this->getTable());
+      sort($tables);
+      $this->associationTable = implode('_', $tables);
     }
 
     return $this->associationTable;
   }
 
+  /**
+   * Get the key of the main table on the association table.
+   *
+   * @return string
+   */
   public function getAssociationPrimaryKey()
   {
     if (empty($this->associationPrimaryKey)) {
@@ -278,6 +309,11 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
     return $this->associationPrimaryKey;
   }
 
+  /**
+   * Get the key of the related table on the association table.
+   *
+   * @return string
+   */
   public function getAssociationForeignKey()
   {
     if (empty($this->associationForeignKey)) {

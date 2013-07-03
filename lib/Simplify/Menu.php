@@ -19,7 +19,7 @@ class Simplify_Menu extends Simplify_MenuItem
 
   public function __construct($name, array $items = null, $style = null, $label = null, $icon = null)
   {
-    $this->name = $name;
+    parent::__construct($name, $label, $icon);
 
     if (! empty($items)) {
       foreach ($items as $item) {
@@ -32,8 +32,6 @@ class Simplify_Menu extends Simplify_MenuItem
     }
 
     $this->style = $style;
-    $this->label = $label;
-    $this->icon = $icon;
   }
 
   public function addItem(Simplify_MenuItem $item)
