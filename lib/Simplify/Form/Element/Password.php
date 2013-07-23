@@ -97,7 +97,7 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
     $element['id'] = $this->getElementId($index);
     $element['name'] = $this->getInputName($index);
     $element['class'] = $this->getElementClass();
-    $element['label'] = 'Password';
+    $element['label'] = $action->show(Simplify_Form::ACTION_CREATE) ? 'Password' : 'New password';
     $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[a]" value="" />';
 
     $line['elements'][$this->getName() . '_a'] = $element;
