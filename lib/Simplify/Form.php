@@ -51,7 +51,7 @@ class Simplify_Form extends Simplify_Renderable
 
   const ACTION_ALL = 31;
 
-  const ACTION_OPTIONS = 32;
+  const ACTION_CONFIG = 32;
 
   const ACTION_SERVICES = 64;
 
@@ -247,6 +247,10 @@ class Simplify_Form extends Simplify_Renderable
    */
   public function addAction(Simplify_Form_Action $action)
   {
+    if (isset($this->actions[$action->getName()])) {
+      throw new Exception("Could not add action: there is already an action called {$action->getName()}");
+    }
+
     $action->form = $this;
 
     if (empty($this->actions)) {
@@ -363,21 +367,22 @@ class Simplify_Form extends Simplify_Renderable
 
   /**
    *
+   * @param Simplify_Form_Action $action
    * @return Simplify_Form_Element[]
    */
-  public function getElements($actionMask)
+  public function getElements(Simplify_Form_Action $action)
   {
-    $elements = array();
+    $actionMask = $action->getActionMask();
 
-    $elements[$actionMask] = array();
+    $elements = array();
 
     foreach ($this->elements as &$element) {
       if ($element->show($actionMask)) {
-        $elements[$actionMask][] = &$element;
+        $elements[] = &$element;
       }
     }
 
-    return $elements[$actionMask];
+    return $elements;
   }
 
   /**

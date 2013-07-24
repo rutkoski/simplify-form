@@ -67,6 +67,15 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   protected $errors;
 
   /**
+   *
+   * @param string $name action name
+   */
+  public function __construct($name = null)
+  {
+    $this->name = $name;
+  }
+
+  /**
    * Execute the action
    *
    * @return void
@@ -177,7 +186,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
     foreach ($this->formData as $index => &$row) {
       $row[Simplify_Form::ID] = $id[$index];
 
-      if (! empty($files)) {
+      if (!empty($files)) {
         foreach ($files as $k => $file) {
           foreach ($file[$index] as $field => $value) {
             $post[$index][$field][$k] = $value['file'];
@@ -274,7 +283,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
    */
   public function getElements()
   {
-    return $this->form->getElements($this->getActionMask());
+    return $this->form->getElements($this);
   }
 
   /**
@@ -312,6 +321,15 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   public function show($actionMask)
   {
     return ($this->getActionMask() & $actionMask) == $actionMask;
+  }
+
+  /**
+   *
+   * @param int $actionMask
+   */
+  public function setActionMask($actionMask)
+  {
+    $this->actionMask = $actionMask;
   }
 
 }
