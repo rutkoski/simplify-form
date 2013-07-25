@@ -94,23 +94,36 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
   {
     $element = array();
 
+    if ($this->matchOriginal) {
+      $label = __('Current password');
+    } else {
+      $label = $action->show(Simplify_Form::ACTION_CREATE) ? __('Password') : __('New password');
+    }
+
     $element['id'] = $this->getElementId($index);
     $element['name'] = $this->getInputName($index);
     $element['class'] = $this->getElementClass();
-    $element['label'] = $action->show(Simplify_Form::ACTION_CREATE) ? 'Password' : 'New password';
+    $element['label'] = $label;
     $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[a]" value="" />';
+
+    $element['state'] = $this->state;
+    $element['stateMessage'] = $this->stateMessage;
 
     $line['elements'][$this->getName() . '_a'] = $element;
 
-    $element = array();
+    if ($this->askForConfirmation) {
+      $element = array();
 
-    $element['id'] = $this->getElementId($index);
-    $element['name'] = $this->getInputName($index);
-    $element['class'] = $this->getElementClass();
-    $element['label'] = 'Repeat password';
-    $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[b]" value="" />';
+      $element['id'] = $this->getElementId($index);
+      $element['name'] = $this->getInputName($index);
+      $element['class'] = $this->getElementClass();
+      $element['label'] = 'Repeat password';
+      $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[b]" value="" />';
 
-    $line['elements'][$this->getName() . '_b'] = $element;
+      $element['state'] = $this->state;
+
+      $line['elements'][$this->getName() . '_b'] = $element;
+    }
   }
 
   /**
@@ -148,18 +161,21 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
     $required = ($this->required || !$exists);
 
     if ($this->askForConfirmation && $a != $b) {
-      $this->errors[] = 'Passwords do not match';
+      $this->errors[] = __('Passwords do not match');
     }
     elseif ($required && $a == $empty) {
-      $this->errors[] = 'Inform your password';
+      $this->errors[] = __('Inform your password');
     }
     elseif ($this->matchOriginal) {
       if ($a != $data[$this->getName()]) {
-        $this->errors[] = 'Wrong password';
+        $this->errors[] = __('Wrong password');
       }
     }
-    else {
+    elseif ($a != $empty) {
       $data[$this->getName()] = $a;
+    }
+    else {
+      unset($data[$this->getName()]);
     }
   }
 
@@ -186,18 +202,10 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
       $error = array_shift($this->errors);
 
       if (!empty($error)) {
-        throw new Simplify_ValidationException(array($this->getName() => $error));
+        throw new Simplify_ValidationException($error);
       }
     }
   }
-
-  /**
-   * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
-   */
-  /* public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
-  {
-  } */
 
   /**
    * Hash the password

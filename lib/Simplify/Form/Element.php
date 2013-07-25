@@ -209,7 +209,9 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    */
   public function onCollectTableData(&$row, $data)
   {
-    $row[$this->getFieldName()] = $data[$this->getName()];
+    if (isset($data[$this->getName()])) {
+      $row[$this->getFieldName()] = $data[$this->getName()];
+    }
   }
 
 }
