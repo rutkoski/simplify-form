@@ -111,6 +111,8 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
     }
     $this->set('filters', $filters);
 
+    $this->form->dispatch(Simplify_Form::ON_RENDER, $this);
+
     return $this->getView();
   }
 

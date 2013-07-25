@@ -124,8 +124,6 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
     $this->set('pager', $this->pager);
     $this->set('bulk', $bulk);
 
-    $this->form->dispatch(Simplify_Form::ON_RENDER, $this);
-
     return parent::onRender();
   }
 

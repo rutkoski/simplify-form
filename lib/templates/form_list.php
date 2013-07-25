@@ -38,7 +38,7 @@
         <td><input type="checkbox" name="<?= $row['name'] ?>" value="<?= $row['_id'] ?>"/></td>
 
         <?php foreach ($row['elements'] as &$element) { ?>
-        <td><?= $element ?></td>
+        <td><?= $element['controls'] ?></td>
         <?php } ?>
 
         <td>

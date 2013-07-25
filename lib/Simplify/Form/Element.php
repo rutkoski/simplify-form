@@ -124,7 +124,7 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    */
   public function onRenderLine(Simplify_Form_Action $action, &$line, $data, $index)
   {
-    $line['elements'][$this->getName()] = $this->getDisplayValue($action, $data, $index);
+    $line['elements'][$this->getName()]['controls'] = $this->getDisplayValue($action, $data, $index);
   }
 
   /**
