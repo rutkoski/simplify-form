@@ -187,7 +187,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
     if (!empty($post[$this->getName()])) {
       foreach ($post[$this->getName()] as $index => $row) {
-        $data[$this->getName()][$index][$this->fields[0][self::FIELD_FILENAME]] = $row['filename'];
+        foreach ($this->fields as $field) {
+          $data[$this->getName()][$index][$field[self::FIELD_FILENAME]] = $row['filename'];
+        }
       }
     }
   }

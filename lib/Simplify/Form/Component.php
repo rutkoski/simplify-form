@@ -173,7 +173,7 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    */
   public function getLabel()
   {
-    if (empty($this->label)) {
+    if (is_null($this->label)) {
       $this->label = Simplify_Inflector::humanize($this->getName());
     }
     return $this->label;

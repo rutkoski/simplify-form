@@ -70,9 +70,10 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
    *
    * @param string $name action name
    */
-  public function __construct($name = null)
+  public function __construct($name = null, $title = null)
   {
     $this->name = $name;
+    $this->title = $title;
   }
 
   /**
@@ -217,7 +218,9 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
       $elements = $this->getElements();
 
       foreach ($elements as $element) {
-        $element->onValidate($this, $rules);
+        if ($this->show($element->validate)) {
+          $element->onValidate($this, $rules);
+        }
       }
 
       $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $rules);
@@ -322,6 +325,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
    */
   public function show($actionMask)
   {
+    if (is_bool($actionMask)) return $actionMask;
     return ($this->getActionMask() & $actionMask) == $actionMask;
   }
 

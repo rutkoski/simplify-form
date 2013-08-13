@@ -56,13 +56,6 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
   public $matchOriginal = false;
 
   /**
-   * Validation errors
-   *
-   * @var array
-   */
-  protected $errors;
-
-  /**
    *
    * @param string $name
    * @param string $label
@@ -161,14 +154,14 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
     $required = ($this->required || !$exists);
 
     if ($this->askForConfirmation && $a != $b) {
-      $this->errors[] = __('Passwords do not match');
+      $this->errors['_'][] = $this->getError('match', __('Passwords do not match'));
     }
     elseif ($required && $a == $empty) {
-      $this->errors[] = __('Inform your password');
+      $this->errors['_'][] = $this->getError('empty', __('Inform your password'));
     }
     elseif ($this->matchOriginal) {
       if ($a != $data[$this->getName()]) {
-        $this->errors[] = __('Wrong password');
+        $this->errors['_'][] = $this->getError('original', __('Wrong password'));
       }
     }
     elseif ($a != $empty) {
@@ -187,6 +180,8 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
    */
   public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
+    parent::onValidate($action, $rules);
+
     $rules->setRule($this->getName(), new Simplify_Validation_Callback(array($this, 'validate')));
   }
 
@@ -198,8 +193,8 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
    */
   public function validate($value)
   {
-    if (!empty($this->errors)) {
-      $error = array_shift($this->errors);
+    if (!empty($this->errors['_'])) {
+      $error = array_shift($this->errors['_']);
 
       if (!empty($error)) {
         throw new Simplify_ValidationException($error);

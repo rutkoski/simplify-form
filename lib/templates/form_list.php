@@ -51,6 +51,7 @@
 
   <?= $this->pager->show($pager) ?>
 
+  <?php if (! empty($bulk)) { ?>
   <select name="formAction">
     <option value=""></option>
     <?php foreach ($bulk as $value => $label) { ?>
@@ -59,4 +60,5 @@
   </select>
 
   <input type="submit" value="Ok" class="btn" />
+  <?php } ?>
 </form>

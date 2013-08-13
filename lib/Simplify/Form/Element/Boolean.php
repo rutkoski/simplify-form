@@ -33,7 +33,7 @@ class Simplify_Form_Element_Boolean extends Simplify_Form_Element
    *
    * @var string
    */
-  public $trueLabel = 'Yes';
+  public $trueLabel;
 
   /**
    *
@@ -45,7 +45,7 @@ class Simplify_Form_Element_Boolean extends Simplify_Form_Element
    *
    * @var string
    */
-  public $falseLabel = 'No';
+  public $falseLabel;
 
   /**
    *
@@ -59,6 +59,14 @@ class Simplify_Form_Element_Boolean extends Simplify_Form_Element
    */
   public function onRender(Simplify_Form_Action $action, $data, $index)
   {
+    if (empty($this->trueLabel)) {
+      $this->trueLabel = __('Yes');
+    }
+
+    if (empty($this->falseLabel)) {
+      $this->falseLabel = __('No');
+    }
+
     $this->set('trueLabel', $this->trueLabel);
     $this->set('trueValue', $this->trueValue);
     $this->set('falseLabel', $this->falseLabel);

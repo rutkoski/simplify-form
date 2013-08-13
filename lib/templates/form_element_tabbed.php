@@ -5,7 +5,7 @@
     <?php } ?>
   </ul>
 
-  <div class="tab-content well">
+  <div class="tab-content">
     <?php foreach ($elements as $i => $element) { ?>
     <div class="tab-pane<?= $i == $active ? ' active' : '' ?>" id="tab<?= $i ?>">
       <?= $element['controls'] ?>

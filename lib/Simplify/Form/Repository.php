@@ -78,13 +78,16 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
    */
   public function find($id = null, $params = null)
   {
-    $query = s::db()->query()->setParams($params)->from($this->table)/* ->where($this->filter()) */->where(
-      "$this->pk = :$this->pk")->limit(1);
+    $query = s::db()->query()->from($this->table);
 
-    $data = (array) sy_get_param($params, 'data');
-    $data[$this->pk] = $id;
+    $query->limit(1);
 
-    $result = $query->execute($data)->fetchRow();
+    if ($id) {
+      $query->where("$this->pk = :$this->pk");
+      $params['data'][$this->pk] = $id;
+    }
+
+    $result = $query->setParams($params)->execute($data)->fetchRow();
 
     return $result;
   }

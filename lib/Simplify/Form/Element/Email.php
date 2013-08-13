@@ -33,7 +33,7 @@ class Simplify_Form_Element_Email extends Simplify_Form_Element
    *
    * @var boolean
    */
-  public $required = true;
+  public $required = false;
 
   /**
    * (non-PHPdoc)
@@ -41,7 +41,12 @@ class Simplify_Form_Element_Email extends Simplify_Form_Element
    */
   public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
-    $rule = new Simplify_Validation_Email('Invalid email address', $this->required);
+    parent::onValidate($action, $rules);
+
+    $required = $action->show($this->required) ? $this->getError('required', __('Invalid email address')) : false;
+    $invalid = $this->getError('invalid', __('Invalid email address'));
+
+    $rule = new Simplify_Validation_Email($invalid, $required);
     $rules->setRule($this->getName(), $rule);
   }
 

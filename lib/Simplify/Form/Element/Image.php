@@ -53,7 +53,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    *
    * @var string[]
    */
-  protected $errors;
+  protected $uploadErrors;
 
   /**
    *
@@ -152,10 +152,10 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
         $data[$this->getName()] = $upload->getUploadedPath();
       }
       catch (Simplify_UploadException $e) {
-        $this->errors[] = $e;
+        $this->uploadErrors[] = $e;
       }
       catch (Simplify_ValidationException $e) {
-        $this->errors[] = $e;
+        $this->uploadErrors[] = $e;
       }
     }
   }
@@ -176,8 +176,8 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    */
   public function validate($value)
   {
-    if (!empty($this->errors)) {
-      $error = array_shift($this->errors);
+    if (!empty($this->uploadErrors)) {
+      $error = array_shift($this->uploadErrors);
       throw $error;
     }
   }

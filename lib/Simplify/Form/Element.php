@@ -31,6 +31,18 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
 
   /**
    *
+   * @var int|boolean
+   */
+  public $validate = true;
+
+  /**
+   *
+   * @var int|boolean
+   */
+  public $unique = false;
+
+  /**
+   *
    * @var string
    */
   public $state;
@@ -40,6 +52,12 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    * @var string
    */
   public $stateMessage;
+
+  /**
+   *
+   * @var string[]
+   */
+  public $errors;
 
   /**
    * (non-PHPdoc)
@@ -101,6 +119,12 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    */
   public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
   {
+    if ($action->show($this->unique)) {
+      $unique = $this->getError('unique', __('Value must be unique'));
+
+      $rule = new Simplify_Form_Validation_Unique($unique, $this);
+      $rules->setRule($this->getName(), $rule);
+    }
   }
 
   /**
@@ -180,7 +204,9 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    */
   public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
   {
-    $params[Simplify_Db_QueryParameters::SELECT][] = $this->getFieldName();
+    if ($this->getFieldName()) {
+      $params[Simplify_Db_QueryParameters::SELECT][] = $this->getFieldName();
+    }
   }
 
   /**
@@ -212,6 +238,11 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
     if (isset($data[$this->getName()])) {
       $row[$this->getFieldName()] = $data[$this->getName()];
     }
+  }
+
+  public function getError($id, $default = null)
+  {
+    return sy_get_param($this->errors, $id, $default);
   }
 
 }
