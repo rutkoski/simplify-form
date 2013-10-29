@@ -1,0 +1,21 @@
+{
+    "name": "rutkoski/simplify-form",
+    "type": "library",
+    "description": "Form",
+    "keywords": ["PHP","framework"],
+    "homepage": "https://github.com/rutkoski/simplify-form",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Rodrigo Rutkoski Rodrigues",
+            "email": "rutkoski@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.2.4",
+        "rutkoski/simplify": "dev-master"
+    },
+    "autoload": {
+        "files": ["lib/autoload.php"]
+    }
+}
