@@ -78,7 +78,7 @@ class Simplify_Menu extends Simplify_MenuItem
   {
     $index = count($this->items) - 1;
 
-    while ($index >= 0 && $this->items[$index]->name != $name)
+    while ($index >= 0 && $this->items[$index] === $item)
       $index --;
 
     if ($index < 0) {

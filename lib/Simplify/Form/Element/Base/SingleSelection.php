@@ -32,7 +32,7 @@ abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_
   /**
    * Selection options
    *
-   * @var array
+   * @var array|ListProvider
    */
   public $options;
 
@@ -112,7 +112,12 @@ abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_
    */
   public function getOptions()
   {
-    $options = (array) $this->options;
+    if ($this->options instanceof Simplify_Form_Provider) {
+      $options = $this->options->getData();
+    }
+    else {
+      $options = (array) $this->options;
+    }
 
     if ($this->showEmpty) {
       $empty = array($this->emptyValue => $this->emptyLabel);

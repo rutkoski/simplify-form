@@ -40,22 +40,39 @@ class Simplify_Form_Element_Base_Composite extends Simplify_Form_Element
    * @param Simplify_Form_Element $element
    * @return Simplify_Form_Element
    */
-  public function addElement(Simplify_Form_Element $element)
+  public function addElement(Simplify_Form_Element $element, $actionMask = Simplify_Form::ACTION_ALL, $index = null)
   {
     $element->form = $this->form;
+    $element->actionMask = $actionMask;
 
-    $this->elements[] = $element;
+    if (is_null($index)) {
+      $this->elements[] = $element;
+    }
+    else {
+      array_splice($this->elements, $index, 0, array($element));
+    }
 
     return $element;
   }
 
   /**
    *
-   * @return Simplify_Form_Element[]
+   * @return Simplify_Form_ElementIterator
    */
-  public function getElements()
+  public function getElements(Simplify_Form_Action $action)
   {
-    return $this->elements;
+    /* $actionMask = $action->getActionMask();
+
+    $elements = array();
+
+    foreach ($this->elements as &$element) {
+      if ($element->show($actionMask)) {
+        $elements[] = &$element;
+      }
+    }
+
+    return $elements; */
+    return new Simplify_Form_ElementIterator($this->elements, $action->getActionMask());
   }
 
   /**

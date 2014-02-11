@@ -288,4 +288,28 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
     return Simplify_Db_MPTT::getInstance($this->table, $this->pk, $this->parent, $this->left, $this->right);
   }
 
+  public function createRepository()
+  {
+    $create = '
+      CREATE TABLE `%1$s` (
+      	`%2$s` MEDIUMINT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
+      	`%3$s` MEDIUMINT(8) UNSIGNED NOT NULL,
+      	`%4$s` MEDIUMINT(8) UNSIGNED NOT NULL,
+      	`%5$s` MEDIUMINT(8) UNSIGNED NOT NULL,
+      	PRIMARY KEY (`%2$s`),
+      	INDEX `tree_parent_id` (`%3$s`),
+      	INDEX `tree_left_id` (`%4$s`),
+      	INDEX `tree_right_id` (`%5$s`)
+      )
+      COLLATE=\'utf8_general_ci\'
+      ENGINE=InnoDB
+    ';
+
+    $sql = sprintf($create, $this->table, $this->pk, $this->parent, $this->left, $this->right);
+
+    if (s::db()->query($sql)->executeRaw() === false) {
+      throw new Simplify_Db_Exception('Could not create table');
+    }
+  }
+
 }

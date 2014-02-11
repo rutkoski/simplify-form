@@ -233,7 +233,7 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    * (non-PHPdoc)
    * @see Simplify_Form_Component::onCollectTableData()
    */
-  public function onCollectTableData(&$row, $data)
+  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
     if (isset($data[$this->getName()])) {
       $row[$this->getFieldName()] = $data[$this->getName()];

@@ -45,6 +45,12 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
 
   /**
    *
+   * @var mixed
+   */
+  public $orderBy = array();
+
+  /**
+   *
    * @var int
    */
   protected $actionMask = Simplify_Form::ACTION_LIST;
@@ -71,6 +77,56 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
   protected function getOffset()
   {
     return s::request()->get('offset', $this->offset);
+  }
+
+  /**
+   *
+   * @return array
+   */
+  public function getOrderBy()
+  {
+    return $this->orderBy;
+  }
+
+  /**
+   *
+   */
+  public function toggleOrderBy($field, $dir = null)
+  {
+    $i = 0;
+
+    if (empty($this->orderBy)) {
+      $this->orderBy[] = array($field, $dir);
+    }
+    else {
+      while ($i < count($this->orderBy) && $this->orderBy[$i][0] != $field) {
+        $i++;
+      }
+    }
+
+    $dir = is_string($dir) ? strtolower($dir) : $dir;
+
+    if ($i < count($this->orderBy) && $this->orderBy[$i][0] == $field) {
+      if ($dir == 'asc' || $dir == 'desc') {
+        $this->orderBy[$i][1] = $dir;
+      }
+      elseif ($this->orderBy[$i][1] == 'asc') {
+        $this->orderBy[$i][1] = 'desc';
+      }
+      elseif ($this->orderBy[$i][1] == 'desc' || $dir === false) {
+        array_splice($this->orderBy, $i, 1);
+      }
+      else {
+        $this->orderBy[$i][1] = 'asc';
+      }
+    }
+    else {
+      if (!$dir) {
+        $dir = 'asc';
+      }
+
+      $this->orderBy[] = array($field, $dir);
+    }
   }
 
   /**
@@ -134,8 +190,8 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
   public function onCreateMenu(Simplify_Menu $menu)
   {
     $menu->getItemByName('main')->addItem(
-        new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
-            new Simplify_URL(null, array('formAction' => $this->getName()))));
+      new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
+        new Simplify_URL(null, array('formAction' => $this->getName()))));
   }
 
   /**
@@ -152,6 +208,7 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
     $params[Simplify_Db_QueryParameters::SELECT][] = $this->form->getPrimaryKey();
     $params[Simplify_Db_QueryParameters::LIMIT] = $this->getLimit();
     $params[Simplify_Db_QueryParameters::OFFSET] = $this->getOffset();
+    $params[Simplify_Db_QueryParameters::ORDER_BY] = $this->getOrderBy();
 
     foreach ($elements as $element) {
       $element->onInjectQueryParams($this, $params);

@@ -301,7 +301,7 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    * @param array $row database row
    * @param array $data form data
    */
-  public function onCollectTableData(&$row, $data)
+  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
   }
 
@@ -343,6 +343,10 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   public function show($actionMask)
   {
     return ((($this->add | $this->actionMask) ^ $this->remove) & $actionMask) == $actionMask;
+  }
+
+  public function onCollectRequirements($schema)
+  {
   }
 
 }

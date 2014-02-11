@@ -98,7 +98,7 @@ abstract class Simplify_Form_Filter extends Simplify_Form_Component
    * (non-PHPdoc)
    * @see Simplify_Form_Component::onCollectTableData()
    */
-  public function onCollectTableData(&$row, $data)
+  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
     $row[$this->getFieldName()] = $data[$this->getName()];
   }

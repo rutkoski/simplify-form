@@ -148,7 +148,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
    *
    * @see Simplify_Form_Element::onCollectTableData()
    */
-  public function onCollectTableData(&$row, $data)
+  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
   }
 

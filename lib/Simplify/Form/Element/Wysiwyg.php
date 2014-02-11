@@ -82,8 +82,7 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
 
         if ($response === Simplify_Form::RESULT_SUCCESS) {
           $fileUrl = $this->getBrowser()->getFileUrl();
-        }
-        else {
+        } else {
           $message = $this->getBrowser()->getErrors();
         }
 
@@ -98,8 +97,7 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
           $funcNum = s::request()->get('CKEditorFuncNum');
           $fileUrl = $this->getBrowser()->getFileUrl();
           echo "<script type='text/javascript'>window.opener.CKEDITOR.tools.callFunction({$funcNum}, '{$fileUrl}');window.close();</script>";
-        }
-        else {
+        } else {
           echo $response;
         }
 

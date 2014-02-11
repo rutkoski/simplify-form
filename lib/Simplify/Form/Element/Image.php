@@ -42,6 +42,18 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
   public $path;
 
   /**
+   *
+   * @var integer
+   */
+  public $thumbWidth = 100;
+
+  /**
+   *
+   * @var integer
+   */
+  public $thumbHeight = null;
+
+  /**
    * Always add the object to these actions
    *
    * @var int
@@ -80,7 +92,8 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
     if (!empty($file)) {
       if ($this->fileExists($file)) {
-        $thumbUrl = $this->getThumbUrl($file, 100, 100);
+        $thumbUrl = $this->getThumbUrl($file, $this->thumbWidth,
+          is_numeric($this->thumbHeight) ? $this->thumbHeight : $this->thumbWidth);
         $imageUrl = $this->getImageUrl($file);
       }
       else {
@@ -107,7 +120,8 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
     if (!empty($file)) {
       if ($this->fileExists($file)) {
-        $thumbUrl = $this->getThumbUrl($file, 50, 50);
+        $thumbUrl = $this->getThumbUrl($file, $this->thumbWidth,
+          is_numeric($this->thumbHeight) ? $this->thumbHeight : $this->thumbWidth);
         $imageUrl = $this->getImageUrl($file);
 
         $value = "<a href=\"{$imageUrl}\" class=\"lightbox\">";
@@ -238,8 +252,13 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    */
   protected function getThumbUrl($file, $width, $height)
   {
-    return s::config()->get('www_url') .
-       Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+    try {
+      return s::config()->get('www_url') .
+         Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+    }
+    catch (Simplify_ThumbException $e) {
+      //
+    }
   }
 
   /**
@@ -262,7 +281,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
   protected function fileExists($file)
   {
     $file = s::config()->get('www_dir') . $this->path . $file;
-    return ! empty($file) && file_exists($file) && ! is_dir($file);
+    return !empty($file) && file_exists($file) && !is_dir($file);
   }
 
 }

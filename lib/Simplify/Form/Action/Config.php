@@ -149,7 +149,7 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
     foreach ($elements as &$element) {
       $row = array();
 
-      $element->onCollectTableData($row, $this->formData[$element->getName()]['data']);
+      $element->onCollectTableData($this, $row, $this->formData[$element->getName()]['data']);
 
       $data = array();
       $data[$this->getNameField()] = $element->getFieldName();

@@ -43,12 +43,6 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    *
-   * @var string
-   */
-  /* public $filter; */
-
-  /**
-   *
    * @param string $table repository table
    * @param string $pk repository primary key
    */
@@ -87,7 +81,7 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
       $params['data'][$this->pk] = $id;
     }
 
-    $result = $query->setParams($params)->execute($data)->fetchRow();
+    $result = $query->setParams($params)->execute()->fetchRow();
 
     return $result;
   }
@@ -98,9 +92,9 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
    */
   public function findAll($params = null)
   {
-    $query = s::db()->query()->from($this->table)/* ->where($this->filter()) */->setParams($params);
+    $query = s::db()->query()->from($this->table)->setParams($params);
 
-    $result = $query->execute(sy_get_param($params, 'data'))->fetchAll();
+    $result = $query->execute()->fetchAll();
 
     return $result;
   }
@@ -111,9 +105,9 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
    */
   public function findCount($params = null)
   {
-    $query = s::db()->query()->setParams($params)/* ->where($this->filter()) */->from($this->table)->select(false)->limit(
+    $query = s::db()->query()->setParams($params)->from($this->table)->select(false)->limit(
       false)->offset(false)->select("COUNT($this->pk)");
-    $result = $query->execute(sy_get_param($params, 'data'))->fetchOne();
+    $result = $query->execute()->fetchOne();
     return intval($result);
   }
 
@@ -134,7 +128,7 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
    */
   public function deleteAll($params = null)
   {
-    $result = s::db()->delete($this->table)->setParams($params)->execute(sy_get_param($params, 'data'));
+    $result = s::db()->delete($this->table)->setParams($params)->execute();
 
     return $result->numRows();
   }
@@ -180,20 +174,5 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
       $result = s::db()->update($this->table, $data, "$this->pk = :$this->pk")->execute($data)->numRows();
     }
   }
-
-  /**
-   *
-   *
-   * @return string
-   */
-  /* protected function filter()
-  {
-    if (!empty($this->filter)) {
-      return $this->filter;
-    }
-    else {
-      return " TRUE ";
-    }
-  } */
 
 }

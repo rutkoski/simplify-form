@@ -127,7 +127,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
    */
   public function onRender(Simplify_Form_Action $action, $data, $index)
   {
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     $pk = $this->getPrimaryKey();
 
@@ -144,9 +144,12 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
         $line[Simplify_Form::ID] = $_row[Simplify_Form::ID];
         $line['elements'] = array();
 
-        foreach ($elements as $element) {
+        $elements->rewind();
+        while ($elements->valid()) {
+          $element = $elements->current();
           $line['elements'][] = array('label' => $element->getLabel(),
             'controls' => $element->onRender($action, $_row, array($index, $this->getName(), $_index))->render());
+          $elements->next();
         }
 
         $this->onRenderRow($line, $data[$this->getName()][$_index], array($index, $this->getName(), $_index));
@@ -162,9 +165,13 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
     $dummy['name'] = "formData[" . implode('][', $__index) . "][" . Simplify_Form::ID . "]";
     $dummy[Simplify_Form::ID] = '';
     $dummy['elements'] = array();
-    foreach ($elements as $element) {
+
+    $elements->rewind();
+    while ($elements->valid()) {
+      $element = $elements->current();
       $dummy['elements'][] = array('label' => $element->getLabel(),
         'controls' => $element->onRender($action, $dummy, array($index, $this->getName(), 'dummy'))->render());
+      $elements->next();
     }
 
     $this->set('data', $lines);
@@ -193,7 +200,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
    */
   public function onLoadData(Simplify_Form_Action $action, &$data, $row)
   {
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     $pk = $this->getPrimaryKey();
     $fk = $this->getForeignKeyColumn();
@@ -211,8 +218,9 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
       $params[Simplify_Db_QueryParameters::ORDER_BY][] = $this->sortable;
     }
 
-    foreach ($elements as $element) {
-      $element->onInjectQueryParams($action, $params);
+    while ($elements->valid()) {
+      $elements->current()->onInjectQueryParams($action, $params);
+      $elements->next();
     }
 
     $this->onBeforeLoadData($params);
@@ -223,8 +231,10 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
       $data[$this->getName()][$_index] = array();
       $data[$this->getName()][$_index][Simplify_Form::ID] = $_row[$pk];
 
-      foreach ($elements as &$element) {
-        $element->onLoadData($action, $data[$this->getName()][$_index], $_row);
+      $elements->rewind();
+      while ($elements->valid()) {
+        $elements->current()->onLoadData($action, $data[$this->getName()][$_index], $_row);
+        $elements->next();
       }
 
       $this->onAfterLoadData($data[$this->getName()][$_index], $_row, $_index);
@@ -271,8 +281,10 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
             $data[$this->getName()][$index][$this->sortable] = $position++;
           }
 
-          foreach ($this->getElements() as $element) {
-            $element->onPostData($action, $data[$this->getName()][$index], $row);
+          $elements = $this->getElements($action);
+          while ($elements->valid()) {
+            $elements->current()->onPostData($action, $data[$this->getName()][$index], $row);
+            $elements->next();
           }
         }
       }
@@ -287,7 +299,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
   {
     $id = array();
 
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     foreach ($data[$this->getName()] as &$row) {
       $_row = array();
@@ -302,8 +314,9 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
         $_row[$this->sortable] = $row[$this->sortable];
       }
 
-      foreach ($elements as &$element) {
-        $element->onCollectTableData($_row, $row);
+      $elements->rewind();
+      while ($elements->valid()) {
+        $elements->current()->onCollectTableData($action, $_row, $row);
       }
 
       $this->onBeforeSave($action, $_row, $row);
@@ -314,8 +327,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
     }
 
     $params = array();
-    $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($this->getForeignKeyColumn(),
-      $data[$this->getReferenceColumn()]);
+    $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($this->getForeignKeyColumn(), $data[$this->getReferenceColumn()]);
     $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($this->getPrimaryKey(), $id, true);
 
     $deleted = $this->repository()->findAll($params);
@@ -351,14 +363,15 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
    */
   public function onBeforeDelete(Simplify_Form_Action $action, &$data)
   {
-    if (empty($data[$this->getName()]))
-      return;
+    if (empty($data[$this->getName()])) return;
 
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     foreach ($data[$this->getName()] as $index => $row) {
-      foreach ($elements as &$element) {
-        $element->onBeforeDelete($action, $row);
+      $elements->rewind();
+      while ($elements->valid()) {
+        $elements->current()->onBeforeDelete($action, $row);
+        $elements->next();
       }
     }
   }
@@ -369,15 +382,14 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
    */
   public function onAfterDelete(Simplify_Form_Action $action, &$data)
   {
-    if (empty($data[$this->getName()]))
-      return;
+    if (empty($data[$this->getName()])) return;
 
     $pk = $this->getPrimaryKey();
     $fk = $this->getForeignKeyColumn();
 
     $id = $data[$this->getReferenceColumn()];
 
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     if ($this->deletePolicy == self::CASCADE) {
       $params = array();
@@ -386,12 +398,13 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
       $this->repository()->deleteAll($params);
 
       foreach ($data[$this->getName()] as $index => $row) {
-        foreach ($elements as &$element) {
-          $element->onAfterDelete($action, $row);
+        $elements->rewind();
+        while ($elements->valid()) {
+          $elements->current()->onAfterDelete($action, $row);
+          $elements->next();
         }
       }
-    }
-    elseif ($this->deletePolicy == self::SETNULL) {
+    } elseif ($this->deletePolicy == self::SETNULL) {
       foreach ($data[$this->getName()] as $index => $row) {
         $_row = array($pk => $row[Simplify_Form::ID], $fk => null);
 
@@ -413,7 +426,7 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
    * (non-PHPdoc)
    * @see Simplify_Form_Element::onCollectTableData()
    */
-  public function onCollectTableData(&$row, $data)
+  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
     // nothing to see here! move along!
   }
@@ -469,25 +482,6 @@ class Simplify_Form_Element_Base_HasMany extends Simplify_Form_Element_Base_Comp
 
     return $this->referenceColumn;
   }
-
-  /**
-   * (non-PHPdoc)
-   * @see Simplify_Form_Component::getFieldName()
-   */
-  /* public function getFieldName($name = null)
-  {
-    if (is_null($name))
-      return parent::getFieldName();
-
-    if (is_array($this->fields) && isset($this->fields[$name])) {
-      $name = $this->fields[$name];
-    }
-    else {
-      $name = Simplify_Inflector::singularize($this->table) . '_' . $name;
-    }
-
-    return $name;
-  } */
 
   /**
    *

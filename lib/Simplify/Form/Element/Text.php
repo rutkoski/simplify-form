@@ -50,13 +50,16 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
     if ($this->minLength !== false || $this->maxLength !== false) {
       if ($this->minLength === $this->maxLength) {
         $msg = _n('%1$s must have exactly %2$s character', '%1$s must have exactly %2$s characters', $this->minLength);
-      } elseif ($this->minLength !== false) {
+      }
+      elseif ($this->minLength !== false) {
         if ($this->maxLength !== false) {
           $msg = __('%1$s must have between %2$s and %3$s characters');
-        } else {
+        }
+        else {
           $msg = __('%1$s must have %2$s or more characters');
         }
-      } elseif ($this->maxLength !== false) {
+      }
+      elseif ($this->maxLength !== false) {
         $msg = __('%1$s must have %3$s or less characters');
       }
 
@@ -77,6 +80,12 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
     $this->set('maxLength', $this->maxLength);
 
     return parent::onRender($action, $data, $index);
+  }
+
+  public function onCollectRequirements($schema)
+  {
+    $schema[$this->form->getTable()]['fields'][$this->getFieldName()] = array('type' => 'TEXT',
+      'size' => $this->maxLength, 'null' => true);
   }
 
 }

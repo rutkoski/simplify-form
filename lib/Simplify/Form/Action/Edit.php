@@ -42,9 +42,10 @@ class Simplify_Form_Action_Edit extends Simplify_Form_Action_Base_Form
   public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
   {
     if (!$action->show(Simplify_Form::ACTION_CREATE) && !$action->show(Simplify_Form::ACTION_EDIT)) {
+      $url = $this->form->url()->extend(null, array('formAction' => $this->getName(), Simplify_Form::ID => $data[Simplify_Form::ID]));
       $menu->getItemByName('main')->addItem(
-        new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
-          new Simplify_URL(null, array('formAction' => $this->getName(), Simplify_Form::ID => $data[Simplify_Form::ID]))));
+        new Simplify_MenuItem($this->getName(), $this->getTitle(), null, $url
+          /* new Simplify_URL(null, array('formAction' => $this->getName(), Simplify_Form::ID => $data[Simplify_Form::ID])) */));
     }
   }
 

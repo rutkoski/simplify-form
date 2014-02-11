@@ -92,11 +92,11 @@ class Simplify_Form_Element_Serializer extends Simplify_Form_Element_Base_Compos
    * (non-PHPdoc)
    * @see Simplify_Form_Element::onCollectTableData()
    */
-  public function onCollectTableData(&$row, $data)
+  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
     $_row = array();
     foreach ($this->getElements() as $element) {
-      $element->onCollectTableData($_row, $data);
+      $element->onCollectTableData($action, $_row, $data);
     }
     $row[$this->getFieldName()] = serialize($_row);
   }

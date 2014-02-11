@@ -103,11 +103,11 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
       $row[$this->form->getPrimaryKey()] = $data[Simplify_Form::ID];
 
       foreach ($elements as &$element) {
-        $element->onCollectTableData($row, $data);
+        $element->onCollectTableData($this, $row, $data);
       }
 
       foreach ($filters as &$filter) {
-        $filter->onCollectTableData($row, $data);
+        $filter->onCollectTableData($this, $row, $data);
       }
 
       $this->repository()->save($row);
