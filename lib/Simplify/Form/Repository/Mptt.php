@@ -70,11 +70,9 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
    */
   public function findAll($params = null)
   {
-    $data = sy_get_param($params, 'data');
-
     $from = $this->mptt()->query()->alias('a');
 
-    $result = s::db()->query()->from($from)->setParams($params)->select('depth')->select($this->parent)->execute($data)->fetchAll();
+    $result = s::db()->query()->from($from)->setParams($params)->select('depth')->select($this->parent)->execute()->fetchAll();
 
     return $result;
   }
@@ -308,7 +306,7 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
     $sql = sprintf($create, $this->table, $this->pk, $this->parent, $this->left, $this->right);
 
     if (s::db()->query($sql)->executeRaw() === false) {
-      throw new Simplify_Db_Exception('Could not create table');
+      throw new Simplify_Db_DatabaseException('Could not create table');
     }
   }
 

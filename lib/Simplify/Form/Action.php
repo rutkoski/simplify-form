@@ -85,7 +85,10 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   {
     $elements = $this->getElements();
 
-    foreach ($elements as $element) {
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onExecute($this);
     }
 
@@ -114,7 +117,18 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
 
     $this->form->dispatch(Simplify_Form::ON_RENDER, $this);
 
-    return $this->getView();
+    return $this;
+  }
+
+  /**
+   * (non-PHPdoc)
+   * @see Simplify_Dictionary::jsonSerialize()
+   */
+  public function jsonSerialize()
+  {
+    $data = array();
+    $data['data'] = $this->formData;
+    return $data;
   }
 
   /**
@@ -150,6 +164,15 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
    */
   public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $row)
   {
+  }
+
+  /**
+   *
+   * @return Simplify_URL
+   */
+  public function url()
+  {
+    return new Simplify_URL(null, array('formAction' => $this->getName()));
   }
 
   /**
@@ -201,7 +224,12 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
         $filter->onPostData($this, $row, $post[$index]);
       }
 
-      foreach ($elements as $element) {
+      $elements->rewind();
+
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $elements->next();
+
         $element->onPostData($this, $row, $post[$index]);
       }
     }
@@ -212,34 +240,42 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
    */
   public function onValidate()
   {
-    try {
-      $rules = new Simplify_Validation_DataValidation();
+    $this->errors = array();
 
-      $elements = $this->getElements();
+    $elements = $this->getElements();
 
-      foreach ($elements as $element) {
+    foreach ($this->formData as $index => $row) {
+
+      $elements->rewind();
+
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $elements->next();
+
         if ($this->show($element->validate)) {
-          $element->onValidate($this, $rules);
+
+          try {
+            $element->onValidate($this, $row);
+          }
+          catch (Simplify_ValidationException $e) {
+            $this->errors[$element->getName()] = $e->getErrors();
+
+            $element->state = 'error';
+            $element->stateMessage = $this->errors[$element->getName()];
+          }
         }
       }
 
-      $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $rules);
-
-      foreach ($this->formData as $index => &$data) {
-        $rules->validate($data);
+      try {
+        $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $row);
+      }
+      catch (Simplify_ValidationException $e) {
+        $this->errors = array_merge_recursive($this->errors, $e->getErrors());
       }
     }
-    catch (Simplify_ValidationException $e) {
-      $this->errors = $e->getErrors();
 
-      foreach ($elements as $element) {
-        if (isset($this->errors[$element->getName()])) {
-          $element->state = 'error';
-          $element->stateMessage = $this->errors[$element->getName()];
-        }
-      }
-
-      throw $e;
+    if (!empty($this->errors)) {
+      throw new Simplify_ValidationException($this->errors);
     }
   }
 
@@ -284,7 +320,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   /**
    * Get the elements for this action according to the action mask
    *
-   * @return Simplify_Form_Element[]
+   * @return Simplify_Form_ElementIterator
    */
   public function getElements()
   {

@@ -43,9 +43,9 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onValidate()
+   * @see Simplify_Form_Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
+  public function onValidate(Simplify_Form_Action $action, $data)
   {
     if ($this->minLength !== false || $this->maxLength !== false) {
       if ($this->minLength === $this->maxLength) {
@@ -66,7 +66,7 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
       $msg = sprintf($msg, $this->getLabel(), $this->minLength, $this->maxLength);
 
       $rule = new Simplify_Validation_Length($msg, $this->minLength, $this->maxLength);
-      $rules->setRule($this->getName(), $rule);
+      $rule->validate($this->getValue($data));
     }
   }
 

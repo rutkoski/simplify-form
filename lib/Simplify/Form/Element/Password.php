@@ -173,16 +173,15 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
   }
 
   /**
-   * On validate callback. Validate component value.
-   *
-   * @param Simplify_Form_Action $action current action
-   * @param Simplify_Validation_DataValidation $rules data validation rules
+   * (non-PHPdoc)
+   * @see Simplify_Form_Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
+  public function onValidate(Simplify_Form_Action $action, $data)
   {
-    parent::onValidate($action, $rules);
+    parent::onValidate($action, $data);
 
-    $rules->setRule($this->getName(), new Simplify_Validation_Callback(array($this, 'validate')));
+    $rule = new Simplify_Validation_Callback(array($this, 'validate'));
+    $rule->validate($this->getValue($data));
   }
 
   /**

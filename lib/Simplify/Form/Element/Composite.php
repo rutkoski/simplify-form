@@ -36,10 +36,16 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
   public function onRenderHeaders(Simplify_Form_Action $action, &$headers)
   {
     if ($action->show(Simplify_Form::ACTION_LIST)) {
-      foreach ($this->getElements($action) as $element) {
+      $elements = $this->getElements($action);
+      $elements->rewind();
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $elements->next();
+
         $element->onRenderHeaders($action, $headers);
       }
-    } else {
+    }
+    else {
       $headers[$this->getName()] = $this->getLabel();
     }
   }
@@ -72,14 +78,24 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
   public function onRender(Simplify_Form_Action $action, $data, $index)
   {
     $headers = array();
-    foreach ($this->getElements($action) as $element) {
+
+    $elements = $this->getElements($action);
+
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onRenderHeaders($action, $headers);
     }
 
     $line = array();
     $line['elements'] = array();
 
-    foreach ($this->getElements($action) as $element) {
+    $elements->rewind();
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onRenderControls($action, $line, $data, $index);
     }
 
@@ -98,7 +114,11 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
    */
   public function onLoadData(Simplify_Form_Action $action, &$data, $row)
   {
-    foreach ($this->getElements($action) as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onLoadData($action, $data, $row);
     }
   }
@@ -109,7 +129,11 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
    */
   public function onPostData(Simplify_Form_Action $action, &$data, $post)
   {
-    foreach ($this->getElements($action) as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onPostData($action, $data, $post);
     }
   }
@@ -120,7 +144,11 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
    */
   public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
-    foreach ($this->getElements($action) as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onCollectTableData($action, $row, $data);
     }
   }
@@ -131,7 +159,11 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
    */
   public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
   {
-    foreach ($this->getElements($action) as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onInjectQueryParams($action, $params);
     }
   }
@@ -142,7 +174,11 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
    */
   public function onSave(Simplify_Form_Action $action, &$data)
   {
-    foreach ($this->getElements($action) as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onSave($action, $data);
     }
   }

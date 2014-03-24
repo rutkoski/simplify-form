@@ -59,8 +59,8 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
   public function onCreateMenu(Simplify_Menu $menu)
   {
     $menu->getItemByName('main')->addItem(
-      new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
-        new Simplify_URL(null, array('formAction' => $this->getName()))));
+        new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
+            new Simplify_URL(null, array('formAction' => $this->getName()))));
   }
 
   /**
@@ -97,12 +97,16 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
     $line[Simplify_Form::ID] = null;
     $line['elements'] = array();
 
-    foreach ($elements as $element) {
+    while ($elements->valid()) {
+      $element = $elements->current();
+
       $line['index'] = $element->getName();
       $line['menu'] = new Simplify_Menu('actions', null, Simplify_Menu::STYLE_TOOLBAR);
       $line['menu']->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
 
       $element->onRenderControls($this, $line, $this->formData[$element->getName()]['data'], $element->getName());
+
+      $elements->next();
     }
 
     $this->form->onCreateItemMenu($line['menu'], $this, null);
@@ -125,7 +129,9 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
 
     $elements = $this->getElements();
 
-    foreach ($elements as $element) {
+    while ($elements->valid()) {
+      $element = $elements->current();
+
       if (!empty($files)) {
         foreach ($files as $k => $file) {
           foreach ($file[$element->getName()] as $field => $value) {
@@ -135,6 +141,8 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
       }
 
       $element->onPostData($this, $this->formData[$element->getName()]['data'], $post[$element->getName()]);
+
+      $elements->next();
     }
   }
 
@@ -146,7 +154,12 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
   {
     $elements = $this->getElements();
 
-    foreach ($elements as &$element) {
+    //foreach ($elements as &$element) {
+    $elements->rewind();
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $row = array();
 
       $element->onCollectTableData($this, $row, $this->formData[$element->getName()]['data']);
@@ -180,7 +193,11 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
 
     $this->formData = array();
 
-    foreach ($elements as &$element) {
+    $elements->rewind();
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $params[Simplify_Db_QueryParameters::WHERE][] = "{$name} = :{$name}";
       $params[Simplify_Db_QueryParameters::DATA] = array($name => $element->getFieldName());
 

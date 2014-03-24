@@ -115,15 +115,15 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    * On validate callback.
    *
    * @param Simplify_Form_Action $action current action
-   * @param Simplify_Validation_DataValidation $rules data validation rules
+   * @param array $data form data
    */
-  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
+  public function onValidate(Simplify_Form_Action $action, $data)
   {
     if ($action->show($this->unique)) {
       $unique = $this->getError('unique', __('Value must be unique'));
 
-      $rule = new Simplify_Form_Validation_Unique($unique, $this);
-      $rules->setRule($this->getName(), $rule);
+      $rule = new Simplify_Form_Validation_Unique($unique, $this, $data[$this->form->getPrimaryKey()]);
+      $rule->validate($this->getValue($data));
     }
   }
 

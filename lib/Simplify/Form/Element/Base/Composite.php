@@ -61,17 +61,6 @@ class Simplify_Form_Element_Base_Composite extends Simplify_Form_Element
    */
   public function getElements(Simplify_Form_Action $action)
   {
-    /* $actionMask = $action->getActionMask();
-
-    $elements = array();
-
-    foreach ($this->elements as &$element) {
-      if ($element->show($actionMask)) {
-        $elements[] = &$element;
-      }
-    }
-
-    return $elements; */
     return new Simplify_Form_ElementIterator($this->elements, $action->getActionMask());
   }
 
@@ -85,7 +74,7 @@ class Simplify_Form_Element_Base_Composite extends Simplify_Form_Element
       return $this;
     }
 
-    foreach ($this->getElements() as $element) {
+    foreach ($this->elements as $element) {
       $found = $element->getElementByName($name);
 
       if ($found) {

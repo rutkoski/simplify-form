@@ -35,7 +35,11 @@ class Simplify_Form_Element_Serializer extends Simplify_Form_Element_Base_Compos
    */
   public function onRenderHeaders(Simplify_Form_Action $action, &$headers)
   {
-    foreach ($this->getElements() as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onRenderHeaders($action, $headers);
     }
   }
@@ -46,7 +50,11 @@ class Simplify_Form_Element_Serializer extends Simplify_Form_Element_Base_Compos
    */
   public function onRenderLine(Simplify_Form_Action $action, &$line, $data, $index)
   {
-    foreach ($this->getElements() as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onRenderLine($action, $line, $data, $index);
     }
   }
@@ -57,7 +65,11 @@ class Simplify_Form_Element_Serializer extends Simplify_Form_Element_Base_Compos
    */
   public function onRenderControls(Simplify_Form_Action $action, &$line, $data, $index)
   {
-    foreach ($this->getElements() as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onRenderControls($action, $line, $data, $index);
     }
   }
@@ -71,7 +83,11 @@ class Simplify_Form_Element_Serializer extends Simplify_Form_Element_Base_Compos
     if (isset($row[$this->getFieldName()])) {
       $_row = unserialize($row[$this->getFieldName()]);
 
-      foreach ($this->getElements() as $element) {
+      $elements = $this->getElements($action);
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $elements->next();
+
         $element->onLoadData($action, $data, $_row);
       }
     }
@@ -83,7 +99,11 @@ class Simplify_Form_Element_Serializer extends Simplify_Form_Element_Base_Compos
    */
   public function onPostData(Simplify_Form_Action $action, &$data, $post)
   {
-    foreach ($this->getElements() as $element) {
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onPostData($action, $data, $post);
     }
   }
@@ -95,9 +115,15 @@ class Simplify_Form_Element_Serializer extends Simplify_Form_Element_Base_Compos
   public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
   {
     $_row = array();
-    foreach ($this->getElements() as $element) {
+
+    $elements = $this->getElements($action);
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $elements->next();
+
       $element->onCollectTableData($action, $_row, $data);
     }
+
     $row[$this->getFieldName()] = serialize($_row);
   }
 

@@ -72,8 +72,13 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
       $line['menu'] = new Simplify_Menu('actions', null, Simplify_Menu::STYLE_TOOLBAR);
       $line['menu']->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
 
-      foreach ($elements as $element) {
+      $elements->rewind();
+
+      while ($elements->valid()) {
+        $element = $elements->current();
         $element->onRenderControls($this, $line, $this->formData[$index], $index);
+
+        $elements->next();
       }
 
       $this->form->onCreateItemMenu($line['menu'], $this, $row);
@@ -102,8 +107,13 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
 
       $row[$this->form->getPrimaryKey()] = $data[Simplify_Form::ID];
 
-      foreach ($elements as &$element) {
+      $elements->rewind();
+
+      while ($elements->valid()) {
+        $element = $elements->current();
         $element->onCollectTableData($this, $row, $data);
+
+        $elements->next();
       }
 
       foreach ($filters as &$filter) {
@@ -115,8 +125,13 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
       // fill the primary key if this is a new record
       $data[Simplify_Form::ID] = $row[$this->form->getPrimaryKey()];
 
-      foreach ($elements as &$element) {
+      $elements->rewind();
+
+      while ($elements->valid()) {
+        $element = $elements->current();
         $element->onSave($this, $data);
+
+        $elements->next();
       }
     }
   }
@@ -136,8 +151,13 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
     $params[Simplify_Db_QueryParameters::SELECT][] = $pk;
     $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($pk, $id);
 
-    foreach ($elements as $element) {
+    $elements->rewind();
+
+    while ($elements->valid()) {
+      $element = $elements->current();
       $element->onInjectQueryParams($this, $params);
+
+      $elements->next();
     }
 
     foreach ($this->form->getFilters() as $filter) {
@@ -153,8 +173,13 @@ abstract class Simplify_Form_Action_Base_Form extends Simplify_Form_Action
       $this->formData[$index][Simplify_Form::ID] = $row[$pk];
       $this->formData[$index][$pk] = $row[$pk];
 
-      foreach ($elements as &$element) {
+      $elements->rewind();
+
+      while ($elements->valid()) {
+        $element = $elements->current();
         $element->onLoadData($this, $this->formData[$index], $row);
+
+        $elements->next();
       }
     }
   }

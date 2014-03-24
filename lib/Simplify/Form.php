@@ -236,7 +236,14 @@ class Simplify_Form extends Simplify_Renderable
 
     $this->set('showMenu', $this->showMenu);
 
-    return $this->getView();
+    return $this;//->getView();
+  }
+
+  public function jsonSerialize()
+  {
+    $data = array();
+    $data['action'] = $this->actionBody;
+    return $data;
   }
 
   /**
@@ -372,17 +379,7 @@ class Simplify_Form extends Simplify_Renderable
    */
   public function getElements(Simplify_Form_Action $action)
   {
-    $actionMask = $action->getActionMask();
-
-    $elements = array();
-
-    foreach ($this->elements as &$element) {
-      if ($element->show($actionMask)) {
-        $elements[] = &$element;
-      }
-    }
-
-    return $elements;
+    return new Simplify_Form_ElementIterator($this->elements, $action->getActionMask());
   }
 
   /**

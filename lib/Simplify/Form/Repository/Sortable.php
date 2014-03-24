@@ -72,7 +72,7 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
    */
   public function findAll($params = null)
   {
-    $params[Simplify_Db_QueryParameters::ORDER_BY][] = array($this->sortColumn, $this->sortDirection);
+    $params[Simplify_Db_QueryParameters::ORDER_BY] = array($this->sortColumn, $this->sortDirection);
     return parent::findAll($params);
   }
 

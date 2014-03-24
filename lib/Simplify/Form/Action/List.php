@@ -162,7 +162,12 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
       $line['menu']->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
 
       $line['elements'] = array();
-      foreach ($elements as $element) {
+
+      $elements->rewind();
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $elements->next();
+
         $element->onRenderLine($this, $line, $row, $index);
       }
 
@@ -190,8 +195,7 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
   public function onCreateMenu(Simplify_Menu $menu)
   {
     $menu->getItemByName('main')->addItem(
-      new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
-        new Simplify_URL(null, array('formAction' => $this->getName()))));
+        new Simplify_MenuItem($this->getName(), $this->getTitle(), null, $this->url()));
   }
 
   /**
@@ -210,8 +214,11 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
     $params[Simplify_Db_QueryParameters::OFFSET] = $this->getOffset();
     $params[Simplify_Db_QueryParameters::ORDER_BY] = $this->getOrderBy();
 
-    foreach ($elements as $element) {
+    while ($elements->valid()) {
+      $element = $elements->current();
       $element->onInjectQueryParams($this, $params);
+
+      $elements->next();
     }
 
     foreach ($this->form->getFilters() as $filter) {
@@ -229,8 +236,13 @@ class Simplify_Form_Action_List extends Simplify_Form_Action
       $this->formData[$index][Simplify_Form::ID] = $row[$pk];
       $this->formData[$index][$pk] = $row[$pk];
 
-      foreach ($elements as &$element) {
+      $elements->rewind();
+
+      while ($elements->valid()) {
+        $element = $elements->current();
         $element->onLoadData($this, $this->formData[$index], $row);
+
+        $elements->next();
       }
     }
 

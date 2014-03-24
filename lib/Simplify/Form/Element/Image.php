@@ -176,11 +176,12 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onValidate()
+   * @see Simplify_Form_Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, Simplify_Validation_DataValidation $rules)
+  public function onValidate(Simplify_Form_Action $action, $data)
   {
-    $rules->setRule($this->getName(), new Simplify_Validation_Callback(array($this, 'validate')));
+    $rule = new Simplify_Validation_Callback(array($this, 'validate'));
+    $rule->validate($this->getValue($data));
   }
 
   /**
@@ -217,8 +218,6 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
     if (!empty($file)) {
       $this->getThumbComponent($file)->cleanCached();
 
-      $file = $this->path . $file;
-
       if (!sy_path_is_absolute($file)) {
         $file = s::config()->get('www_dir') . $file;
       }
@@ -253,9 +252,9 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
   protected function getThumbUrl($file, $width, $height)
   {
     try {
-      return s::config()->get('www_url') .
-         Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
-    }
+    return s::config()->get('www_url') .
+       Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+  }
     catch (Simplify_ThumbException $e) {
       //
     }
@@ -269,7 +268,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    */
   protected function getImageUrl($file)
   {
-    return s::config()->get('www_url') . $this->path . $file;
+    return s::config()->get('www_url') . $file;
   }
 
   /**
@@ -280,8 +279,8 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    */
   protected function fileExists($file)
   {
-    $file = s::config()->get('www_dir') . $this->path . $file;
-    return !empty($file) && file_exists($file) && !is_dir($file);
+    $file = s::config()->get('www_dir') . $file;
+    return ! empty($file) && file_exists($file) && ! is_dir($file);
   }
 
 }
