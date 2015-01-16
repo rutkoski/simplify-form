@@ -1,1 +1,2 @@
-<textarea name="<?= $inputName ?>"<?= $maxLength !== false ? ' maxlength="'.$maxLength.'"' : '' ?>><?= $value ?></textarea>
+<textarea name="{{ inputName }}" class="form-control" 
+  {{ maxLength > 0 ? ' maxlength="' ~ maxLength ~ '"' : '' }}>{{ value }}</textarea>

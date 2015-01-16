@@ -21,12 +21,20 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
+use Simplify;
+use Simplify\Form;
+use Simplify\URL;
+use Simplify\Inflector;
+use Simplify\Renderable;
+
 /**
  *
  * Provides basic functionality to form components
  *
  */
-abstract class Simplify_Form_Component extends Simplify_Renderable
+abstract class Component extends Renderable
 {
 
   /**
@@ -34,11 +42,11 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    *
    * @var int
    */
-  public $actionMask = Simplify_Form::ACTION_ALL;
+  public $actionMask = Form::ACTION_ALL;
 
   /**
    *
-   * @var Simplify_Form
+   * @var Form
    */
   public $form;
 
@@ -83,14 +91,14 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    *
    * @var int
    */
-  protected $add = Simplify_Form::ACTION_NONE;
+  protected $add = Form::ACTION_NONE;
 
   /**
    * Never add the object to these actions
    *
    * @var int
    */
-  protected $remove = Simplify_Form::ACTION_NONE;
+  protected $remove = Form::ACTION_NONE;
 
   /**
    * Constructor
@@ -107,11 +115,11 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   /**
    *
    * @param string $serviceAction
-   * @return Simplify_URL
+   * @return URL
    */
   public function getServiceUrl($serviceAction)
   {
-    $uploaderUrl = Simplify_URL::make(null, null, false, null, Simplify_URL::JSON);
+    $uploaderUrl = URL::make(null, null, false, null, URL::JSON);
     $uploaderUrl->set('formAction', 'services');
     $uploaderUrl->set('serviceName', $this->getName());
     $uploaderUrl->set('serviceAction', $serviceAction);
@@ -120,7 +128,7 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
 
   /**
    *
-   * @return Simplify_Form_Component
+   * @return Component
    */
   public function getElementByName($name)
   {
@@ -174,14 +182,14 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   public function getLabel()
   {
     if (is_null($this->label)) {
-      $this->label = Simplify_Inflector::humanize($this->getName());
+      $this->label = Inflector::humanize($this->getName());
     }
     return $this->label;
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Renderable::getTemplateFilename()
+   * @see Renderable::getTemplateFilename()
    */
   public function getTemplateFilename()
   {
@@ -189,21 +197,21 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
       return $this->style;
     }
 
-    return Simplify_Inflector::underscore(substr(get_class($this), strlen('Simplify_')));
+    return 'form_element_' . strtolower(join('', array_slice(explode('\\', get_class($this)), -1)));
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Renderable::getTemplatesPath()
+   * @see Renderable::getTemplatesPath()
    */
-  public function getTemplatesPath()
+  /*public function getTemplatesPath()
   {
-    return array(s::config()->get('templates_dir') . '/form', FORM_DIR . '/templates');
-  }
+    return array(Simplify::config()->get('templates_dir') . '/form', FORM_DIR . '/templates');
+  }*/
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Renderable::getLayoutsPath()
+   * @see Renderable::getLayoutsPath()
    */
   public function getLayoutsPath()
   {
@@ -220,7 +228,7 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    */
   public function getValue()
   {
-    return s::request()->get($this->getName(), $this->getDefaultValue());
+    return Simplify::request()->get($this->getName(), $this->getDefaultValue());
   }
 
   /**
@@ -236,29 +244,29 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   /**
    * On execute callback. Runs on action execute and before render.
    *
-   * @param Simplify_Form_Action $action current executing action
+   * @param Action $action current executing action
    */
-  public function onExecute(Simplify_Form_Action $action)
+  public function onExecute(Action $action)
   {
   }
 
   /**
    * On execute services callback. Component services called via AJAX.
    *
-   * @param Simplify_Form_Action $action current executing action
+   * @param Action $action current executing action
    * @param string $serviceAction the name of the service in the component being called
    */
-  public function onExecuteServices(Simplify_Form_Action $action, $serviceAction)
+  public function onExecuteServices(Action $action, $serviceAction)
   {
   }
 
   /**
    * On render callback. Renders the component.
    *
-   * @param Simplify_Form_Action $action current executing action
+   * @param Action $action current executing action
    * @return IView
    */
-  public function onRender(Simplify_Form_Action $action)
+  public function onRender(Action $action)
   {
     return $this->getView();
   }
@@ -266,32 +274,32 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
   /**
    * On load data callback.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $data form data
    * @param array $row database row
    */
-  public function onLoadData(Simplify_Form_Action $action, &$data, $row)
+  public function onLoadData(Action $action, &$data, $row)
   {
   }
 
   /**
    * On post data callback.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $data form data
    * @param array $post post data
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(Action $action, &$data, $post)
   {
   }
 
   /**
    * On inject query params callback.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $params query parameters
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(Action $action, &$params)
   {
   }
 
@@ -301,37 +309,37 @@ abstract class Simplify_Form_Component extends Simplify_Renderable
    * @param array $row database row
    * @param array $data form data
    */
-  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
+  public function onCollectTableData(Action $action, &$row, $data)
   {
   }
 
   /**
    * On before delete callback.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $data form data
    */
-  public function onBeforeDelete(Simplify_Form_Action $action, &$data)
+  public function onBeforeDelete(Action $action, &$data)
   {
   }
 
   /**
    * On after delete callback.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $data form data
    */
-  public function onAfterDelete(Simplify_Form_Action $action, &$data)
+  public function onAfterDelete(Action $action, &$data)
   {
   }
 
   /**
    * On save callback.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $data form data
    */
-  public function onSave(Simplify_Form_Action $action, &$data)
+  public function onSave(Action $action, &$data)
   {
   }
 

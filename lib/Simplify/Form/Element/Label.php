@@ -21,11 +21,13 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Label form element
  *
  */
-class Simplify_Form_Element_Label extends Simplify_Form_Element
+class Label extends \Simplify\Form\Element
 {
 }

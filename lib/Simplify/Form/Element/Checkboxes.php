@@ -21,11 +21,34 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Multiple selection checkboxes
  *
  */
-class Simplify_Form_Element_Checkboxes extends Simplify_Form_Element_Base_MultipleSelection
+class Checkboxes extends \Simplify\Form\Element\Base\MultipleSelection
 {
+
+  /**
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Element::onRender()
+   */
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
+  {
+    $params = array(
+        'formAction' => 'services', 
+        'serviceName' => $this->getName(), 
+        'serviceAction' => 'toggle', 
+        \Simplify\Form::ID => $data[\Simplify\Form::ID]
+    );
+
+    $this->set('ajaxUrl', \Simplify\URL::make(null, $params)->format(\Simplify\URL::JSON));
+    $this->set('jsName', str_replace(array('[', ']'), array('\\\[', '\\\]'), $this->getInputName($index) . '[]'));
+    $this->set('useAjax', $action->show(\Simplify\Form::ACTION_LIST));
+
+    return parent::onRender($action, $data, $index);
+  }
+
 }

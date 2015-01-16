@@ -1,33 +1,36 @@
 <?php
 
-class Simplify_Form_Action_Services extends Simplify_Form_Action
+namespace Simplify\Form\Action;
+
+class Services extends \Simplify\Form\Action
 {
 
   /**
    *
    * @var int
    */
-  protected $actionMask = Simplify_Form::ACTION_SERVICES;
+  protected $actionMask = \Simplify\Form::ACTION_SERVICES;
 
   /**
    *
-   * @var Simplify_Form_Element
+   * @var \Simplify\Form\Element
    */
   protected $service;
 
   /**
    *
-   * @var Simplify_Form_Element
+   * @var \Simplify\Form\Element
    */
   protected $response;
 
   /**
-   *
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Action::onExecute()
    */
   public function onExecute()
   {
-    $serviceName = s::request()->get('serviceName');
-    $serviceAction = s::request()->get('serviceAction');
+    $serviceName = \Simplify::request()->get('serviceName');
+    $serviceAction = \Simplify::request()->get('serviceAction');
 
     $this->service = $this->form->getElementByName($serviceName);
 
@@ -36,6 +39,10 @@ class Simplify_Form_Action_Services extends Simplify_Form_Action
     $this->set($serviceName, $this->response);
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Action::onRender()
+   */
   public function onRender()
   {
     return $this->response;

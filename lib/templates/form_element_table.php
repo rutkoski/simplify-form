@@ -16,7 +16,7 @@
       <?php } ?>
 
       <td>
-        <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
+        <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[\Simplify\Form::ID] ?>" />
         <a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a>
       </td>
     </tr>

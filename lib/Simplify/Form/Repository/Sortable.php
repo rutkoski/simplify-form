@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Repository;
+
 /**
  *
  * Sortable repository
  *
  */
-class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository implements Simplify_Db_SortableInterface
+class Sortable extends \Simplify\Form\Repository implements \Simplify\Db\SortableInterface
 {
 
   /**
@@ -58,7 +60,7 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
    * @param string $sort sort column
    * @param string $direction sort direction
    */
-  public function __construct($table, $pk, $sortColumn, $sortDirection = Simplify_Db_QueryObject::ORDER_ASC)
+  public function __construct($table, $pk, $sortColumn, $sortDirection = \Simplify\Db\QueryObject::ORDER_ASC)
   {
     parent::__construct($table, $pk);
 
@@ -68,17 +70,17 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::findAll()
+   * @see \Simplify\Form\Repository::findAll()
    */
   public function findAll($params = null)
   {
-    $params[Simplify_Db_QueryParameters::ORDER_BY] = array($this->sortColumn, $this->sortDirection);
+    $params[\Simplify\Db\QueryParameters::ORDER_BY] = array($this->sortColumn, $this->sortDirection);
     return parent::findAll($params);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::insert()
+   * @see \Simplify\Form\Repository::insert()
    */
   public function insert(&$data)
   {
@@ -89,10 +91,10 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
     if (isset($data[$sort])) {
       $new = $data[$sort];
 
-      s::db()->query("UPDATE $table SET $sort = $sort + 1 WHERE {$this->filter()} AND $sort >= $new")->execute();
+      \Simplify::db()->query("UPDATE $table SET $sort = $sort + 1 WHERE {$this->filter()} AND $sort >= $new")->execute();
     }
     else {
-      $max = s::db()->query()->from($table)->select("MAX($sort)")->where($this->filter())->execute()->fetchOne();
+      $max = \Simplify::db()->query()->from($table)->select("MAX($sort)")->where($this->filter())->execute()->fetchOne();
 
       $data[$sort] = $max + 1;
     }
@@ -102,7 +104,7 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::update()
+   * @see \Simplify\Form\Repository::update()
    */
   public function update(&$data)
   {
@@ -113,15 +115,15 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
     if (isset($data[$sort])) {
       $id = $data[$pk];
 
-      $old = s::db()->query()->from($table)->select("$sort")->where($this->filter())->where("$pk = ?")->execute($id)->fetchOne();
+      $old = \Simplify::db()->query()->from($table)->select("$sort")->where($this->filter())->where("$pk = ?")->execute($id)->fetchOne();
 
       $new = $data[$sort];
 
       if ($new > $old) {
-        s::db()->query("UPDATE $table SET $sort = $sort - 1 WHERE {$this->filter()} AND $sort BETWEEN $old AND $new")->execute();
+        \Simplify::db()->query("UPDATE $table SET $sort = $sort - 1 WHERE {$this->filter()} AND $sort BETWEEN $old AND $new")->execute();
       }
       elseif ($new < $old) {
-        s::db()->query("UPDATE $table SET $sort = $sort + 1 WHERE {$this->filter()} AND $sort BETWEEN $new AND $old")->execute();
+        \Simplify::db()->query("UPDATE $table SET $sort = $sort + 1 WHERE {$this->filter()} AND $sort BETWEEN $new AND $old")->execute();
       }
     }
 
@@ -130,7 +132,7 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::delete()
+   * @see \Simplify\Form\Repository::delete()
    */
   public function delete($id = null, $params = array())
   {
@@ -138,22 +140,22 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
     $pk = $this->pk;
     $sort = $this->sortColumn;
 
-    $old = s::db()->query()->from($table)->select("$sort")->where($this->filter())->where("$pk = ?")->execute($id)->fetchOne();
+    $old = \Simplify::db()->query()->from($table)->select("$sort")->where($this->filter())->where("$pk = ?")->execute($id)->fetchOne();
 
-    s::db()->query("UPDATE $table SET $sort = $sort - 1 WHERE {$this->filter()} AND $sort > $old")->execute();
+    \Simplify::db()->query("UPDATE $table SET $sort = $sort - 1 WHERE {$this->filter()} AND $sort > $old")->execute();
 
     return parent::delete($id, $params);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::deleteAll()
+   * @see \Simplify\Form\Repository::deleteAll()
    */
   public function deleteAll($params = null)
   {
     $rows = 0;
 
-    $data = s::db()->query()->from($this->table)->setParams($params)->select(false)->select($this->pk)->execute()->fetchCol();
+    $data = \Simplify::db()->query()->from($this->table)->setParams($params)->select(false)->select($this->pk)->execute()->fetchCol();
 
     foreach ($data as $id) {
       $rows += $this->delete($id);
@@ -164,7 +166,7 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_SortableInterface::moveTo()
+   * @see \Simplify\Db\SortableInterface::moveTo()
    */
   public function moveTo($id, $position)
   {
@@ -173,10 +175,10 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
       return;
     }
 
-    $pos = s::db()->query()->from($this->table)->select("IFNULL($this->sortColumn, 0)")->where($this->filter())->where(
+    $pos = \Simplify::db()->query()->from($this->table)->select("IFNULL($this->sortColumn, 0)")->where($this->filter())->where(
       "{$this->pk} = :{$this->pk}")->execute(array($this->pk => $id))->fetchOne();
 
-    $q = s::db()->query()->from($this->table)->select($this->pk)->where($this->filter());
+    $q = \Simplify::db()->query()->from($this->table)->select($this->pk)->where($this->filter());
 
     if (is_numeric($position)) {
       if ($pos > $position) {
@@ -231,12 +233,12 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
     if (!empty($data)) {
       $sql = "UPDATE $this->table SET $this->sortColumn = GREATEST(0, IFNULL($this->sortColumn, 0) - $dif) WHERE {$this->filter()} AND $this->pk IN (" .
          implode(', ', $data) . ")";
-      s::db()->query($sql)->execute();
+      \Simplify::db()->query($sql)->execute();
     }
 
     if ($pos + $dis != $pos) {
       $sql = "UPDATE $this->table SET $this->sortColumn = GREATEST(0, IFNULL($this->sortColumn, 0) + $dis) WHERE {$this->filter()} AND $this->pk = $id";
-      s::db()->query($sql)->execute();
+      \Simplify::db()->query($sql)->execute();
     }
   }
 
@@ -247,12 +249,12 @@ class Simplify_Form_Repository_Sortable extends Simplify_Form_Repository impleme
   protected function filter()
   {
     if ($this->sortGroupColumn) {
-      if (! s::request()->get()->has($this->sortGroupColumn)) {
-        throw new Exception("Missing sort group column value");
+      if (! \Simplify::request()->get()->has($this->sortGroupColumn)) {
+        throw new \Exception("Missing sort group column value");
       }
 
-      $value = s::request()->get($this->sortGroupColumn);
-      $value = s::db()->quote($value);
+      $value = \Simplify::request()->get($this->sortGroupColumn);
+      $value = \Simplify::db()->quote($value);
 
       $filter = " {$this->sortGroupColumn} = {$value} ";
 

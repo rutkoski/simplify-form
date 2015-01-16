@@ -21,11 +21,13 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Form radio buttons
  *
  */
-class Simplify_Form_Element_Radios extends Simplify_Form_Element_Base_SingleSelection
+class Radios extends \Simplify\Form\Element\Base\SingleSelection
 {
 }

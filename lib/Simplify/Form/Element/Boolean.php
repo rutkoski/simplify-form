@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Boolean form element
  *
  */
-class Simplify_Form_Element_Boolean extends Simplify_Form_Element
+class Boolean extends \Simplify\Form\Element
 {
 
   /**
@@ -54,10 +56,12 @@ class Simplify_Form_Element_Boolean extends Simplify_Form_Element
   public $falseValue = 0;
 
   /**
-   * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * 
+   * @param \Simplify\Form\Action $action
+   * @param unknown_type $data
+   * @param unknown_type $index
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     if (empty($this->trueLabel)) {
       $this->trueLabel = __('Yes');
@@ -77,9 +81,9 @@ class Simplify_Form_Element_Boolean extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
     return $data[$this->getName()] == $this->trueValue ? $this->trueLabel : $this->falseLabel;
   }

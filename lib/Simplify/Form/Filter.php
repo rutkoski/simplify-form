@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
 /**
  *
  * Base class for form filters
  *
  */
-abstract class Simplify_Form_Filter extends Simplify_Form_Component
+abstract class Filter extends Component
 {
 
   /**
@@ -43,28 +45,28 @@ abstract class Simplify_Form_Filter extends Simplify_Form_Component
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getValue()
+   * @see Component::getValue()
    */
   public function getValue()
   {
-    return $this->editable ? s::request()->get($this->getName(), $this->getDefaultValue()) : $this->getDefaultValue();
+    return $this->editable ? \Simplify::request()->get($this->getName(), $this->getDefaultValue()) : $this->getDefaultValue();
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onExecute()
+   * @see Component::onExecute()
    */
-  public function onExecute(Simplify_Form_Action $action)
+  public function onExecute(Action $action)
   {
     $this->form->url()->set($this->getName(), $this->getValue());
   }
 
   /**
    *
-   * @param Simplify_Form_Action $action
+   * @param Action $action
    * @param array $filters
    */
-  public function onRenderControls(Simplify_Form_Action $action, &$filters)
+  public function onRenderControls(Action $action, &$filters)
   {
     if ($this->visible) {
       $filters[$this->getName()]['controls'] = $this->onRender($action);
@@ -73,9 +75,9 @@ abstract class Simplify_Form_Filter extends Simplify_Form_Component
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * @see Component::onRender()
    */
-  public function onRender(Simplify_Form_Action $action)
+  public function onRender(Action $action)
   {
     $this->set('label', $this->getLabel());
     $this->set('name', $this->getName());
@@ -87,18 +89,18 @@ abstract class Simplify_Form_Filter extends Simplify_Form_Component
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onPostData()
+   * @see Component::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(Action $action, &$data, $post)
   {
     $data[$this->getName()] = $this->getValue();
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onCollectTableData()
+   * @see Component::onCollectTableData()
    */
-  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
+  public function onCollectTableData(Action $action, &$row, $data)
   {
     $row[$this->getFieldName()] = $data[$this->getName()];
   }

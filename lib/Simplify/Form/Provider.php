@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
 /**
  *
  * Base class for list providers
  *
  */
-abstract class Simplify_Form_Provider
+abstract class Provider
 {
 
   protected $data = false;

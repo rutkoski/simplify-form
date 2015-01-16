@@ -21,12 +21,18 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
+use Simplify;
+use Simplify\Pager;
+use Simplify\Db\RepositoryInterface;
+
 /**
  *
  * Form repository
  *
  */
-class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
+class Repository implements RepositoryInterface
 {
 
   /**
@@ -56,23 +62,23 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
    * Get a pager
    *
    * @param array $params query parameters
-   * @return Simplify_Pager
+   * @return Pager
    */
   public function findPager($params = null)
   {
     $limit = $params['limit'];
     $offset = $params['offset'];
 
-    return new Simplify_Pager($this->findCount($params), $limit, $offset);
+    return new Pager($this->findCount($params), $limit, $offset);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_RepositoryInterface::find()
+   * @see RepositoryInterface::find()
    */
   public function find($id = null, $params = null)
   {
-    $query = s::db()->query()->from($this->table);
+    $query = Simplify::db()->query()->from($this->table);
 
     $query->limit(1);
 
@@ -88,11 +94,11 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_RepositoryInterface::findAll()
+   * @see RepositoryInterface::findAll()
    */
   public function findAll($params = null)
   {
-    $query = s::db()->query()->from($this->table)->setParams($params);
+    $query = Simplify::db()->query()->from($this->table)->setParams($params);
 
     $result = $query->execute()->fetchAll();
 
@@ -101,11 +107,11 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_RepositoryInterface::findCount()
+   * @see RepositoryInterface::findCount()
    */
   public function findCount($params = null)
   {
-    $query = s::db()->query()->setParams($params)->from($this->table)->select(false)->limit(
+    $query = Simplify::db()->query()->setParams($params)->from($this->table)->select(false)->limit(
       false)->offset(false)->select("COUNT($this->pk)");
     $result = $query->execute()->fetchOne();
     return intval($result);
@@ -113,29 +119,29 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_RepositoryInterface::delete()
+   * @see RepositoryInterface::delete()
    */
   public function delete($id = null, $params = array())
   {
-    $result = s::db()->delete($this->table, "$this->pk = ?")->execute($id);
+    $result = Simplify::db()->delete($this->table, "$this->pk = ?")->execute($id);
 
     return $result->numRows();
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_RepositoryInterface::deleteAll()
+   * @see RepositoryInterface::deleteAll()
    */
   public function deleteAll($params = null)
   {
-    $result = s::db()->delete($this->table)->setParams($params)->execute();
+    $result = Simplify::db()->delete($this->table)->setParams($params)->execute();
 
     return $result->numRows();
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_RepositoryInterface::save()
+   * @see RepositoryInterface::save()
    */
   public function save(&$data)
   {
@@ -156,9 +162,9 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
    */
   public function insert(&$data)
   {
-    s::db()->insert($this->table, $data)->execute($data);
+    Simplify::db()->insert($this->table, $data)->execute($data);
 
-    $data[$this->pk] = s::db()->lastInsertId();
+    $data[$this->pk] = Simplify::db()->lastInsertId();
   }
 
   /**
@@ -171,7 +177,7 @@ class Simplify_Form_Repository implements Simplify_Db_RepositoryInterface
     $result = 0;
 
     if (count($data) > 1) {
-      $result = s::db()->update($this->table, $data, "$this->pk = :$this->pk")->execute($data)->numRows();
+      $result = Simplify::db()->update($this->table, $data, "$this->pk = :$this->pk")->execute($data)->numRows();
     }
   }
 

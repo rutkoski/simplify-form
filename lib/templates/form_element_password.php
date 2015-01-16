@@ -1,0 +1,1 @@
+<input type="password" class="form-control" name="{{ inputName }}{{ inputNameSufix }}" value=""/>

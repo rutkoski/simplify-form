@@ -21,17 +21,19 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Provider;
+
 /**
  *
  * Base class for list providers
  *
  */
-class Simplify_Form_Provider_OptionsFromQuery extends Simplify_Form_Provider
+class OptionsFromQuery extends \Simplify\Form\Provider
 {
 
   /**
    *
-   * @var Simplify_Db_QueryObject
+   * @var \Simplify\Db\QueryObject
    */
   protected $query;
 
@@ -46,11 +48,15 @@ class Simplify_Form_Provider_OptionsFromQuery extends Simplify_Form_Provider
     $this->label = $label;
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Provider::getData()
+   */
   public function getData()
   {
     if ($this->data === false) {
       if (is_array($this->query)) {
-        $this->query = s::db()->query()->select($this->value)->select($this->label)->setParams($this->query);
+        $this->query = \Simplify::db()->query()->select($this->value)->select($this->label)->setParams($this->query);
       }
 
       $data = $this->query->execute()->fetchAll();

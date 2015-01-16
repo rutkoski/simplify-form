@@ -1,5 +1,5 @@
-<select name="<?= $inputName ?>">
-<?php foreach($options as $option => $label) { ?>
-  <option value="<?= $option ?>"<?= '' . $option == '' . $value ? ' selected' : '' ?>><?= $label ?></option>
-<?php } ?>
+<select name="{{ inputName }}" class="form-control">
+  {% for option, label in options %}
+  <option value="{{ option }}"{{ option == value ? ' selected' : '' }}>{{ label }}</option>
+  {% endfor %}
 </select>

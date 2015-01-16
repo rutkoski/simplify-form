@@ -21,21 +21,23 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Composite
  *
  */
-class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composite
+class Composite extends \Simplify\Form\Element\Base\Composite
 {
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onRenderHeaders()
+   * @see \Simplify\Form\Element::onRenderHeaders()
    */
-  public function onRenderHeaders(Simplify_Form_Action $action, &$headers)
+  public function onRenderHeaders(\Simplify\Form\Action $action, &$headers)
   {
-    if ($action->show(Simplify_Form::ACTION_LIST)) {
+    if ($action->show(\Simplify\Form::ACTION_LIST)) {
       $elements = $this->getElements($action);
       $elements->rewind();
       while ($elements->valid()) {
@@ -52,9 +54,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onRenderLine()
+   * @see \Simplify\Form\Element::onRenderLine()
    */
-  public function onRenderLine(Simplify_Form_Action $action, &$line, $data, $index)
+  public function onRenderLine(\Simplify\Form\Action $action, &$line, $data, $index)
   {
     foreach ($this->getElements($action) as $element) {
       $element->onRenderLine($action, $line, $data, $index);
@@ -63,9 +65,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onRenderControls()
+   * @see \Simplify\Form\Element::onRenderControls()
    */
-  public function onRenderControls(Simplify_Form_Action $action, &$line, $data, $index)
+  public function onRenderControls(\Simplify\Form\Action $action, &$line, $data, $index)
   {
     parent::onRenderControls($action, $line, $data, $index);
     $line['elements'][$this->getName()]['label'] = false;
@@ -73,9 +75,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $headers = array();
 
@@ -110,9 +112,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onLoadData()
+   * @see \Simplify\Form\Element::onLoadData()
    */
-  public function onLoadData(Simplify_Form_Action $action, &$data, $row)
+  public function onLoadData(\Simplify\Form\Action $action, &$data, $row)
   {
     $elements = $this->getElements($action);
     while ($elements->valid()) {
@@ -125,9 +127,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onPostData()
+   * @see \Simplify\Form\Element::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     $elements = $this->getElements($action);
     while ($elements->valid()) {
@@ -140,9 +142,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onCollectTableData()
+   * @see \Simplify\Form\Element::onCollectTableData()
    */
-  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
+  public function onCollectTableData(\Simplify\Form\Action $action, &$row, $data)
   {
     $elements = $this->getElements($action);
     while ($elements->valid()) {
@@ -155,9 +157,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onInjectQueryParams()
+   * @see \Simplify\Form\Element::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
     $elements = $this->getElements($action);
     while ($elements->valid()) {
@@ -170,9 +172,9 @@ class Simplify_Form_Element_Composite extends Simplify_Form_Element_Base_Composi
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onSave()
+   * @see \Simplify\Form\Component::onSave()
    */
-  public function onSave(Simplify_Form_Action $action, &$data)
+  public function onSave(\Simplify\Form\Action $action, &$data)
   {
     $elements = $this->getElements($action);
     while ($elements->valid()) {

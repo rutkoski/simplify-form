@@ -1,7 +1,7 @@
 <div class="tabbable">
   <ul class="nav nav-tabs">
     <?php foreach ($data as $i => $row) { ?>
-    <li class="<?= $i == 0 ? 'active' : '' ?>"><a href="#tab<?= $row[Simplify_Form::ID] ?>" data-toggle="tab"><?= $label ?> (<?= $row[Simplify_Form::ID] ?>)</a></li>
+    <li class="<?= $i == 0 ? 'active' : '' ?>"><a href="#tab<?= $row[\Simplify\Form::ID] ?>" data-toggle="tab"><?= $label ?> (<?= $row[\Simplify\Form::ID] ?>)</a></li>
     <?php } ?>
 
     <li class="dummy"><a href="#tab-0" data-toggle="tab">+</a></li>
@@ -9,8 +9,8 @@
 
   <div class="tab-content well">
     <?php foreach ($data as $i => $row) { ?>
-    <div class="tab-pane<?= $i == 0 ? ' active' : '' ?>" id="tab<?= $row[Simplify_Form::ID] ?>">
-      <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
+    <div class="tab-pane<?= $i == 0 ? ' active' : '' ?>" id="tab<?= $row[\Simplify\Form::ID] ?>">
+      <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[\Simplify\Form::ID] ?>" />
 
       <?php foreach ($row['elements'] as $element) { ?>
       <?= $element['controls'] ?>

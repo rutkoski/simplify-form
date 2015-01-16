@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Form element with email validation
  *
  */
-class Simplify_Form_Element_Email extends Simplify_Form_Element
+class Email extends \Simplify\Form\Element
 {
 
   /**
@@ -37,16 +39,16 @@ class Simplify_Form_Element_Email extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onValidate()
+   * @see \Simplify\Form\Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, $data)
+  public function onValidate(\Simplify\Form\Action $action, $data)
   {
     parent::onValidate($action, $data);
 
     $required = $action->show($this->required) ? $this->getError('required', __('Invalid email address')) : false;
     $invalid = $this->getError('invalid', __('Invalid email address'));
 
-    $rule = new Simplify_Validation_Email($invalid, $required);
+    $rule = new \Simplify\Validation\Email($invalid, $required);
     $rule->validate($this->getValue($data));
   }
 

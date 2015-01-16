@@ -44,7 +44,7 @@
             <?php } ?>
           </div>
 
-          <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
+          <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[\Simplify\Form::ID] ?>" />
           <input type="hidden" name="<?= $row['baseName'] ?>[filename]" value="<?= $row['filename'] ?>"/>
         </li>
         <?php } ?>

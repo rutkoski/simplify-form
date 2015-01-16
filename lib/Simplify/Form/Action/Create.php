@@ -21,36 +21,46 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Action;
+
+use Simplify;
+use Simplify\Db\QueryParameters;
+use Simplify\Form;
+use Simplify\Form\Action;
+use Simplify\Menu;
+use Simplify\MenuItem;
+
 /**
  *
  * Form action create
  *
  */
-class Simplify_Form_Action_Create extends Simplify_Form_Action_Base_Form
+class Create extends Base\FormBase
 {
 
   /**
    *
    * @var int
    */
-  protected $actionMask = Simplify_Form::ACTION_CREATE;
+  protected $actionMask = Form::ACTION_CREATE;
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onCreateMenu()
+   * @see \Simplify\Form\Action::onCreateMenu()
    */
-  public function onCreateMenu(Simplify_Menu $menu)
+  public function onCreateMenu(Menu $menu)
   {
-    $menu->getItemByName('main')->addItem(new Simplify_MenuItem($this->getName(), $this->getTitle(), null, $this->form->url()->extend(null, array('formAction' => $this->getName()))));
+    $menu->getItemByName('main')->addItem(new MenuItem($this->getName(), $this->getTitle(), null, 
+      $this->form->url()->extend(null, array('formAction' => $this->getName()))));
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action_Base_Form::onLoadData()
+   * @see \Simplify\Form\Action\Base\FormBase::onLoadData()
    */
   public function onLoadData()
   {
-    $this->formData = array(array(Simplify_Form::ID => null));
+    $this->formData = array(array(Form::ID => null));
   }
 
 }

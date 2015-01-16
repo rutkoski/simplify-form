@@ -12,10 +12,11 @@
         }
     ],
     "require": {
-        "php": ">=5.2.4",
+        "php": ">=5.3",
         "rutkoski/simplify": "dev-master"
     },
     "autoload": {
-        "files": ["lib/autoload.php"]
+        "files": [ "lib/autoload.php" ],
+        "psr-0": { "Simplify\\": "lib/" }
     }
 }

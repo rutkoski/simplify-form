@@ -21,26 +21,28 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element\Base;
+
 /**
  *
  * Base class for form elements composed of other elements
  *
  */
-class Simplify_Form_Element_Base_Composite extends Simplify_Form_Element
+class Composite extends \Simplify\Form\Element
 {
 
   /**
    *
-   * @var Simplify_Form_Element[]
+   * @var \Simplify\Form\Element[]
    */
   protected $elements = array();
 
   /**
    *
-   * @param Simplify_Form_Element $element
-   * @return Simplify_Form_Element
+   * @param \Simplify\Form\Element $element
+   * @return \Simplify\Form\Element
    */
-  public function addElement(Simplify_Form_Element $element, $actionMask = Simplify_Form::ACTION_ALL, $index = null)
+  public function addElement(\Simplify\Form\Element $element, $actionMask = \Simplify\Form::ACTION_ALL, $index = null)
   {
     $element->form = $this->form;
     $element->actionMask = $actionMask;
@@ -57,16 +59,16 @@ class Simplify_Form_Element_Base_Composite extends Simplify_Form_Element
 
   /**
    *
-   * @return Simplify_Form_ElementIterator
+   * @return \Simplify\Form\ElementIterator
    */
-  public function getElements(Simplify_Form_Action $action)
+  public function getElements(\Simplify\Form\Action $action)
   {
-    return new Simplify_Form_ElementIterator($this->elements, $action->getActionMask());
+    return new \Simplify\Form\ElementIterator($this->elements, $action->getActionMask());
   }
 
   /**
    *
-   * @return Simplify_Form_Element
+   * @return \Simplify\Form\Element
    */
   public function getElementByName($name)
   {

@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Image upload form element
  *
  */
-class Simplify_Form_Element_Image extends Simplify_Form_Element
+class Image extends \Simplify\Form\Element
 {
 
   /**
@@ -45,7 +47,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    *
    * @var integer
    */
-  public $thumbWidth = 100;
+  public $thumbWidth = 120;
 
   /**
    *
@@ -58,7 +60,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    *
    * @var int
    */
-  protected $add = Simplify_Form::ACTION_DELETE;
+  protected $add = \Simplify\Form::ACTION_DELETE;
 
   /**
    * Validation errors
@@ -76,14 +78,14 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
   {
     parent::__construct($name, $label);
 
-    $this->path = s::config()->get('files_path');
+    $this->path = \Simplify::config()->get('files_path');
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $file = $this->getValue($data);
 
@@ -110,9 +112,9 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
     $file = $this->getValue($data);
 
@@ -125,7 +127,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
         $imageUrl = $this->getImageUrl($file);
 
         $value = "<a href=\"{$imageUrl}\" class=\"lightbox\">";
-        $value .= "<img src=\"{$thumbUrl}\" class=\"img-polaroid\"/>";
+        $value .= "<img src=\"{$thumbUrl}\" class=\"thumbnail\"/>";
         $value .= "</a>";
       }
       else {
@@ -138,9 +140,9 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onPostData()
+   * @see \Simplify\Form\Element::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     $name = $this->getName();
 
@@ -156,7 +158,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
     if (!empty($post[$name]['name']) || $this->required) {
       try {
-        $upload = new Simplify_Upload($post[$name]);
+        $upload = new \Simplify\Upload($post[$name]);
         $upload->uploadPath = $this->path;
         $upload->hashFilename = true;
         $upload->upload();
@@ -165,10 +167,10 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
         $data[$this->getName()] = $upload->getUploadedPath();
       }
-      catch (Simplify_UploadException $e) {
+      catch (\Simplify\UploadException $e) {
         $this->uploadErrors[] = $e;
       }
-      catch (Simplify_ValidationException $e) {
+      catch (\Simplify\ValidationException $e) {
         $this->uploadErrors[] = $e;
       }
     }
@@ -176,11 +178,11 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onValidate()
+   * @see \Simplify\Form\Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, $data)
+  public function onValidate(\Simplify\Form\Action $action, $data)
   {
-    $rule = new Simplify_Validation_Callback(array($this, 'validate'));
+    $rule = new \Simplify\Validation\Callback(array($this, 'validate'));
     $rule->validate($this->getValue($data));
   }
 
@@ -199,9 +201,9 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onBeforeDelete()
+   * @see \Simplify\Form\Component::onBeforeDelete()
    */
-  public function onBeforeDelete(Simplify_Form_Action $action, &$data)
+  public function onBeforeDelete(\Simplify\Form\Action $action, &$data)
   {
     $this->onDelete($data);
   }
@@ -219,7 +221,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
       $this->getThumbComponent($file)->cleanCached();
 
       if (!sy_path_is_absolute($file)) {
-        $file = s::config()->get('www_dir') . $file;
+        $file = \Simplify::config()->get('www_dir') . $file;
       }
 
       if (file_exists($file)) {
@@ -234,11 +236,11 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    * Get the thumb component
    *
    * @param string $file filename
-   * @return Simplify_Thumb
+   * @return \Simplify\Thumb
    */
   protected function getThumbComponent($file)
   {
-    return Simplify_Thumb::factory()->load($file);
+    return \Simplify\Thumb::factory()->load($file);
   }
 
   /**
@@ -252,10 +254,10 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
   protected function getThumbUrl($file, $width, $height)
   {
     try {
-    return s::config()->get('www_url') .
-       Simplify_Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
-  }
-    catch (Simplify_ThumbException $e) {
+      return \Simplify::config()->get('www_url') .
+        \Simplify\Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+    }
+    catch (\Simplify\ThumbException $e) {
       //
     }
   }
@@ -268,7 +270,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    */
   protected function getImageUrl($file)
   {
-    return s::config()->get('www_url') . $file;
+    return \Simplify::config()->get('www_url') . $file;
   }
 
   /**
@@ -279,7 +281,7 @@ class Simplify_Form_Element_Image extends Simplify_Form_Element
    */
   protected function fileExists($file)
   {
-    $file = s::config()->get('www_dir') . $file;
+    $file = \Simplify::config()->get('www_dir') . $file;
     return ! empty($file) && file_exists($file) && ! is_dir($file);
   }
 

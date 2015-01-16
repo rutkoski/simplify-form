@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Filter;
+
 /**
  *
  * Form filter with hidden element
  *
  */
-class Simplify_Form_Filter_Hidden extends Simplify_Form_Filter
+class Hidden extends \Simplify\Form\Filter
 {
 
   /**
@@ -43,17 +45,17 @@ class Simplify_Form_Filter_Hidden extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
+   * @see \Simplify\Form\Component::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
     parent::onInjectQueryParams($action, $params);
 
     $value = $this->getValue();
     $name = $this->getFieldName();
 
-    $params[Simplify_Db_QueryParameters::WHERE][] = "{$name} = :{$name}";
-    $params[Simplify_Db_QueryParameters::DATA][$name] = $value;
+    $params[\Simplify\Db\QueryParameters::WHERE][] = "{$name} = :{$name}";
+    $params[\Simplify\Db\QueryParameters::DATA][$name] = $value;
   }
 
 }

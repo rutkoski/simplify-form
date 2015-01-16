@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Filter;
+
 /**
  *
  * Form filter with select element
  *
  */
-class Simplify_Form_Filter_Select extends Simplify_Form_Filter
+class Select extends \Simplify\Form\Filter
 {
 
   /**
@@ -69,9 +71,9 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Filter::onRender()
+   * @see \Simplify\Form\Filter::onRender()
    */
-  public function onRender(Simplify_Form_Action $action)
+  public function onRender(\Simplify\Form\Action $action)
   {
     $this->set('options', $this->getOptions());
     $this->set('showEmpty', $this->showEmpty);
@@ -83,11 +85,11 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getValue()
+   * @see \Simplify\Form\Filter::getValue()
    */
   public function getValue()
   {
-    $value = s::request()->get($this->getName());
+    $value = \Simplify::request()->get($this->getName());
 
     // if show empty is true, default value makes no sense...
     if ('' . $value == '' . $this->emptyValue && !$this->showEmpty) {
@@ -105,9 +107,9 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
+   * @see \Simplify\Form\Component::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
     parent::onInjectQueryParams($action, $params);
 
@@ -116,8 +118,8 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
     if ($value != $this->emptyValue) {
       $name = $this->getFieldName();
 
-      $params[Simplify_Db_QueryParameters::WHERE][] = "{$name} = :{$name}";
-      $params[Simplify_Db_QueryParameters::DATA][$name] = $value;
+      $params[\Simplify\Db\QueryParameters::WHERE][] = "{$name} = :{$name}";
+      $params[\Simplify\Db\QueryParameters::DATA][$name] = $value;
     }
   }
 
@@ -128,7 +130,7 @@ class Simplify_Form_Filter_Select extends Simplify_Form_Filter
   public function getOptions()
   {
     if ($this->options === false) {
-      $options = s::db()
+      $options = \Simplify::db()
         ->query()
         ->from($this->form->getTable())
         ->select($this->getFieldName())

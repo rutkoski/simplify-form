@@ -21,11 +21,13 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Tabbed
  *
  */
-class Simplify_Form_Element_Tabbed extends Simplify_Form_Element_Composite
+class Tabbed extends \Simplify\Form\Element\Composite
 {
 }

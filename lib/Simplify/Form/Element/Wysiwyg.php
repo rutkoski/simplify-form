@@ -21,27 +21,29 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * WYSIWYG form element
  *
  */
-class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
+class Wysiwyg extends \Simplify\Form\Element
 {
 
   const SERVICE_BROWSER = 'browser';
 
   /**
    *
-   * @var Simplify_Form_Browser
+   * @var \Simplify\Form\Browser
    */
   protected $browser;
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
     $value = parent::getDisplayValue($action, $data, $index);
     $value = strip_tags($value);
@@ -52,27 +54,30 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_ElementTable::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
-    $this->set('uploaderUrl', $this->getServiceUrl(Simplify_Form::SERVICE_UPLOAD));
-    $this->set('browserUrl', $this->getServiceUrl(self::SERVICE_BROWSER)->format(false));
+    $wysiwygOptions = array();
+    $wysiwygOptions['uploaderUrl'] = $this->getServiceUrl(\Simplify\Form::SERVICE_UPLOAD)->build();
+    $wysiwygOptions['browserUrl'] = $this->getServiceUrl(self::SERVICE_BROWSER)->format(false)->build();
+
+    $this->set('wysiwygOptions', json_encode($wysiwygOptions));
 
     return parent::onRender($action, $data, $index);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onExecuteServices()
+   * @see \Simplify\Form\Component::onExecuteServices()
    */
-  public function onExecuteServices(Simplify_Form_Action $action, $serviceAction)
+  public function onExecuteServices(\Simplify\Form\Action $action, $serviceAction)
   {
     switch ($serviceAction) {
-      case Simplify_Form::SERVICE_UPLOAD :
-        $funcNum = s::request()->get('CKEditorFuncNum');
-        //$CKEditor = s::request()->get('CKEditor');
-        //$langCode = s::request()->get('langCode');
+      case \Simplify\Form::SERVICE_UPLOAD :
+        $funcNum = \Simplify::request()->get('CKEditorFuncNum');
+        //$CKEditor = \Simplify::request()->get('CKEditor');
+        //$langCode = \Simplify::request()->get('langCode');
 
 
         $fileUrl = false;
@@ -80,7 +85,7 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
 
         $response = $this->getBrowser()->upload('upload');
 
-        if ($response === Simplify_Form::RESULT_SUCCESS) {
+        if ($response === \Simplify\Form::RESULT_SUCCESS) {
           $fileUrl = $this->getBrowser()->getFileUrl();
         } else {
           $message = $this->getBrowser()->getErrors();
@@ -93,8 +98,8 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
       case self::SERVICE_BROWSER :
         $response = $this->getBrowser()->browse();
 
-        if ($response === Simplify_Form::RESULT_SUCCESS) {
-          $funcNum = s::request()->get('CKEditorFuncNum');
+        if ($response === \Simplify\Form::RESULT_SUCCESS) {
+          $funcNum = \Simplify::request()->get('CKEditorFuncNum');
           $fileUrl = $this->getBrowser()->getFileUrl();
           echo "<script type='text/javascript'>window.opener.CKEDITOR.tools.callFunction({$funcNum}, '{$fileUrl}');window.close();</script>";
         } else {
@@ -107,9 +112,9 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onPostData()
+   * @see \Simplify\Form\Element::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     parent::onPostData($action, $data, $post);
 
@@ -118,9 +123,9 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onLoadData()
+   * @see \Simplify\Form\Element::onLoadData()
    */
-  public function onLoadData(Simplify_Form_Action $action, &$data, $row)
+  public function onLoadData(\Simplify\Form\Action $action, &$data, $row)
   {
     parent::onLoadData($action, $data, $row);
 
@@ -131,12 +136,12 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
 
   /**
    *
-   * @return Simplify_Form_Browser
+   * @return \Simplify\Form\Browser
    */
   protected function getBrowser()
   {
     if (empty($this->browser)) {
-      $this->browser = new Simplify_Form_Browser();
+      $this->browser = new \Simplify\Form\Browser();
     }
     return $this->browser;
   }
@@ -148,7 +153,7 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
    */
   protected function makeUrlsRelative($value)
   {
-    $base = s::config()->get('www_url');
+    $base = \Simplify::config()->get('www_url');
 
     $value = preg_replace('# src="' . preg_quote($base) . '#', ' src="', $value);
 
@@ -162,7 +167,7 @@ class Simplify_Form_Element_Wysiwyg extends Simplify_Form_Element
    */
   protected function makeUrlsAbsolute($value)
   {
-    $base = s::config()->get('www_url');
+    $base = \Simplify::config()->get('www_url');
 
     $value = preg_replace('# src="(?!(' . preg_quote($base) . '|http))#', ' src="' . $base, $value);
 

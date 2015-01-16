@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Form password element with confirmation
  *
  */
-class Simplify_Form_Element_Password extends Simplify_Form_Element
+class Password extends \Simplify\Form\Element
 {
 
   /**
@@ -64,12 +66,12 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
   {
     parent::__construct($name, $label);
 
-    $this->remove = Simplify_Form::ACTION_VIEW ^ Simplify_Form::ACTION_LIST;
+    $this->remove = \Simplify\Form::ACTION_VIEW ^ \Simplify\Form::ACTION_LIST;
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getLabel()
+   * @see \Simplify\Form\Component::getLabel()
    */
   public function getLabel()
   {
@@ -81,23 +83,25 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onRenderControls()
+   * @see \Simplify\Form\Element::onRenderControls()
    */
-  public function onRenderControls(Simplify_Form_Action $action, &$line, $data, $index)
+  public function onRenderControls(\Simplify\Form\Action $action, &$line, $data, $index)
   {
     $element = array();
 
     if ($this->matchOriginal) {
       $label = __('Current password');
     } else {
-      $label = $action->show(Simplify_Form::ACTION_CREATE) ? __('Password') : __('New password');
+      $label = $action->show(\Simplify\Form::ACTION_CREATE) ? __('Password') : __('New password');
     }
 
+    $this->set('inputNameSufix', '[a]');
+    
     $element['id'] = $this->getElementId($index);
     $element['name'] = $this->getInputName($index);
     $element['class'] = $this->getElementClass();
     $element['label'] = $label;
-    $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[a]" value="" />';
+    $element['controls'] = $this->onRender($action, $data, $index)->render();
 
     $element['state'] = $this->state;
     $element['stateMessage'] = $this->stateMessage;
@@ -107,11 +111,13 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
     if ($this->askForConfirmation) {
       $element = array();
 
+      $this->set('inputNameSufix', '[b]');
+      
       $element['id'] = $this->getElementId($index);
       $element['name'] = $this->getInputName($index);
       $element['class'] = $this->getElementClass();
       $element['label'] = 'Repeat password';
-      $element['controls'] = '<input type="password" name="'.$this->getInputName($index).'[b]" value="" />';
+      $element['controls'] = $this->onRender($action, $data, $index)->render();
 
       $element['state'] = $this->state;
 
@@ -121,9 +127,9 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $this->set('askForConfirmation', $this->askForConfirmation);
 
@@ -132,25 +138,25 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $row, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $row, $index)
   {
     return '';
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onPostData()
+   * @see \Simplify\Form\Element::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     $a = $this->hash(sy_get_param(sy_get_param($post, $this->getName(), array()), 'a'));
     $b = $this->hash(sy_get_param(sy_get_param($post, $this->getName(), array()), 'b'));
     $c = $this->hash(sy_get_param(sy_get_param($post, $this->getName(), array()), 'c'));
 
     $empty = $this->hash('');
-    $exists = (!empty($data[Simplify_Form::ID]));
+    $exists = (!empty($data[\Simplify\Form::ID]));
     $required = ($this->required || !$exists);
 
     if ($this->askForConfirmation && $a != $b) {
@@ -174,13 +180,13 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onValidate()
+   * @see \Simplify\Form\Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, $data)
+  public function onValidate(\Simplify\Form\Action $action, $data)
   {
     parent::onValidate($action, $data);
 
-    $rule = new Simplify_Validation_Callback(array($this, 'validate'));
+    $rule = new \Simplify\Validation\Callback(array($this, 'validate'));
     $rule->validate($this->getValue($data));
   }
 
@@ -188,7 +194,7 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
    * Throws validation exception for validation that failed during onPostData
    *
    * @param string $value
-   * @throws Simplify_ValidationException
+   * @throws \Simplify\ValidationException
    */
   public function validate($value)
   {
@@ -196,7 +202,7 @@ class Simplify_Form_Element_Password extends Simplify_Form_Element
       $error = array_shift($this->errors['_']);
 
       if (!empty($error)) {
-        throw new Simplify_ValidationException($error);
+        throw new \Simplify\ValidationException($error);
       }
     }
   }

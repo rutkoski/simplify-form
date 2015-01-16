@@ -21,11 +21,13 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Form select
  *
  */
-class Simplify_Form_Element_Select extends Simplify_Form_Element_Base_SingleSelection
+class Select extends \Simplify\Form\Element\Base\SingleSelection
 {
 }

@@ -21,32 +21,37 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Action;
+
+use Simplify;
+use Simplify\Form;
+use Simplify\Form\Action;
+use Simplify\Menu;
+use Simplify\MenuItem;
+
 /**
  *
  * Form action edit
  *
  */
-class Simplify_Form_Action_Edit extends Simplify_Form_Action_Base_Form
-{
+class Edit extends Base\FormBase {
 
-  /**
-   *
-   * @var int
-   */
-  protected $actionMask = Simplify_Form::ACTION_EDIT;
+	/**
+	 *
+	 * @var int
+	 */
+	protected $actionMask = Form::ACTION_EDIT;
 
-  /**
-   * (non-PHPdoc)
-   * @see Simplify_Form_Action::onCreateItemMenu()
-   */
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
-  {
-    if (!$action->show(Simplify_Form::ACTION_CREATE) && !$action->show(Simplify_Form::ACTION_EDIT)) {
-      $url = $this->form->url()->extend(null, array('formAction' => $this->getName(), Simplify_Form::ID => $data[Simplify_Form::ID]));
-      $menu->getItemByName('main')->addItem(
-        new Simplify_MenuItem($this->getName(), $this->getTitle(), null, $url
-          /* new Simplify_URL(null, array('formAction' => $this->getName(), Simplify_Form::ID => $data[Simplify_Form::ID])) */));
-    }
-  }
+	/**
+	 * (non-PHPdoc)
+	 * @see \Simplify\Form\Action::onCreateItemMenu()
+	 */
+	public function onCreateItemMenu(Menu $menu, Action $action, $data) {
+		if (!$action->show(Form::ACTION_CREATE) && !$action->show(Form::ACTION_EDIT)) {
+			$url = $this->form->url()->extend(null, array('formAction' => $this->getName(), Form::ID => $data[Form::ID]));
+			$menu->getItemByName('main')->addItem(
+				new MenuItem($this->getName(), $this->getTitle(), null, $url));
+		}
+	}
 
 }

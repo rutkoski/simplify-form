@@ -1,28 +1,30 @@
-<?php foreach($options[0] as $option => $label) { ?>
-<label class="checkbox">
-  <input type="checkbox" name="<?= $inputName ?>[]" value="<?= $option ?>"<?= in_array($option, $options[1]) ? ' checked' : '' ?>/> <?= $label ?>
-</label>
-<?php } ?>
+{% for option, label in options['options'] %}
+<div class="checkbox">
+  <label>
+    <input type="checkbox" name="{{ inputName }}[]" value="{{ option }}" {{ option in options['checked'] ? 'checked' : '' }}>
+    {{ label }}
+  </label>
+</div>
+{% endfor %}
 
-<?php if ($action->show(Simplify_Form::ACTION_LIST)) { ?>
+{% if useAjax %}
 <script>
 $(document).ready(function() {
-  var name = '<?= str_replace(array('[', ']'), array('\\\[', '\\\]'), "{$inputName}[]") ?>';
-  $(':checkbox[name=' + name + ']').change(function() {
-    var url = '<?= Simplify_URL::make(null, array('formAction' => 'services', 'serviceName' => $name, 'serviceAction' => 'toggle', Simplify_Form::ID => ${Simplify_Form::ID}))->format(Simplify_URL::JSON) ?>';
+  $(':checkbox[name={{ jsName }}]').change(function() {
+    var url = '{{ ajaxUrl }}';
 
     var data = {
-      '<?= Simplify_Form::ID ?>' : '<?= ${Simplify_Form::ID} ?>',
-      '<?= $name ?>' : $(this).val()
+      '_id' : '{{ _id }}',
+      '{{ name }}' : $(this).val()
     }
 
-    $.amp.loadBegin();
+    //$.amp.loadBegin();
 
     $.post(url, data, function(response) {
       console.log(url, data, response);
-      $.amp.loadEnd();
+      //$.amp.loadEnd();
     });
   });
 });
 </script>
-<?php } ?>
+{% endif %}

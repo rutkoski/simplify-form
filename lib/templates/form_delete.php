@@ -4,7 +4,7 @@
   <input type="hidden" name="deleteAction" value="confirm" />
 
   <?php foreach ($data as $row) { ?>
-  <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>" />
+  <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[\Simplify\Form::ID] ?>" />
   <?php } ?>
 
   <p>Do you really want to delete these items?</p>

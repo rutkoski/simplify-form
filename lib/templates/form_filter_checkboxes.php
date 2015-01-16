@@ -1,10 +1,11 @@
 <div class="control-group">
-  <label for="<?= $name ?>"><?= $label ?></label>
+  <label for="{{ name }}">{{ label }}</label>
   <div class="controls">
-    <?php foreach($options as $option => $label) { ?>
+    {% for option, label in options %}
     <label class="radio inline">
-      <input type="checkbox" name="<?= $name ?>[]" value="<?= $option ?>"<?= $editable ? '' : ' disabled' ?><?= '' . in_array($option, $value) ? ' checked' : '' ?>> <?= $label ?></input>
+      <input type="checkbox" name="{{ name }}[]" value="{{ option }}"{{ editable ? '' : ' disabled' }}{{ option is in_array(value) ? ' checked' : '' }}/>
+      {{ label }}
     </label>
-    <?php } ?>
+    {% endfor %}
   </div>
 </div>

@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
 /**
  *
  * Sortable form
  *
  */
-class Simplify_Form_Sortable extends Simplify_Form
+class Sortable extends \Simplify\Form
 {
 
   const LIST_ACTION_SORT = 'sort';
@@ -39,7 +41,7 @@ class Simplify_Form_Sortable extends Simplify_Form
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Form::setTable()
+   * @see \Simplify\Form::setTable()
    */
   public function setTable($table, $primaryKey, $sortField = null)
   {
@@ -50,7 +52,7 @@ class Simplify_Form_Sortable extends Simplify_Form
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form::execute()
+   * @see \Simplify\Form::execute()
    */
   public function execute($action = null)
   {
@@ -63,12 +65,12 @@ class Simplify_Form_Sortable extends Simplify_Form
      *
      */
 
-    if ($Action->show(Simplify_Form::ACTION_LIST)) {
-      $listAction = s::request()->get('listAction');
+    if ($Action->show(\Simplify\Form::ACTION_LIST)) {
+      $listAction = \Simplify::request()->get('listAction');
 
       if ($listAction == self::LIST_ACTION_SORT) {
-        $id = s::request()->get(Simplify_Form::ID);
-        $index = s::request()->get('index');
+        $id = \Simplify::request()->get(\Simplify\Form::ID);
+        $index = \Simplify::request()->get('index');
 
         $this->repository()->moveTo($id, $index);
       }
@@ -84,7 +86,7 @@ class Simplify_Form_Sortable extends Simplify_Form
   public function getSortField()
   {
     if (empty($this->sortField)) {
-      $this->sortField = Simplify_Inflector::singularize($this->getTable()) . '_order';
+      $this->sortField = \Simplify\Inflector::singularize($this->getTable()) . '_order';
     }
 
     return $this->sortField;
@@ -92,20 +94,20 @@ class Simplify_Form_Sortable extends Simplify_Form
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form::onCreateItemMenu()
+   * @see \Simplify\Form::onCreateItemMenu()
    */
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
+  public function onCreateItemMenu(\Simplify\Menu $menu, \Simplify\Form\Action $action, $data)
   {
-    if ($action->show(Simplify_Form::ACTION_LIST)) {
-      $moveMenu = new Simplify_Menu(null, null, Simplify_Menu::STYLE_DROPDOWN);
-      $moveMenu->addItem(new Simplify_MenuItem('move_top', 'First', 'arrow_top', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'first', Simplify_Form::ID => $data[Simplify_Form::ID]))));
-      $moveMenu->addItem(new Simplify_MenuItem('move_up', 'Previous', 'arrow_up', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'previous', Simplify_Form::ID => $data[Simplify_Form::ID]))));
-      $moveMenu->addItem(new Simplify_MenuItem('move_down', 'Next', 'arrow_down', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'next', Simplify_Form::ID => $data[Simplify_Form::ID]))));
-      $moveMenu->addItem(new Simplify_MenuItem('move_bottom', 'Last', 'arrow_bottom', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'last', Simplify_Form::ID => $data[Simplify_Form::ID]))));
+    if ($action->show(\Simplify\Form::ACTION_LIST)) {
+      $moveMenu = new \Simplify\Menu();
+      $moveMenu->addItem(new \Simplify\MenuItem('move_top', 'First', 'arrow_top', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'first', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
+      $moveMenu->addItem(new \Simplify\MenuItem('move_up', 'Previous', 'arrow_up', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'previous', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
+      $moveMenu->addItem(new \Simplify\MenuItem('move_down', 'Next', 'arrow_down', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'next', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
+      $moveMenu->addItem(new \Simplify\MenuItem('move_bottom', 'Last', 'arrow_bottom', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'last', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
 
-      $moveItem = new Simplify_MenuItem('move', 'Move', null, null, $moveMenu);
+      $moveItem = new \Simplify\MenuItem('move', 'Move', null, null, $moveMenu);
 
-      $menu->addItem(new Simplify_Menu('sortable', array($moveItem), Simplify_Menu::STYLE_BUTTON_GROUP));
+      $menu->addItem(new \Simplify\Menu('sortable', array($moveItem)));
     }
 
     parent::onCreateItemMenu($menu, $action, $data);
@@ -113,16 +115,16 @@ class Simplify_Form_Sortable extends Simplify_Form
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form::repository()
+   * @see \Simplify\Form::repository()
    */
-  public function repository(Simplify_Form_Repository $repository = null)
+  public function repository(\Simplify\Form\Repository $repository = null)
   {
-    if ($repository instanceof Simplify_Form_Repository_Sortable) {
+    if ($repository instanceof \Simplify\Form\Repository\Sortable) {
       $this->repository = $repository;
     }
 
     if (empty($this->repository)) {
-      $this->repository = new Simplify_Form_Repository_Sortable($this->getTable(), $this->getPrimaryKey(), $this->getSortField());
+      $this->repository = new \Simplify\Form\Repository\Sortable($this->getTable(), $this->getPrimaryKey(), $this->getSortField());
     }
 
     return $this->repository;

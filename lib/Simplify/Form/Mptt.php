@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
 /**
  *
  * Tree style form
  *
  */
-class Simplify_Form_Mptt extends Simplify_Form
+class Mptt extends \Simplify\Form
 {
 
   /**
@@ -59,7 +61,7 @@ class Simplify_Form_Mptt extends Simplify_Form
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Form::setTable()
+   * @see \Simplify\Form_Form::setTable()
    */
   public function setTable($table, $primaryKey, $parent = null, $left = null, $right = null)
   {
@@ -72,7 +74,7 @@ class Simplify_Form_Mptt extends Simplify_Form
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form::execute()
+   * @see \Simplify\Form::execute()
    */
   public function execute($action = null)
   {
@@ -90,12 +92,12 @@ class Simplify_Form_Mptt extends Simplify_Form
      *
      */
 
-    if ($Action->show(Simplify_Form::ACTION_LIST)) {
-      $listAction = s::request()->get('listAction');
+    if ($Action->show(\Simplify\Form::ACTION_LIST)) {
+      $listAction = \Simplify::request()->get('listAction');
 
       if ($listAction == self::LIST_ACTION_SORT) {
-        $id = s::request()->get(Simplify_Form::ID);
-        $index = s::request()->get('index');
+        $id = \Simplify::request()->get(\Simplify\Form::ID);
+        $index = \Simplify::request()->get('index');
 
         $this->repository()->moveTo($id, $index);
       }
@@ -107,7 +109,7 @@ class Simplify_Form_Mptt extends Simplify_Form
      *
      */
 
-    if ($Action->show(Simplify_Form::ACTION_LIST)) {
+    if ($Action->show(\Simplify\Form::ACTION_LIST)) {
       $q = $this->repository()->mptt()->query()->select(false)->select("node.{$pk}")->select(
         "CONCAT(REPEAT('&ndash;', (COUNT(parent.{$pk}) - 1)), ' ', node.{$label}) AS {$label}")->select(
         "(COUNT(parent.{$pk}) - 1) AS depth");
@@ -117,7 +119,7 @@ class Simplify_Form_Mptt extends Simplify_Form
       $parents = array(0 => 'Root');
       $parents += sy_array_to_options($data, $pk, $label);
 
-      $filter = new Simplify_Form_Filter_Select($parent, 'Parent');
+      $filter = new \Simplify\Form\Filter\Select($parent, 'Parent');
       $filter->showEmpty = false;
       $filter->defaultValue = '0';
       $filter->options = $parents;
@@ -131,7 +133,7 @@ class Simplify_Form_Mptt extends Simplify_Form
      *
      */
 
-    if ($Action->show(Simplify_Form::ACTION_EDIT & Simplify_Form::ACTION_CREATE)) {
+    if ($Action->show(\Simplify\Form::ACTION_EDIT & \Simplify\Form::ACTION_CREATE)) {
       $q = $this->repository()->mptt()->query()->select(false)->select("node.{$pk}")->select(
         "CONCAT(REPEAT('&ndash;', (COUNT(parent.{$pk}) - 1)), ' ', node.{$label}) AS {$label}")->select(
         "(COUNT(parent.{$pk}) - 1) AS depth");
@@ -148,12 +150,12 @@ class Simplify_Form_Mptt extends Simplify_Form
       $parents = array(0 => 'Root');
       $parents += sy_array_to_options($data, $pk, $label);
 
-      $parentSelect = new Simplify_Form_Element_Select($parent, 'Parent');
+      $parentSelect = new \Simplify\Form\Element\Select($parent, 'Parent');
       $parentSelect->showEmpty = false;
       $parentSelect->defaultValue = '0';
       $parentSelect->options = $parents;
 
-      $this->addElement($parentSelect, Simplify_Form::ACTION_EDIT | Simplify_Form::ACTION_CREATE, 0);
+      $this->addElement($parentSelect, \Simplify\Form::ACTION_EDIT | \Simplify\Form::ACTION_CREATE, 0);
     }
 
     return parent::execute($action);
@@ -166,7 +168,7 @@ class Simplify_Form_Mptt extends Simplify_Form
   public function getParent()
   {
     if (empty($this->parent)) {
-      $this->parent = Simplify_Inflector::singularize($this->getTable()) . '_parent_id';
+      $this->parent = \Simplify\Inflector::singularize($this->getTable()) . '_parent_id';
     }
 
     return $this->parent;
@@ -179,7 +181,7 @@ class Simplify_Form_Mptt extends Simplify_Form
   public function getLeft()
   {
     if (empty($this->left)) {
-      $this->left = Simplify_Inflector::singularize($this->getTable()) . '_left';
+      $this->left = \Simplify\Inflector::singularize($this->getTable()) . '_left';
     }
 
     return $this->left;
@@ -192,7 +194,7 @@ class Simplify_Form_Mptt extends Simplify_Form
   public function getRight()
   {
     if (empty($this->right)) {
-      $this->right = Simplify_Inflector::singularize($this->getTable()) . '_right';
+      $this->right = \Simplify\Inflector::singularize($this->getTable()) . '_right';
     }
 
     return $this->right;
@@ -200,39 +202,39 @@ class Simplify_Form_Mptt extends Simplify_Form
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form::onCreateItemMenu()
+   * @see \Simplify\Form::onCreateItemMenu()
    */
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
+  public function onCreateItemMenu(\Simplify\Menu $menu, \Simplify\Form\Action $action, $data)
   {
-    if ($action->show(Simplify_Form::ACTION_LIST)) {
-      $children = new Simplify_MenuItem('children', 'Children', null,
-        $this->url()->extend(null, array($this->repository()->parent => $data[Simplify_Form::ID])));
+    if ($action->show(\Simplify\Form::ACTION_LIST)) {
+      $children = new \Simplify\MenuItem('children', 'Children', null,
+        $this->url()->extend(null, array($this->repository()->parent => $data[\Simplify\Form::ID])));
 
-      $moveMenu = new Simplify_Menu(null, null, Simplify_Menu::STYLE_DROPDOWN);
+      $moveMenu = new \Simplify\Menu(null, null, \Simplify\Menu::STYLE_DROPDOWN);
       $moveMenu->addItem(
-        new Simplify_MenuItem('move_top', 'First', 'arrow_top',
+        new \Simplify\MenuItem('move_top', 'First', 'arrow_top',
           $this->url()->extend(null,
             array('listAction' => self::LIST_ACTION_SORT, 'index' => 'first',
-              Simplify_Form::ID => $data[Simplify_Form::ID]))));
+              \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
       $moveMenu->addItem(
-        new Simplify_MenuItem('move_up', 'Previous', 'arrow_up',
+        new \Simplify\MenuItem('move_up', 'Previous', 'arrow_up',
           $this->url()->extend(null,
             array('listAction' => self::LIST_ACTION_SORT, 'index' => 'previous',
-              Simplify_Form::ID => $data[Simplify_Form::ID]))));
+              \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
       $moveMenu->addItem(
-        new Simplify_MenuItem('move_down', 'Next', 'arrow_down',
+        new \Simplify\MenuItem('move_down', 'Next', 'arrow_down',
           $this->url()->extend(null,
             array('listAction' => self::LIST_ACTION_SORT, 'index' => 'next',
-              Simplify_Form::ID => $data[Simplify_Form::ID]))));
+              \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
       $moveMenu->addItem(
-        new Simplify_MenuItem('move_bottom', 'Last', 'arrow_bottom',
+        new \Simplify\MenuItem('move_bottom', 'Last', 'arrow_bottom',
           $this->url()->extend(null,
             array('listAction' => self::LIST_ACTION_SORT, 'index' => 'last',
-              Simplify_Form::ID => $data[Simplify_Form::ID]))));
+              \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
 
-      $moveItem = new Simplify_MenuItem('move', 'Move', null, null, $moveMenu);
+      $moveItem = new \Simplify\MenuItem('move', 'Move', null, null, $moveMenu);
 
-      $menu->addItem(new Simplify_Menu('mptt', array($moveItem, $children), Simplify_Menu::STYLE_BUTTON_GROUP));
+      $menu->addItem(new \Simplify\Menu('mptt', array($moveItem, $children), \Simplify\Menu::STYLE_BUTTON_GROUP));
     }
 
     parent::onCreateItemMenu($menu, $action, $data);
@@ -240,16 +242,16 @@ class Simplify_Form_Mptt extends Simplify_Form
 
   /**
    *
-   * @return Simplify_Form_Repository_Mptt
+   * @return \Simplify\Form_Repository_Mptt
    */
-  public function repository(Simplify_Form_Repository_Mptt $repository = null)
+  public function repository(\Simplify\Form\Repository\Mptt $repository = null)
   {
-    if ($repository instanceof Simplify_Form_Repository_Mptt) {
+    if ($repository instanceof \Simplify\Form\Repository\Mptt) {
       $this->repository = $repository;
     }
 
     if (empty($this->repository)) {
-      $this->repository = new Simplify_Form_Repository_Mptt($this->getTable(), $this->getPrimaryKey(),
+      $this->repository = new \Simplify\Form\Repository\Mptt($this->getTable(), $this->getPrimaryKey(),
         $this->getParent(), $this->getLeft(), $this->getRight());
     }
 

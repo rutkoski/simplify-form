@@ -21,90 +21,87 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
+use Simplify\Form;
+
 /**
  *
  * Form element iterator
  *
  */
-class Simplify_Form_ElementIterator implements Iterator
-{
+class ElementIterator implements \Iterator {
 
-  /**
-   *
-   * @var FormElement[]
-   */
-  protected $elements;
+	/**
+	 *
+	 * @var FormElement[]
+	 */
+	protected $elements;
 
-  /**
-   *
-   * @var int
-   */
-  protected $mask;
+	/**
+	 *
+	 * @var int
+	 */
+	protected $mask;
 
-  /**
-   *
-   * @var int
-   */
-  protected $index;
+	/**
+	 *
+	 * @var int
+	 */
+	protected $index;
 
-  /**
-   *
-   * @param FormElement[] $elements
-   * @param int $mask
-   */
-  public function __construct($elements, $mask = Simplify_Form::ACTION_ALL)
-  {
-    $this->elements = $elements;
-    $this->mask = $mask;
-    $this->index = count($this->elements) ? 0 : -1;
-  }
+	/**
+	 *
+	 * @param FormElement[] $elements
+	 * @param int $mask
+	 */
+	public function __construct($elements, $mask = Form::ACTION_ALL) {
+		$this->elements = $elements;
+		$this->mask     = $mask;
+		$this->index    = count($this->elements) ? 0 : -1;
+	}
 
-  /**
-   * (non-PHPdoc)
-   * @see Iterator::current()
-   * @return Simplify_Form_Element
-   */
-  public function current()
-  {
-    return $this->elements[$this->key()];
-  }
+	/**
+	 * (non-PHPdoc)
+	 * @see Iterator::current()
+	 * @return Element
+	 */
+	public function current() {
+		return $this->elements[$this->key()];
+	}
 
-  /**
-   * (non-PHPdoc)
-   * @see Iterator::next()
-   */
-  public function next()
-  {
-    do {
-      $this->index++;
-    } while ($this->index < count($this->elements) && !$this->elements[$this->index]->show($this->mask));
-  }
+	/**
+	 * (non-PHPdoc)
+	 * @see Iterator::next()
+	 */
+	public function next() {
+		do {
+			$this->index++;
+		} while ($this->index < count($this->elements) && !$this->elements[$this->index]->show($this->mask));
+	}
 
-  /**
-   * (non-PHPdoc)
-   * @see Iterator::key()
-   */
-  public function key()
-  {
-    return $this->index;
-  }
+	/**
+	 * (non-PHPdoc)
+	 * @see Iterator::key()
+	 */
+	public function key() {
+		return $this->index;
+	}
 
-  /**
-   * (non-PHPdoc)
-   * @see Iterator::valid()
-   */
-  public function valid()
-  {
-    return $this->index >= 0 && $this->index < count($this->elements);
-  }
+	/**
+	 * (non-PHPdoc)
+	 * @see Iterator::valid()
+	 */
+	public function valid() {
+		return $this->index >= 0 && $this->index < count($this->elements);
+	}
 
-  /**
-   * (non-PHPdoc)
-   * @see Iterator::rewind()
-   */
-  public function rewind()
-  {
-    $this->index = count($this->elements) ? 0 : -1;
-  }
+	/**
+	 * (non-PHPdoc)
+	 * @see Iterator::rewind()
+	 */
+	public function rewind() {
+		$this->index = count($this->elements) ? 0 : -1;
+	}
 
 }

@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Filter;
+
 /**
  *
  * Form filter with select element
  *
  */
-class Simplify_Form_Filter_Checkboxes extends Simplify_Form_Filter
+class Checkboxes extends \Simplify\Form\Filter
 {
 
   /**
@@ -38,9 +40,9 @@ class Simplify_Form_Filter_Checkboxes extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Filter::onRender()
+   * @see \Simplify\Form\Filter::onRender()
    */
-  public function onRender(Simplify_Form_Action $action)
+  public function onRender(\Simplify\Form\Action $action)
   {
     $this->set('options', $this->getOptions());
 
@@ -49,7 +51,7 @@ class Simplify_Form_Filter_Checkboxes extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getValue()
+   * @see \Simplify\Form\Filter::getValue()
    */
   public function getValue()
   {
@@ -58,9 +60,9 @@ class Simplify_Form_Filter_Checkboxes extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
+   * @see \Simplify\Form\Component::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
     parent::onInjectQueryParams($action, $params);
 
@@ -69,7 +71,7 @@ class Simplify_Form_Filter_Checkboxes extends Simplify_Form_Filter
     if (! empty($value)) {
       $name = $this->getFieldName();
 
-      $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($name, $value);
+      $params[\Simplify\Db\QueryParameters::WHERE][] = \Simplify\Db\QueryObject::buildIn($name, $value);
     }
   }
 
@@ -80,7 +82,7 @@ class Simplify_Form_Filter_Checkboxes extends Simplify_Form_Filter
   public function getOptions()
   {
     if ($this->options === false) {
-      $options = s::db()
+      $options = \Simplify::db()
         ->query()
         ->from($this->form->getTable())
         ->select($this->getFieldName())

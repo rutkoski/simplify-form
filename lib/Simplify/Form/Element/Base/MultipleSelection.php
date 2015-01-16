@@ -21,10 +21,12 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element\Base;
+
 /**
  * Base class for miltiple selection elements
  */
-abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_Form_Element
+abstract class MultipleSelection extends \Simplify\Form\Element
 {
 
   /**
@@ -71,17 +73,16 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
-   *
-   * @see Simplify_Form_Component::onExecuteServices()
+   * @see \Simplify\Form\Component::onExecuteServices()
    */
-  public function onExecuteServices(Simplify_Form_Action $action, $serviceAction)
+  public function onExecuteServices(\Simplify\Form\Action $action, $serviceAction)
   {
     parent::onExecuteServices($action, $serviceAction);
 
     switch ($serviceAction) {
       case 'toggle' :
         $pid = $this->form->getId();
-        $fid = s::request()->post($this->getName());
+        $fid = \Simplify::request()->post($this->getName());
 
         $this->set('value', $this->toggleValue($pid[0], $fid));
 
@@ -108,14 +109,14 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
     $data = array($apk => $pid, $afk => $fid);
 
-    $found = s::db()->query()->from($at)->select("COUNT(*)")->where("{$apk} = :{$apk} AND {$afk} = :{$afk}")->execute(
+    $found = \Simplify::db()->query()->from($at)->select("COUNT(*)")->where("{$apk} = :{$apk} AND {$afk} = :{$afk}")->execute(
       $data)->fetchOne();
 
     if (empty($found)) {
-      s::db()->insert($at, $data)->execute($data);
+      \Simplify::db()->insert($at, $data)->execute($data);
     }
     else {
-      s::db()->delete($at, "{$apk} = :{$apk} AND {$afk} = :{$afk}")->execute($data);
+      \Simplify::db()->delete($at, "{$apk} = :{$apk} AND {$afk} = :{$afk}")->execute($data);
     }
 
     return !$found;
@@ -123,10 +124,9 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
-   *
-   * @see Simplify_Form_Element::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $this->set('options', $this->getOptions($data));
 
@@ -135,35 +135,32 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
 
   /**
    * (non-PHPdoc)
-   *
-   * @see Simplify_Form_Component::onPostData()
+   * @see \Simplify\Form\Element::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     $data[$this->getName()] = (array) sy_get_param($post, $this->getName());
   }
 
   /**
    * (non-PHPdoc)
-   *
-   * @see Simplify_Form_Element::onCollectTableData()
+   * @see \Simplify\Form\Element::onCollectTableData()
    */
-  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
+  public function onCollectTableData(\Simplify\Form\Action $action, &$row, $data)
   {
   }
 
   /**
    * (non-PHPdoc)
-   *
-   * @see Simplify_Form_Component::onSave()
+   * @see \Simplify\Form\Component::onSave()
    */
-  public function onSave(Simplify_Form_Action $action, &$data)
+  public function onSave(\Simplify\Form\Action $action, &$data)
   {
-    $id = $data[Simplify_Form::ID];
+    $id = $data[\Simplify\Form::ID];
 
     $options = $this->getOptions($data);
 
-    $a = $options[1];
+    $a = $options['checked'];
 
     $b = $data[$this->getName()];
 
@@ -177,39 +174,37 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
     foreach ($add as $_id) {
       $data = array($apk => $id, $afk => $_id);
 
-      s::db()->insert($at, $data)->execute($data);
+      \Simplify::db()->insert($at, $data)->execute($data);
     }
 
     foreach ($rem as $_id) {
       $data = array($apk => $id, $afk => $_id);
 
-      s::db()->delete($at, "{$apk} = :{$apk} AND {$afk} = :{$afk}")->execute($data);
+      \Simplify::db()->delete($at, "{$apk} = :{$apk} AND {$afk} = :{$afk}")->execute($data);
     }
   }
 
   /**
    * (non-PHPdoc)
-   *
-   * @see Simplify_Form_Element::onInjectQueryParams()
+   * @see \Simplify\Form\Element::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
   }
 
   /**
    * (non-PHPdoc)
-   *
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
     return $this->onRender($action, $data, $index)->render();
   }
 
   /**
-   *
-   * @param array $data
-   * @return multitype:multitype:Ambigous <unknown, ArrayAccess> multitype:unknown
+   * 
+   * @param unknown_type $data
+   * @return multitype:multitype:Ambigous <unknown, ArrayAccess>  multitype:unknown
    */
   public function getOptions($data)
   {
@@ -220,10 +215,10 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
     $apk = $this->getAssociationPrimaryKey();
     $afk = $this->getAssociationForeignKey();
 
-    $q = s::db()->query()->select("{$t}.{$fk}")->select("{$t}.{$this->labelField}")->select("{$at}.{$afk} AS checked")->from(
+    $q = \Simplify::db()->query()->select("{$t}.{$fk}")->select("{$t}.{$this->labelField}")->select("{$at}.{$afk} AS checked")->from(
       $t)->leftJoin("{$at} ON ({$t}.{$fk} = {$at}.{$afk} AND {$at}.{$apk} = :{$pk})");
 
-    $data = $q->execute(array($pk => $data[Simplify_Form::ID]))->fetchAll();
+    $data = $q->execute(array($pk => $data[\Simplify\Form::ID]))->fetchAll();
 
     $options = sy_array_to_options($data, $fk, $this->labelField);
 
@@ -234,7 +229,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
       }
     }
 
-    return array($options, $checked);
+    return array('options' => $options, 'checked' => $checked);
   }
 
   /**
@@ -272,7 +267,7 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
   public function getForeignKey()
   {
     if (empty($this->foreignKey)) {
-      $this->foreignKey = Simplify_Inflector::singularize($this->getTable()) . '_id';
+      $this->foreignKey = \Simplify\Inflector::singularize($this->getTable()) . '_id';
     }
 
     return $this->foreignKey;
@@ -288,7 +283,9 @@ abstract class Simplify_Form_Element_Base_MultipleSelection extends Simplify_For
   {
     if (empty($this->associationTable)) {
       $tables = array($this->form->getTable(), $this->getTable());
+      
       sort($tables);
+      
       $this->associationTable = implode('_', $tables);
     }
 

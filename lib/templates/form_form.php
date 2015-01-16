@@ -1,25 +1,32 @@
-<h3><?= $title ?></h3>
+<h3>{{ title }}</h3>
 
-<form action="" method="POST" enctype="multipart/form-data" class="form-horizontal">
-  <?php foreach ($data as $row) { ?>
-  <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[Simplify_Form::ID] ?>"/>
+<form action="" method="POST" enctype="multipart/form-data" class="form-horizontal" role="form">
+  {% for row in data %}
+    <input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}"/>
 
-  <?php foreach ($row['elements'] as $element) { ?>
-  <?php if ($element['label'] !== false) { ?>
-  <div class="control-group <?= $element['class'] ?><?= $element['state'] ? " {$element['state']}" : '' ?>" id="<?= $element['id'] ?>">
-    <label class="control-label" for="<?= $element['name'] ?>"><?= $element['label'] ?></label>
-    <div class="controls">
-      <?= $element['controls'] ?>
-      <?= $element['stateMessage'] ? "<span class=\"help-inline\">{$element['stateMessage']}</span>" : '' ?>
-    </div>
+    {% for element in row['elements'] %}
+      {% if element['label'] != false %}
+        <div class="form-group {{ element['class'] }} {{ element['state'] }}" id="{{ element['id'] }}">
+          <label class="col-sm-2 control-label" for="{{ element['name'] }}">{{ element['label'] }}</label>
+          <div class="col-sm-10">
+            {{ element['controls'] }}
+
+            {% if element['stateMessage'] %}
+              <span class="help-block">{{ element['stateMessage'] }}</span>
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        {{ element['controls'] }}
+      {% endif %}
+    {% endfor %}
+
+    {% if menu %}
+      {% include 'form_menu.php' with { 'menu' : row['menu'].getItemAt(0) } %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">Save</button>
   </div>
-  <?php } else { ?>
-  <?= $element['controls'] ?>
-  <?php } ?>
-  <?php } ?>
-
-  <?= $this->menu->show($row['menu']) ?>
-  <?php } ?>
-
-  <input type="submit" value="Save" class="btn btn-primary" />
 </form>

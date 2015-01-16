@@ -1,6 +1,8 @@
 <?php
 
-class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
+namespace Simplify\Form\Filter;
+
+class Datetime extends \Simplify\Form\Filter
 {
 
   /**
@@ -39,9 +41,9 @@ class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Filter::onExecute()
+   * @see \Simplify\Form\Filter::onExecute()
    */
-  public function onExecute(Simplify_Form_Action $action)
+  public function onExecute(\Simplify\Form\Action $action)
   {
     parent::onExecute($action);
 
@@ -55,12 +57,12 @@ class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Filter::onRender()
+   * @see \Simplify\Form\Filter::onRender()
    */
-  public function onRender(Simplify_Form_Action $action)
+  public function onRender(\Simplify\Form\Action $action)
   {
-    $this->set('formatedSince', Simplify_Form_DateTime::datetime($this->since));
-    $this->set('formatedUntil', Simplify_Form_DateTime::datetime($this->until));
+    $this->set('formatedSince', \Simplify\Form\DateTime::datetime($this->since));
+    $this->set('formatedUntil', \Simplify\Form\DateTime::datetime($this->until));
     $this->set('sinceEnabled', $this->sinceEnabled());
     $this->set('untilEnabled', $this->untilEnabled());
 
@@ -69,24 +71,24 @@ class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
+   * @see \Simplify\Form\Component::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
     if ($this->sinceEnabled()) {
       $value = $this->getSinceValue();
       $name = "{$this->getName()}_since";
 
-      $params[Simplify_Db_QueryParameters::WHERE][] = "{$this->getFieldName()} >= :{$name}";
-      $params[Simplify_Db_QueryParameters::DATA][$name] = Simplify_Form_DateTime::database($value);
+      $params[\Simplify\Db\QueryParameters::WHERE][] = "{$this->getFieldName()} >= :{$name}";
+      $params[\Simplify\Db\QueryParameters::DATA][$name] = \Simplify\Form\DateTime::database($value);
     }
 
     if ($this->untilEnabled()) {
       $value = $this->getUntilValue();
       $name = "{$this->getName()}_until";
 
-      $params[Simplify_Db_QueryParameters::WHERE][] = "{$this->getFieldName()} <= :{$name}";
-      $params[Simplify_Db_QueryParameters::DATA][$name] = Simplify_Form_DateTime::database($value);
+      $params[\Simplify\Db\QueryParameters::WHERE][] = "{$this->getFieldName()} <= :{$name}";
+      $params[\Simplify\Db\QueryParameters::DATA][$name] = \Simplify\Form\DateTime::database($value);
     }
 
     parent::onInjectQueryParams($action, $params);
@@ -107,7 +109,7 @@ class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
    */
   public function getSinceValue($default = null)
   {
-    return s::request()->get($this->getName() . '_since', $default);
+    return \Simplify::request()->get($this->getName() . '_since', $default);
   }
 
   /**
@@ -125,7 +127,7 @@ class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
    */
   public function getUntilValue($default = null)
   {
-    return s::request()->get($this->getName() . '_until', $default);
+    return \Simplify::request()->get($this->getName() . '_until', $default);
   }
 
   /**
@@ -153,14 +155,14 @@ class Simplify_Form_Filter_Datetime extends Simplify_Form_Filter
    */
   protected function loadDatabaseLimits()
   {
-    $limits = s::db()->query()->from($this->form->getTable())->select(
+    $limits = \Simplify::db()->query()->from($this->form->getTable())->select(
       "MIN({$this->getFieldName()}) AS min, MAX({$this->getFieldName()}) AS max")->execute()->fetchRow();
 
-    $minDate = Simplify_Form_DateTime::timestamp($limits['min']);
-    $maxDate = Simplify_Form_DateTime::timestamp($limits['max']);
+    $minDate = \Simplify\Form\DateTime::timestamp($limits['min']);
+    $maxDate = \Simplify\Form\DateTime::timestamp($limits['max']);
 
-    $this->minDate = max(Simplify_Form_DateTime::timestamp($this->minDate), $minDate);
-    $this->maxDate = min(Simplify_Form_DateTime::timestamp($this->maxDate), $maxDate);
+    $this->minDate = max(\Simplify\Form\DateTime::timestamp($this->minDate), $minDate);
+    $this->maxDate = min(\Simplify\Form\DateTime::timestamp($this->maxDate), $maxDate);
 
     if (empty($this->maxDate)) {
       $this->maxDate = $maxDate;

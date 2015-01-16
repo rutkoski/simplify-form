@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Text form element
  *
  */
-class Simplify_Form_Element_Text extends Simplify_Form_Element
+class Text extends \Simplify\Form\Element
 {
 
   /**
@@ -43,9 +45,9 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onValidate()
+   * @see \Simplify\Form\Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, $data)
+  public function onValidate(\Simplify\Form\Action $action, $data)
   {
     if ($this->minLength !== false || $this->maxLength !== false) {
       if ($this->minLength === $this->maxLength) {
@@ -65,16 +67,16 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
 
       $msg = sprintf($msg, $this->getLabel(), $this->minLength, $this->maxLength);
 
-      $rule = new Simplify_Validation_Length($msg, $this->minLength, $this->maxLength);
+      $rule = new \Simplify\Validation\Length($msg, $this->minLength, $this->maxLength);
       $rule->validate($this->getValue($data));
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $this->set('minLength', $this->minLength);
     $this->set('maxLength', $this->maxLength);
@@ -82,6 +84,10 @@ class Simplify_Form_Element_Text extends Simplify_Form_Element
     return parent::onRender($action, $data, $index);
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Component::onCollectRequirements()
+   */
   public function onCollectRequirements($schema)
   {
     $schema[$this->form->getTable()]['fields'][$this->getFieldName()] = array('type' => 'TEXT',

@@ -1,1 +1,1 @@
-<input type="text" name="<?= $inputName ?>" value="<?= $value ?>" />
+<input type="email" class="form-control" name="{{ inputName }}" value="{{ value }}" />

@@ -21,19 +21,21 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Form date and time element
  *
  */
-class Simplify_Form_Element_Datetime extends Simplify_Form_Element
+class Datetime extends \Simplify\Form\Element
 {
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $this->set('formatedValue', $this->getDisplayValue($action, $data, $index));
 
@@ -42,31 +44,31 @@ class Simplify_Form_Element_Datetime extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onPostData()
+   * @see \Simplify\Form\Element::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     $date = $post[$this->getName()];
 
-    $data[$this->getName()] = Simplify_Form_DateTime::database($date);
+    $data[$this->getName()] = \Simplify\Form\DateTime::database($date);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
-    return Simplify_Form_DateTime::datetime($this->getValue($data));
+    return \Simplify\Form\DateTime::datetime($this->getValue($data));
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getDefaultValue()
+   * @see \Simplify\Form\Component::getDefaultValue()
    */
   public function getDefaultValue()
   {
-    return Simplify_Form_DateTime::database('now');
+    return \Simplify\Form\DateTime::database('now');
   }
 
 }

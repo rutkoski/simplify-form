@@ -21,11 +21,13 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Filter;
+
 /**
  *
  * Form filter with select element
  *
  */
-class Simplify_Form_Filter_Radios extends Simplify_Form_Filter_Select
+class Radios extends \Simplify\Form\Filter\Select
 {
 }

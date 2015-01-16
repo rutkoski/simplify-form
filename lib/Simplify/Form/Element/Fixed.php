@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Hidden form element
  *
  */
-class Simplify_Form_Element_Fixed extends Simplify_Form_Element
+class Fixed extends \Simplify\Form\Element
 {
 
   /**
@@ -46,17 +48,17 @@ class Simplify_Form_Element_Fixed extends Simplify_Form_Element
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
+   * @see \Simplify\Form\Element::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
-    $params[Simplify_Db_QueryParameters::SELECT][] = $this->getFieldName();
-    $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($this->getFieldName(), $this->value);
+    $params[\Simplify\Db\QueryParameters::SELECT][] = $this->getFieldName();
+    $params[\Simplify\Db\QueryParameters::WHERE][] = \Simplify\Db\QueryObject::buildIn($this->getFieldName(), $this->value);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getValue()
+   * @see \Simplify\Form\Element::getValue()
    */
   public function getValue($data)
   {

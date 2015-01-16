@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Textarea form element
  *
  */
-class Simplify_Form_Element_Textarea extends Simplify_Form_Element_Text
+class Textarea extends \Simplify\Form\Element\Text
 {
 
   /**
@@ -50,9 +52,9 @@ class Simplify_Form_Element_Textarea extends Simplify_Form_Element_Text
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
     $value = parent::getDisplayValue($action, $data, $index);
 

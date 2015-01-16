@@ -1,10 +1,2 @@
-<?= $this->html->js('/ckeditor/ckeditor.js') ?>
-
-<textarea name="<?= $inputName ?>"><?= $value ?></textarea>
-
-<script>
-CKEDITOR.replace('<?= $inputName ?>', {
-  filebrowserBrowseUrl: '<?= $browserUrl ?>',
-  filebrowserUploadUrl: '<?= $uploaderUrl ?>'
-});
-</script>
+<textarea name="{{ inputName }}" class="form-control" 
+  data-sy-form-wysiwyg='{{ wysiwygOptions }}'>{{ value }}</textarea>

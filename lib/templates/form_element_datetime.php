@@ -1,6 +1,6 @@
-<input type="text" name="<?= $inputName ?>" value="<?= $formatedValue ?>"/>
+<input type="text" name="{{ inputName }}" value="{{ formatedValue }}"/>
 <script>
 (function() {
-  $("#<?= $id ?> input").datetimepicker();
+  $('#{{ id }} input').datetimepicker();
 })();
 </script>

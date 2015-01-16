@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Repository;
+
 /**
  *
  * MPTT form repository
  *
  */
-class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements Simplify_Db_SortableInterface
+class Mptt extends \Simplify\Form\Repository implements \Simplify\Db\SortableInterface
 {
 
   /**
@@ -66,20 +68,20 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::findAll()
+   * @see \Simplify\Form\Repository::findAll()
    */
   public function findAll($params = null)
   {
     $from = $this->mptt()->query()->alias('a');
 
-    $result = s::db()->query()->from($from)->setParams($params)->select('depth')->select($this->parent)->execute()->fetchAll();
+    $result = \Simplify::db()->query()->from($from)->setParams($params)->select('depth')->select($this->parent)->execute()->fetchAll();
 
     return $result;
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::insert()
+   * @see \Simplify\Form\Repository::insert()
    */
   public function insert(&$data)
   {
@@ -88,14 +90,14 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::update()
+   * @see \Simplify\Form\Repository::update()
    */
   public function update(&$data)
   {
     $row = $this->find($data[$this->pk]);
 
     if ($row[$this->parent] != $data[$this->parent]) {
-      $this->mptt()->move($data[$this->pk], $data[$this->parent], Simplify_Db_MPTT::LAST_CHILD);
+      $this->mptt()->move($data[$this->pk], $data[$this->parent], \Simplify\Db\MPTT::LAST_CHILD);
     }
 
     return parent::update($data);
@@ -103,7 +105,7 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::delete()
+   * @see \Simplify\Form\Repository::delete()
    */
   public function delete($id = null, $params = array())
   {
@@ -120,11 +122,11 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Repository::deleteAll()
+   * @see \Simplify\Form\Repository::deleteAll()
    */
   public function deleteAll($params = null)
   {
-    $params[Simplify_Db_QueryParameters::SELECT][] = $this->pk;
+    $params[\Simplify\Db\QueryParameters::SELECT][] = $this->pk;
 
     $data = $this->findAll($params);
 
@@ -143,20 +145,20 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Db_SortableInterface::moveTo()
+   * @see \Simplify\Db\SortableInterface::moveTo()
    */
   public function moveTo($id, $position)
   {
     if (!is_numeric($position) &&
        !in_array($position, array('top', 'up', 'down', 'bottom', 'first', 'left', 'right', 'last', 'previous', 'next'))) {
-      throw new Exception("Invalid index <b>$position</b>");
+      throw new \Exception("Invalid index <b>$position</b>");
     }
 
-    $row = s::db()->query()->from($this->table)->select($this->parent)->select($this->left)->select($this->right)->where(
+    $row = \Simplify::db()->query()->from($this->table)->select($this->parent)->select($this->left)->select($this->right)->where(
       "{$this->pk} = ?")->execute($id)->fetchRow();
 
     if (empty($row)) {
-      throw new Exception("Record not found");
+      throw new \Exception("Record not found");
     }
 
     $parent = $row[$this->parent];
@@ -164,15 +166,15 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
     $oldright = $row[$this->right];
     $oldwidth = $oldright - $oldleft + 1;
 
-    $branch = s::db()->query()->select($this->pk)->from($this->table)->where(
+    $branch = \Simplify::db()->query()->select($this->pk)->from($this->table)->where(
       "$this->left BETWEEN $oldleft AND $oldright")->execute()->fetchCol();
     $branch = implode(', ', $branch);
 
-    $q = s::db()->query()->from($this->table)->select($this->left)->select($this->right)->where(
+    $q = \Simplify::db()->query()->from($this->table)->select($this->left)->select($this->right)->where(
       "$this->parent = $parent");
 
     if (is_numeric($position)) {
-      $pos = s::db()->query()->from($this->table)->select("COUNT({$this->pk})")->where("{$this->parent} = {$parent}")->where(
+      $pos = \Simplify::db()->query()->from($this->table)->select("COUNT({$this->pk})")->where("{$this->parent} = {$parent}")->where(
         "{$this->left} < {$oldleft}")->execute()->fetchOne();
 
       if ($position == $pos) {
@@ -265,7 +267,7 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
         WHERE {$this->left} BETWEEN :left AND :right
       ";
 
-      s::db()->query($sql)->execute(array('width' => $olddir * $oldwidth, 'left' => $newleft, 'right' => $newright));
+      \Simplify::db()->query($sql)->execute(array('width' => $olddir * $oldwidth, 'left' => $newleft, 'right' => $newright));
 
       $sql = "
         UPDATE {$this->table}
@@ -273,17 +275,17 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
         WHERE {$this->pk} IN ({$branch})
       ";
 
-      s::db()->query($sql)->execute(array('width' => $dir * $width));
+      \Simplify::db()->query($sql)->execute(array('width' => $dir * $width));
     }
   }
 
   /**
-   *
-   * @return Simplify_Db_MPTT
+   * 
+   * @return \Simplify\Db\Mptt
    */
   public function mptt()
   {
-    return Simplify_Db_MPTT::getInstance($this->table, $this->pk, $this->parent, $this->left, $this->right);
+    return \Simplify\Db\MPTT::getInstance($this->table, $this->pk, $this->parent, $this->left, $this->right);
   }
 
   public function createRepository()
@@ -305,8 +307,8 @@ class Simplify_Form_Repository_Mptt extends Simplify_Form_Repository implements 
 
     $sql = sprintf($create, $this->table, $this->pk, $this->parent, $this->left, $this->right);
 
-    if (s::db()->query($sql)->executeRaw() === false) {
-      throw new Simplify_Db_DatabaseException('Could not create table');
+    if (\Simplify::db()->query($sql)->executeRaw() === false) {
+      throw new \Simplify\Db\DatabaseException('Could not create table');
     }
   }
 

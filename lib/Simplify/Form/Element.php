@@ -21,12 +21,18 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
+use Simplify\Db\QueryParameters;
+use Simplify\Form;
+use Simplify\Inflector;
+
 /**
  *
  * Form elements
  *
  */
-abstract class Simplify_Form_Element extends Simplify_Form_Component
+abstract class Element extends Component
 {
 
   /**
@@ -61,7 +67,7 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getValue()
+   * @see Component::getValue()
    */
   public function getValue($data)
   {
@@ -71,12 +77,12 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
   /**
    * Get the display value for the element.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $data form data
    * @param mixed $index
    * @return string the display value
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(Action $action, $data, $index)
   {
     return $data[$this->getName()];
   }
@@ -98,7 +104,7 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
    */
   public function getElementClass()
   {
-    return Simplify_Inflector::underscore(get_class($this));
+    return Inflector::underscore(get_class($this));
   }
 
   /**
@@ -114,25 +120,25 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
   /**
    * On validate callback.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $data form data
    */
-  public function onValidate(Simplify_Form_Action $action, $data)
+  public function onValidate(Action $action, $data)
   {
     if ($action->show($this->unique)) {
       $unique = $this->getError('unique', __('Value must be unique'));
 
-      $rule = new Simplify_Form_Validation_Unique($unique, $this, $data[$this->form->getPrimaryKey()]);
+      $rule = new \Simplify\Form\Validation\Unique($unique, $this, $data[$this->form->getPrimaryKey()]);
       $rule->validate($this->getValue($data));
     }
   }
 
   /**
    *
-   * @param Simplify_Form_Action $action
+   * @param Action $action
    * @param string[] $headers
    */
-  public function onRenderHeaders(Simplify_Form_Action $action, &$headers)
+  public function onRenderHeaders(Action $action, &$headers)
   {
     $headers[$this->getName()] = $this->getLabel();
   }
@@ -140,25 +146,25 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
   /**
    * Get the display value for the element.
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $line the table row
    * @param array $data form data
    * @param mixed $index
    * @return string the display value
    */
-  public function onRenderLine(Simplify_Form_Action $action, &$line, $data, $index)
+  public function onRenderLine(Action $action, &$line, $data, $index)
   {
     $line['elements'][$this->getName()]['controls'] = $this->getDisplayValue($action, $data, $index);
   }
 
   /**
    *
-   * @param Simplify_Form_Action $action current action
+   * @param Action $action current action
    * @param array $line the form line
    * @param array $data form data
    * @param mixed $index
    */
-  public function onRenderControls(Simplify_Form_Action $action, &$line, $data, $index)
+  public function onRenderControls(Action $action, &$line, $data, $index)
   {
     $element = array();
 
@@ -176,16 +182,16 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * @see Component::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(Action $action, $data, $index)
   {
-    $exists = (!empty($data[Simplify_Form::ID]));
+    $exists = (!empty($data[Form::ID]));
 
     $this->set('state', $this->state);
     $this->set('stateMessage', $this->stateMessage);
     $this->set('exists', $exists);
-    $this->set(Simplify_Form::ID, $data[Simplify_Form::ID]);
+    $this->set(Form::ID, $data[Form::ID]);
     $this->set('id', $this->getElementId($index));
     $this->set('inputName', $this->getInputName($index));
     $this->set('name', $this->getName());
@@ -200,20 +206,20 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onInjectQueryParams()
+   * @see Component::onInjectQueryParams()
    */
-  public function onInjectQueryParams(Simplify_Form_Action $action, &$params)
+  public function onInjectQueryParams(Action $action, &$params)
   {
     if ($this->getFieldName()) {
-      $params[Simplify_Db_QueryParameters::SELECT][] = $this->getFieldName();
+      $params[QueryParameters::SELECT][] = $this->getFieldName();
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onLoadData()
+   * @see Component::onLoadData()
    */
-  public function onLoadData(Simplify_Form_Action $action, &$data, $row)
+  public function onLoadData(Action $action, &$data, $row)
   {
     if (isset($row[$this->getFieldName()])) {
       $data[$this->getName()] = $row[$this->getFieldName()];
@@ -222,18 +228,18 @@ abstract class Simplify_Form_Element extends Simplify_Form_Component
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onPostData()
+   * @see Component::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(Action $action, &$data, $post)
   {
     $data[$this->getName()] = sy_get_param($post, $this->getName(), $this->getDefaultValue());
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onCollectTableData()
+   * @see Component::onCollectTableData()
    */
-  public function onCollectTableData(Simplify_Form_Action $action, &$row, $data)
+  public function onCollectTableData(Action $action, &$row, $data)
   {
     if (isset($data[$this->getName()])) {
       $row[$this->getFieldName()] = $data[$this->getName()];

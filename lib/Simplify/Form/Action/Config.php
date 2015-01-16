@@ -1,6 +1,8 @@
 <?php
 
-class Simplify_Form_Action_Config extends Simplify_Form_Action
+namespace Simplify\Form\Action;
+
+class Config extends \Simplify\Form\Action
 {
 
   /**
@@ -34,7 +36,7 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
    *
    * @var int
    */
-  protected $actionMask = Simplify_Form::ACTION_CONFIG;
+  protected $actionMask = \Simplify\Form::ACTION_CONFIG;
 
   /**
    *
@@ -54,18 +56,18 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onCreateMenu()
+   * @see \Simplify\Form\Action::onCreateMenu()
    */
-  public function onCreateMenu(Simplify_Menu $menu)
+  public function onCreateMenu(\Simplify\Menu $menu)
   {
     $menu->getItemByName('main')->addItem(
-        new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
-            new Simplify_URL(null, array('formAction' => $this->getName()))));
+        new \Simplify\MenuItem($this->getName(), $this->getTitle(), null,
+            new \Simplify\URL(null, array('formAction' => $this->getName()))));
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onExecute()
+   * @see \Simplify\Form\Action::onExecute()
    */
   public function onExecute()
   {
@@ -73,18 +75,18 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
 
     $this->onLoadData();
 
-    if (s::request()->method(Simplify_Request::POST)) {
+    if (\Simplify::request()->method(\Simplify\Request::POST)) {
       $this->onPostData();
       $this->onValidate();
       $this->onSave();
 
-      return Simplify_Form::RESULT_SUCCESS;
+      return \Simplify\Form::RESULT_SUCCESS;
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onRender()
+   * @see \Simplify\Form\Action::onRender()
    */
   public function onRender()
   {
@@ -93,23 +95,23 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
     $data = array();
 
     $line = array();
-    $line['name'] = Simplify_Form::ID . "[]";
-    $line[Simplify_Form::ID] = null;
+    $line['name'] = \Simplify\Form::ID . "[]";
+    $line[\Simplify\Form::ID] = null;
     $line['elements'] = array();
 
     while ($elements->valid()) {
       $element = $elements->current();
 
       $line['index'] = $element->getName();
-      $line['menu'] = new Simplify_Menu('actions', null, Simplify_Menu::STYLE_TOOLBAR);
-      $line['menu']->addItem(new Simplify_Menu('main', null, Simplify_Menu::STYLE_BUTTON_GROUP));
+      //$line['menu'] = new \Simplify\Menu('actions');
+      //$line['menu']->addItem(new \Simplify\Menu('main'));
 
       $element->onRenderControls($this, $line, $this->formData[$element->getName()]['data'], $element->getName());
 
       $elements->next();
     }
 
-    $this->form->onCreateItemMenu($line['menu'], $this, null);
+    //$this->form->onCreateItemMenu($line['menu'], $this, null);
 
     $data[] = $line;
 
@@ -120,12 +122,12 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onPostData()
+   * @see \Simplify\Form\Action::onPostData()
    */
   public function onPostData()
   {
-    $post = s::request()->post('formData');
-    $files = s::request()->files('formData');
+    $post = \Simplify::request()->post('formData');
+    $files = \Simplify::request()->files('formData');
 
     $elements = $this->getElements();
 
@@ -148,7 +150,7 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onSave()
+   * @see \Simplify\Form\Action::onSave()
    */
   protected function onSave()
   {
@@ -169,17 +171,17 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
       $data[$this->getValueField()] = $row[$element->getFieldName()];
 
       if (empty($this->formData[$element->getName()]['found'])) {
-        s::db()->insert($this->getTable(), $data)->execute();
+        \Simplify::db()->insert($this->getTable(), $data)->execute();
       }
       else {
-        s::db()->update($this->getTable(), $data, "{$this->getNameField()} = :{$this->getNameField()}")->execute();
+        \Simplify::db()->update($this->getTable(), $data, "{$this->getNameField()} = :{$this->getNameField()}")->execute();
       }
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onLoadData()
+   * @see \Simplify\Form\Action::onLoadData()
    */
   protected function onLoadData()
   {
@@ -189,7 +191,7 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
     $value = $this->getValueField();
 
     $params = array();
-    $params[Simplify_Db_QueryParameters::SELECT][] = $value;
+    $params[\Simplify\Db\QueryParameters::SELECT][] = $value;
 
     $this->formData = array();
 
@@ -198,12 +200,12 @@ class Simplify_Form_Action_Config extends Simplify_Form_Action
       $element = $elements->current();
       $elements->next();
 
-      $params[Simplify_Db_QueryParameters::WHERE][] = "{$name} = :{$name}";
-      $params[Simplify_Db_QueryParameters::DATA] = array($name => $element->getFieldName());
+      $params[\Simplify\Db\QueryParameters::WHERE][] = "{$name} = :{$name}";
+      $params[\Simplify\Db\QueryParameters::DATA] = array($name => $element->getFieldName());
 
       $row = array();
 
-      $row['found'] = s::db()->query()->from($this->getTable())->setParams($params)->execute()->fetchRow();
+      $row['found'] = \Simplify::db()->query()->from($this->getTable())->setParams($params)->execute()->fetchRow();
 
       $row['data'][$element->getFieldName()] = sy_get_param($row['found'], $value);
 

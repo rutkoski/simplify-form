@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Hidden form element
  *
  */
-class Simplify_Form_Element_Hidden extends Simplify_Form_Element
+class Hidden extends \Simplify\Form\Element
 {
 
   /**
@@ -37,12 +39,12 @@ class Simplify_Form_Element_Hidden extends Simplify_Form_Element
   {
     parent::__construct($name, $label);
 
-    $this->remove = Simplify_Form::ACTION_VIEW ^ Simplify_Form::ACTION_LIST;
+    $this->remove = \Simplify\Form::ACTION_VIEW ^ \Simplify\Form::ACTION_LIST;
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::getLabel()
+   * @see \Simplify\Form\Component::getLabel()
    */
   public function getLabel()
   {

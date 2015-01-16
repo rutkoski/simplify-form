@@ -1,5 +1,7 @@
 <?php
 
-class Simplify_Form_Element_Table extends Simplify_Form_Element_Base_HasMany
+namespace Simplify\Form\Element;
+
+class Table extends \Simplify\Form\Element\Base\HasMany
 {
 }

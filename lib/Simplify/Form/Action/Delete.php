@@ -21,23 +21,25 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Action;
+
 /**
  *
  * Form action delete
  *
  */
-class Simplify_Form_Action_Delete extends Simplify_Form_Action
+class Delete extends \Simplify\Form\Action
 {
 
   /**
    *
    * @var int
    */
-  protected $actionMask = Simplify_Form::ACTION_DELETE;
+  protected $actionMask = \Simplify\Form::ACTION_DELETE;
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onExecute()
+   * @see Form_Action::onExecute()
    */
   public function onExecute()
   {
@@ -46,29 +48,29 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
     $this->onValidate();
 
     foreach ($this->formData as $row) {
-      $this->form->dispatch(Simplify_Form::ON_BEFORE_DELETE, $this, $row);
+      $this->form->dispatch(\Simplify\Form::ON_BEFORE_DELETE, $this, $row);
     }
 
-    if (s::request()->method(Simplify_Request::POST) && s::request()->post('deleteAction') == 'confirm') {
+    if (\Simplify::request()->method(\Simplify\Request::POST) && \Simplify::request()->post('deleteAction') == 'confirm') {
       $this->onDelete();
 
-      return Simplify_Form::RESULT_SUCCESS;
+      return \Simplify\Form::RESULT_SUCCESS;
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onRender()
+   * @see \Simplify\Form\Action::onRender()
    */
   public function onRender()
   {
-    $this->set(Simplify_Form::ID, (array) $this->form->getId());
+    $this->set(\Simplify\Form::ID, (array) $this->form->getId());
 
     $data = array();
     foreach ($this->formData as $index => $row) {
       $line = array();
-      $line[Simplify_Form::ID] = $row[Simplify_Form::ID];
-      $line['name'] = Simplify_Form::ID . "[]";
+      $line[\Simplify\Form::ID] = $row[\Simplify\Form::ID];
+      $line['name'] = \Simplify\Form::ID . "[]";
       $line['label'] = $row['label'];
 
       $data[] = $line;
@@ -81,21 +83,21 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onCreateItemMenu()
+   * @see \Simplify\Form\Action::onCreateItemMenu()
    */
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $data)
+  public function onCreateItemMenu(\Simplify\Menu $menu, \Simplify\Form\Action $action, $data)
   {
-    if (!$action->show(Simplify_Form::ACTION_CREATE)) {
+    if (!$action->show(\Simplify\Form::ACTION_CREATE)) {
       $menu->getItemByName('main')->addItem(
-          new Simplify_MenuItem($this->getName(), $this->getTitle(), null,
-              new Simplify_URL(null,
-                  array('formAction' => $this->getName(), Simplify_Form::ID => $data[Simplify_Form::ID]))));
+          new \Simplify\MenuItem($this->getName(), $this->getTitle(), null,
+              new \Simplify\URL(null,
+                  array('formAction' => $this->getName(), \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onCreateBulkOptions()
+   * @see \Simplify\Form\Action::onCreateBulkOptions()
    */
   public function onCreateBulkOptions(array &$actions)
   {
@@ -124,7 +126,7 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
     $pk = $this->form->getPrimaryKey();
 
     $params = array();
-    $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($pk, $id);
+    $params[\Simplify\Db\QueryParameters::WHERE][] = \Simplify\Db\QueryObject::buildIn($pk, $id);
 
     $this->repository()->deleteAll($params);
 
@@ -137,7 +139,7 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Action::onLoadData()
+   * @see \Simplify\Form\Action::onLoadData()
    */
   protected function onLoadData()
   {
@@ -148,9 +150,9 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
     $label = $this->form->getLabel();
 
     $params = array();
-    $params[Simplify_Db_QueryParameters::SELECT][] = $pk;
-    $params[Simplify_Db_QueryParameters::SELECT][] = $label;
-    $params[Simplify_Db_QueryParameters::WHERE][] = Simplify_Db_QueryObject::buildIn($pk, $id);
+    $params[\Simplify\Db\QueryParameters::SELECT][] = $pk;
+    $params[\Simplify\Db\QueryParameters::SELECT][] = $label;
+    $params[\Simplify\Db\QueryParameters::WHERE][] = \Simplify\Db\QueryObject::buildIn($pk, $id);
 
     while ($elements->valid()) {
       $element = $elements->current();
@@ -165,7 +167,7 @@ class Simplify_Form_Action_Delete extends Simplify_Form_Action
 
     foreach ($data as $index => $row) {
       $this->formData[$index] = array();
-      $this->formData[$index][Simplify_Form::ID] = $row[$pk];
+      $this->formData[$index][\Simplify\Form::ID] = $row[$pk];
       $this->formData[$index]['label'] = $row[$label];
 
       $elements->rewind();

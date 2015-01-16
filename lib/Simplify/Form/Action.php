@@ -21,17 +21,26 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
+use Simplify;
+use Simplify\Form;
+use Simplify\Renderable;
+use Simplify\Inflector;
+use Simplify\URL;
+use Simplify\Menu;
+
 /**
  *
  * Abstract class for form actions such as list, edit, create...
  *
  */
-abstract class Simplify_Form_Action extends Simplify_Renderable
+abstract class Action extends Renderable
 {
 
   /**
    *
-   * @var Simplify_Form
+   * @var Form
    */
   public $form;
 
@@ -115,14 +124,14 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
     }
     $this->set('filters', $filters);
 
-    $this->form->dispatch(Simplify_Form::ON_RENDER, $this);
+    $this->form->dispatch(Form::ON_RENDER, $this);
 
     return $this;
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Dictionary::jsonSerialize()
+   * @see Dictionary::jsonSerialize()
    */
   public function jsonSerialize()
   {
@@ -148,31 +157,31 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   /**
    * Create the action menu
    *
-   * @param Simplify_Menu $menu
-   * @param Simplify_Form_Action $action
+   * @param Menu $menu
+   * @param Action $action
    */
-  public function onCreateMenu(Simplify_Menu $menu, Simplify_Form_Action $action)
+  public function onCreateMenu(Menu $menu, Action $action)
   {
   }
 
   /**
    * Create the menu for each row in the form
    *
-   * @param Simplify_Menu $menu
-   * @param Simplify_Form_Action $action
+   * @param Menu $menu
+   * @param Action $action
    * @param array $row
    */
-  public function onCreateItemMenu(Simplify_Menu $menu, Simplify_Form_Action $action, $row)
+  public function onCreateItemMenu(Menu $menu, Action $action, $row)
   {
   }
 
   /**
    *
-   * @return Simplify_URL
+   * @return URL
    */
   public function url()
   {
-    return new Simplify_URL(null, array('formAction' => $this->getName()));
+    return new URL(null, array('formAction' => $this->getName()));
   }
 
   /**
@@ -201,8 +210,8 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
    */
   public function onPostData()
   {
-    $post = s::request()->post('formData');
-    $files = s::request()->files('formData');
+    $post = Simplify::request()->post('formData');
+    $files = Simplify::request()->files('formData');
 
     $id = $this->form->getId();
 
@@ -210,7 +219,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
     $filters = $this->form->getFilters();
 
     foreach ($this->formData as $index => &$row) {
-      $row[Simplify_Form::ID] = $id[$index];
+      $row[Form::ID] = $id[$index];
 
       if (!empty($files)) {
         foreach ($files as $k => $file) {
@@ -257,25 +266,25 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
           try {
             $element->onValidate($this, $row);
           }
-          catch (Simplify_ValidationException $e) {
+          catch (\Simplify\ValidationException $e) {
             $this->errors[$element->getName()] = $e->getErrors();
 
-            $element->state = 'error';
+            $element->state = 'has-error';
             $element->stateMessage = $this->errors[$element->getName()];
           }
         }
       }
 
       try {
-        $this->form->dispatch(Simplify_Form::ON_VALIDATE, $this, $row);
+        $this->form->dispatch(Form::ON_VALIDATE, $this, $row);
       }
-      catch (Simplify_ValidationException $e) {
+      catch (\Simplify\ValidationException $e) {
         $this->errors = array_merge_recursive($this->errors, $e->getErrors());
       }
     }
 
     if (!empty($this->errors)) {
-      throw new Simplify_ValidationException($this->errors);
+      throw new \Simplify\ValidationException($this->errors);
     }
   }
 
@@ -287,7 +296,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   public function getName()
   {
     if (empty($this->name)) {
-      $this->name = strtolower(substr(get_class($this), strlen('Simplify_Form_Action_')));
+      $this->name = strtolower(join('', array_slice(explode('\\', get_class($this)), -1)));
     }
 
     return $this->name;
@@ -301,7 +310,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   public function getTitle()
   {
     if (empty($this->title)) {
-      $this->title = Simplify_Inflector::titleize($this->getName());
+      $this->title = Inflector::titleize($this->getName());
     }
 
     return $this->title;
@@ -320,7 +329,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
   /**
    * Get the elements for this action according to the action mask
    *
-   * @return Simplify_Form_ElementIterator
+   * @return ElementIterator
    */
   public function getElements()
   {
@@ -329,7 +338,7 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Renderable::getTemplateFilename()
+   * @see Renderable::getTemplateFilename()
    */
   public function getTemplateFilename()
   {
@@ -338,16 +347,16 @@ abstract class Simplify_Form_Action extends Simplify_Renderable
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Renderable::getTemplatesPath()
+   * @see Renderable::getTemplatesPath()
    */
-  public function getTemplatesPath()
+  /*public function getTemplatesPath()
   {
-    return array(s::config()->get('templates_dir') . '/form', FORM_DIR . '/templates');
-  }
+    return array(Simplify::config()->get('templates_dir') . '/form', FORM_DIR . '/templates');
+  }*/
 
   /**
    *
-   * @return Simplify_Form_Repository
+   * @return Repository
    */
   protected function repository()
   {

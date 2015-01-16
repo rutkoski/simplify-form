@@ -1,11 +1,13 @@
 <?php
 
-class Simplify_Form_Validation_Unique extends Simplify_Validation_AbstractValidation
+namespace Simplify\Form\Validation;
+
+class Unique extends \Simplify\Validation\AbstractValidation
 {
 
   /**
    *
-   * @var Simplify_Form_Element
+   * @var \Simplify\Form\Element
    */
   public $element;
 
@@ -20,7 +22,7 @@ class Simplify_Form_Validation_Unique extends Simplify_Validation_AbstractValida
    *
    * @param string $message validation fail message
    */
-  function __construct($message = '', Simplify_Form_Element $element = null, $id = null)
+  function __construct($message = '', \Simplify\Form\Element $element = null, $id = null)
   {
     parent::__construct($message);
 
@@ -30,7 +32,7 @@ class Simplify_Form_Validation_Unique extends Simplify_Validation_AbstractValida
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_ValidationInterface::validate()
+   * @see \Simplify\ValidationInterface::validate()
    */
   public function validate($value)
   {
@@ -41,12 +43,12 @@ class Simplify_Form_Validation_Unique extends Simplify_Validation_AbstractValida
     $pk = $repo->pk;
 
     $params = array();
-    $params[Simplify_Db_QueryParameters::WHERE][] = "{$field} = :{$field}";
-    $params[Simplify_Db_QueryParameters::DATA][$field] = $value;
+    $params[\Simplify\Db\QueryParameters::WHERE][] = "{$field} = :{$field}";
+    $params[\Simplify\Db\QueryParameters::DATA][$field] = $value;
 
     if ($this->id) {
-      $params[Simplify_Db_QueryParameters::WHERE][] = "{$pk} != :{$pk}";
-      $params[Simplify_Db_QueryParameters::DATA][$pk] = $this->id;
+      $params[\Simplify\Db\QueryParameters::WHERE][] = "{$pk} != :{$pk}";
+      $params[\Simplify\Db\QueryParameters::DATA][$pk] = $this->id;
     }
 
     $found = $repo->findCount($params);

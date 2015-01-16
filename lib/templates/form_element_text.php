@@ -1,1 +1,2 @@
-<input type="text" name="<?= $inputName ?>" value="<?= $value ?>"<?= $maxLength !== false ? ' maxlength="'.$maxLength.'"' : '' ?>/>
+<input type="text" class="form-control" name="{{ inputName }}" value="{{ value }}"
+  {{ maxLength > 0 ? ' maxlength="' ~ maxLength ~ '"' : '' }}>

@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
 /**
  *
  * File browser
  *
  */
-class Simplify_Form_Browser extends Simplify_Renderable
+class Browser extends \Simplify\Renderable
 {
 
   /**
@@ -82,7 +84,7 @@ class Simplify_Form_Browser extends Simplify_Renderable
    */
   public function getFileUrl()
   {
-    return s::config()->get('www_url') . $this->file;
+    return \Simplify::config()->get('www_url') . $this->file;
   }
 
   /**
@@ -93,7 +95,7 @@ class Simplify_Form_Browser extends Simplify_Renderable
    */
   protected function getFilePath($absolute = false)
   {
-    return ($absolute ? s::config()->get('www_dir') : '') . $this->file;
+    return ($absolute ? \Simplify::config()->get('www_dir') : '') . $this->file;
   }
 
   /**
@@ -104,36 +106,36 @@ class Simplify_Form_Browser extends Simplify_Renderable
   public function upload($name)
   {
     try {
-      $file = s::request()->files($name);
+      $file = \Simplify::request()->files($name);
 
-      $upload = new Simplify_Upload($file);
+      $upload = new \Simplify\Upload($file);
       $upload->uploadPath = $this->path;
       $upload->upload();
 
       $this->file = $this->path . $upload->getUploadedPath();
 
-      return Simplify_Form::RESULT_SUCCESS;
+      return \Simplify\Form::RESULT_SUCCESS;
     }
-    catch (Simplify_UploadException $e) {
+    catch (\Simplify\UploadException $e) {
       $this->errors = $e->getErrors();
     }
 
-    return Simplify_Form::RESULT_ERROR;
+    return \Simplify\Form::RESULT_ERROR;
   }
 
   /**
    *
-   * @return Simplify_ViewInterface
+   * @return \Simplify\ViewInterface
    */
   public function browse()
   {
-    $browserAction = s::request()->get('browserAction');
+    $browserAction = \Simplify::request()->get('browserAction');
 
     switch ($browserAction) {
       case self::ACTION_SELECT :
-        $this->file = s::request()->get('file');
+        $this->file = \Simplify::request()->get('file');
 
-        return Simplify_Form::RESULT_SUCCESS;
+        return \Simplify\Form::RESULT_SUCCESS;
     }
 
     $files = $this->findFiles();
@@ -148,7 +150,7 @@ class Simplify_Form_Browser extends Simplify_Renderable
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Renderable::getLayoutsPath()
+   * @see \Simplify\Renderable::getLayoutsPath()
    */
   public function getLayoutsPath()
   {
@@ -160,12 +162,12 @@ class Simplify_Form_Browser extends Simplify_Renderable
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Renderable::getTemplatesPath()
+   * @see \Simplify\Renderable::getTemplatesPath()
    */
   public function getTemplatesPath()
   {
     $path = array();
-    $path[] = s::config()->get('templates_dir') . '/form';
+    $path[] = \Simplify::config()->get('templates_dir') . '/form';
     $path[] = FORM_DIR . '/templates';
     return $path;
   }
@@ -174,11 +176,11 @@ class Simplify_Form_Browser extends Simplify_Renderable
    * Get the thumb component
    *
    * @param string $file filename
-   * @return Simplify_Thumb
+   * @return \Simplify\Thumb
    */
   protected function getThumbComponent($file)
   {
-    return Simplify_Thumb::factory()->load($file);
+    return \Simplify\Thumb::factory()->load($file);
   }
 
   /**
@@ -192,10 +194,10 @@ class Simplify_Form_Browser extends Simplify_Renderable
   protected function getThumbUrl($file, $width = null, $height = null)
   {
     if (empty($width) && empty($height)) {
-      return s::config()->get('www_url') . $file;
+      return \Simplify::config()->get('www_url') . $file;
     }
 
-    return s::config()->get('www_url') .
+    return \Simplify::config()->get('www_url') .
        $this->getThumbComponent($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
   }
 
@@ -205,13 +207,13 @@ class Simplify_Form_Browser extends Simplify_Renderable
    */
   protected function findFiles()
   {
-    $baseUrl = s::config()->get('www_url');
-    $baseDir = s::config()->get('www_dir');
+    $baseUrl = \Simplify::config()->get('www_url');
+    $baseDir = \Simplify::config()->get('www_dir');
 
     $files = glob($baseDir . $this->path . '/' . '*.{' . implode(',', $this->extensions) . '}',
       GLOB_BRACE);
 
-    $selectUrl = Simplify_URL::make(null, null, true)->set('browserAction', self::ACTION_SELECT);
+    $selectUrl = \Simplify\URL::make(null, null, true)->set('browserAction', self::ACTION_SELECT);
 
     foreach ($files as &$file) {
       $file = substr($file, strlen($baseDir));

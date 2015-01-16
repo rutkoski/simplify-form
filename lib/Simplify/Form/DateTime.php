@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form;
+
 /**
  *
  * Data/Time utilities
  *
  */
-class Simplify_Form_DateTime
+class DateTime
 {
 
   /**

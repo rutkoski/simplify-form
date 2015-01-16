@@ -1,5 +1,10 @@
 <?php
 
+use Simplify as s;
+
+$config = Simplify::config();
+
 define('FORM_DIR', __dir__);
 
-Simplify_Autoload::registerPath(FORM_DIR);
+$config['forms:dir'] = __dir__;
+$config['templates:path:'] = '{forms:dir}/templates';

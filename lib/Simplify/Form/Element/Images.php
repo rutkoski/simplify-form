@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element;
+
 /**
  *
  * Form element for multiple image upload
  *
  */
-class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
+class Images extends \Simplify\Form\Element\Base\HasMany
 {
 
   const FIELD_FILENAME = 0;
@@ -50,7 +52,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    *
    * @var int
    */
-  protected $remove = Simplify_Form::ACTION_NONE;
+  protected $remove = \Simplify\Form::ACTION_NONE;
 
   /**
    *
@@ -61,15 +63,15 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
   {
     parent::__construct($name, $label);
 
-    $this->path = s::config()->get('files_path');
+    $this->path = \Simplify::config()->get('files_path');
   }
 
   /**
    *
    * @param string $fieldName
-   * @param Simplify_Thumb $thumb
+   * @param \Simplify\Thumb $thumb
    */
-  public function addField($fieldName, Simplify_Thumb $thumb = null)
+  public function addField($fieldName, \Simplify\Thumb $thumb = null)
   {
     $this->fields[] = array(
       self::FIELD_FILENAME => $fieldName,
@@ -79,9 +81,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
     $files = $this->getValue($data);
 
@@ -99,7 +101,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
         $output[] = $value;
       }
-      catch (Simplify_ThumbException $e) {
+      catch (\Simplify\ThumbException $e) {
         //
       }
     }
@@ -109,18 +111,18 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element_Base_HasMany::onBeforeLoadData()
+   * @see \Simplify\Form\Element\Base\HasMany::onBeforeLoadData()
    */
   protected function onBeforeLoadData(&$queryParams)
   {
     foreach ($this->fields as $field) {
-      $queryParams[Simplify_Db_QueryParameters::SELECT][] = $field[self::FIELD_FILENAME];
+      $queryParams[\Simplify\Db\QueryParameters::SELECT][] = $field[self::FIELD_FILENAME];
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element_Base_HasMany::onAfterLoadData()
+   * @see \Simplify\Form\Element\Base\HasMany::onAfterLoadData()
    */
   protected function onAfterLoadData(&$data, $row, $index)
   {
@@ -131,9 +133,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element_Base_HasMany::onAfterSave()
+   * @see \Simplify\Form\Element\Base\HasMany::onAfterSave()
    */
-  protected function onAfterSave(Simplify_Form_Action $action, &$data, $deleted)
+  protected function onAfterSave(\Simplify\Form\Action $action, &$data, $deleted)
   {
     foreach ($deleted as $row) {
       $this->onDelete($row);
@@ -142,9 +144,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element_Base_HasMany::onAfterDelete()
+   * @see \Simplify\Form\Element\Base\HasMany::onAfterDelete()
    */
-  public function onAfterDelete(Simplify_Form_Action $action, &$data)
+  public function onAfterDelete(\Simplify\Form\Action $action, &$data)
   {
     foreach ($data[$this->getName()] as $row) {
       $this->onDelete($row);
@@ -155,7 +157,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element_Base_HasMany::onRenderRow()
+   * @see \Simplify\Form\Element\Base\HasMany::onRenderRow()
    */
   public function onRenderRow(&$row, $data, $index)
   {
@@ -177,13 +179,13 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onPostData()
+   * @see \Simplify\Form\Element\Base\HasMany::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     parent::onPostData($action, $data, $post);
 
-    $id = $data[Simplify_Form::ID];
+    $id = $data[\Simplify\Form::ID];
 
     if (!empty($post[$this->getName()])) {
       foreach ($post[$this->getName()] as $index => $row) {
@@ -196,9 +198,9 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element_Base_HasMany::onBeforeSave()
+   * @see \Simplify\Form\Element\Base\HasMany::onBeforeSave()
    */
-  public function onBeforeSave(Simplify_Form_Action $action, &$row, $data)
+  public function onBeforeSave(\Simplify\Form\Action $action, &$row, $data)
   {
     foreach ($this->fields as $field) {
       $row[$field[self::FIELD_FILENAME]] = $data[$field[self::FIELD_FILENAME]];
@@ -207,30 +209,30 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_ElementTable::onRender()
+   * @see \Simplify\Form\Element\Base\HasMany::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $this->set('uploaderId', $this->getElementId($index) . '-uploader');
-    $this->set('uploaderUrl', $this->getServiceUrl(Simplify_Form::SERVICE_UPLOAD));
+    $this->set('uploaderUrl', $this->getServiceUrl(\Simplify\Form::SERVICE_UPLOAD));
 
     return parent::onRender($action, $data, $index);
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onExecuteServices()
+   * @see \Simplify\Form\Component::onExecuteServices()
    */
-  public function onExecuteServices(Simplify_Form_Action $action, $serviceAction)
+  public function onExecuteServices(\Simplify\Form\Action $action, $serviceAction)
   {
     switch ($serviceAction) {
-      case Simplify_Form::SERVICE_UPLOAD :
+      case \Simplify\Form::SERVICE_UPLOAD :
         $data = array();
 
-        $file = s::request()->files($this->getName());
+        $file = \Simplify::request()->files($this->getName());
 
         try {
-          $upload = new Simplify_Upload($file);
+          $upload = new \Simplify\Upload($file);
           $upload->uploadPath = $this->path;
           $upload->upload();
 
@@ -243,11 +245,11 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
           $data['success'] = true;
           $data['image'] = $image;
         }
-        catch (Simplify_UploadException $e) {
+        catch (\Simplify\UploadException $e) {
           $data['error'] = $e->getErrors();
         }
 
-        $view = $this->getView(Simplify_View::JSON);
+        $view = $this->getView(\Simplify\View::JSON);
         $view->copyAll($data);
         echo $view->render();
         exit();
@@ -271,7 +273,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
         $file = $this->path . $file;
 
         if (!sy_path_is_absolute($file)) {
-          $file = s::config()->get('www_dir') . $file;
+          $file = \Simplify::config()->get('www_dir') . $file;
         }
 
         if (file_exists($file)) {
@@ -287,11 +289,11 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    * Get the thumb component
    *
    * @param string $file filename
-   * @return Simplify_Thumb
+   * @return \Simplify\Thumb
    */
   protected function getThumbComponent($file)
   {
-    return Simplify_Thumb::factory()->load($file);
+    return \Simplify\Thumb::factory()->load($file);
   }
 
   /**
@@ -304,7 +306,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   protected function getThumbUrl($file, $width, $height)
   {
-    return s::config()->get('www_url') .
+    return \Simplify::config()->get('www_url') .
        $this->getThumbComponent($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
   }
 
@@ -316,7 +318,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   protected function getImageUrl($file)
   {
-    return s::config()->get('www_url') . $this->path . $file;
+    return \Simplify::config()->get('www_url') . $this->path . $file;
   }
 
   /**
@@ -327,7 +329,7 @@ class Simplify_Form_Element_Images extends Simplify_Form_Element_Base_HasMany
    */
   protected function fileExists($file)
   {
-    $file = s::config()->get('www_dir') . $this->path . $file;
+    $file = \Simplify::config()->get('www_dir') . $this->path . $file;
     return !empty($file) && file_exists($file) && !is_dir($file);
   }
 

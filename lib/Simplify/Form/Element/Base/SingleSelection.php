@@ -21,12 +21,14 @@
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
 
+namespace Simplify\Form\Element\Base;
+
 /**
  *
  * Base class for form elements that allow for single selection
  *
  */
-abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_Element
+abstract class SingleSelection extends \Simplify\Form\Element
 {
 
   /**
@@ -63,9 +65,9 @@ abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onRender()
+   * @see \Simplify\Form\Element::onRender()
    */
-  public function onRender(Simplify_Form_Action $action, $data, $index)
+  public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
     $this->set('options', $this->getOptions());
     $this->set('showEmpty', $this->showEmpty);
@@ -77,23 +79,23 @@ abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::onValidate()
+   * @see \Simplify\Form\Element::onValidate()
    */
-  public function onValidate(Simplify_Form_Action $action, $data)
+  public function onValidate(\Simplify\Form\Action $action, $data)
   {
     parent::onValidate($action, $data);
 
     if ($this->required) {
-      $rule = new Simplify_Validation_StrictEqual('Invalid selection', $this->emptyValue);
+      $rule = new \Simplify\Validation\StrictEqual('Invalid selection', $this->emptyValue);
       $rule->validate($this->getValue($data));
     }
   }
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Component::onPostData()
+   * @see \Simplify\Form\Element::onPostData()
    */
-  public function onPostData(Simplify_Form_Action $action, &$data, $post)
+  public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
     $value = sy_get_param($post, $this->getName(), $this->getDefaultValue());
     $data[$this->getName()] = $value == '' ? null : $value;
@@ -101,9 +103,9 @@ abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_
 
   /**
    * (non-PHPdoc)
-   * @see Simplify_Form_Element::getDisplayValue()
+   * @see \Simplify\Form\Element::getDisplayValue()
    */
-  public function getDisplayValue(Simplify_Form_Action $action, $data, $index)
+  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
     return sy_get_param($this->getOptions(), $this->getValue($data));
   }
@@ -114,7 +116,7 @@ abstract class Simplify_Form_Element_Base_SingleSelection extends Simplify_Form_
    */
   public function getOptions()
   {
-    if ($this->options instanceof Simplify_Form_Provider) {
+    if ($this->options instanceof \Simplify\Form\Provider) {
       $options = $this->options->getData();
     }
     else {
