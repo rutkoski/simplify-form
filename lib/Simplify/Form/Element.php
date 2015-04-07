@@ -84,7 +84,7 @@ abstract class Element extends Component
    */
   public function getDisplayValue(Action $action, $data, $index)
   {
-    return $data[$this->getName()];
+    return sy_get_param($data, $this->getName());
   }
 
   /**
@@ -125,10 +125,10 @@ abstract class Element extends Component
    */
   public function onValidate(Action $action, $data)
   {
-    if ($action->show($this->unique)) {
+    if ($this->unique && $action->show($this->unique)) {
       $unique = $this->getError('unique', __('Value must be unique'));
 
-      $rule = new \Simplify\Form\Validation\Unique($unique, $this, $data[$this->form->getPrimaryKey()]);
+      $rule = new \Simplify\Form\Validation\Unique($unique, $this, sy_get_param($data, $this->form->getPrimaryKey()));
       $rule->validate($this->getValue($data));
     }
   }
@@ -154,7 +154,15 @@ abstract class Element extends Component
    */
   public function onRenderLine(Action $action, &$line, $data, $index)
   {
-    $line['elements'][$this->getName()]['controls'] = $this->getDisplayValue($action, $data, $index);
+    $element = array();
+
+    $element['id'] = $this->getElementId($index);
+    $element['name'] = $this->getInputName($index);
+    $element['class'] = $this->getElementClass();
+    $element['label'] = $this->getLabel();
+    $element['controls'] = $this->getDisplayValue($action, $data, $index);
+
+    $line['elements'][$this->getName()] = $element;
   }
 
   /**
@@ -191,7 +199,7 @@ abstract class Element extends Component
     $this->set('state', $this->state);
     $this->set('stateMessage', $this->stateMessage);
     $this->set('exists', $exists);
-    $this->set(Form::ID, $data[Form::ID]);
+    $this->set(Form::ID, sy_get_param($data, Form::ID));
     $this->set('id', $this->getElementId($index));
     $this->set('inputName', $this->getInputName($index));
     $this->set('name', $this->getName());
@@ -217,7 +225,7 @@ abstract class Element extends Component
 
   /**
    * (non-PHPdoc)
-   * @see Component::onLoadData()
+   * @see \Simplify\Form\Component::onLoadData()
    */
   public function onLoadData(Action $action, &$data, $row)
   {

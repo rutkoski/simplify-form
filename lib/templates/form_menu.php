@@ -1,13 +1,35 @@
-{% if display == 'pills' %}
-<ul class="nav nav-pills">
-  {% for item in menu.items() %}
-  <li><a href="{{ item.url }}" title="{{ item.label }}">{{ item.label }}</a></li>
-  {% endfor %}
-</ul>
+{% if display == 'dropdown' %}
+  <ul class="dropdown-menu" role="menu">
+    {% for item in menu.items() %}
+    <li>
+      <a href="{{ item.url }}" title="{{ item.label }}">
+        {% if item.icon %}<span class="glyphicon glyphicon-{{ item.icon }} pull-right"></span>{% endif %}
+        {{ item.label }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
 {% else %}
-<div class="btn-group">
-  {% for item in menu.items() %}
-  <a href="{{ item.url }}" title="{{ item.label }}" class="btn btn-default">{{ item.label }}</a>
+  {% for _menu in menu.items() %}
+    <div class="btn-group">
+      {% for item in _menu.items() %}
+        
+        {% if item.submenu %}
+          <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+            {{ _menu.label }}
+            <span class="caret"></span>
+          </button>
+          
+          {% include 'form_menu.php' with { 'menu' : item.submenu, 'display' : 'dropdown' } %}
+        {% else %}
+        
+          <a href="{{ item.url }}" title="{{ item.label }}" class="btn btn-default btn-sm btn-{{item.name}}">
+            {% if item.icon %}<span class="glyphicon glyphicon-{{ item.icon }}"></span>{% endif %}
+            {% if not hideLabels %}{{ item.label }}{% endif %}
+          </a>
+        {% endif %}
+    
+      {% endfor %}
+    </div>
   {% endfor %}
-</div>
 {% endif %}

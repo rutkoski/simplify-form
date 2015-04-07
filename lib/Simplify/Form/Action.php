@@ -12,17 +12,18 @@
  *
  * SimplifyPHP Framework is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
-
 namespace Simplify\Form;
 
+use Simplify\Db\QueryObject;
+use Simplify\Db\QueryParameters;
 use Simplify;
 use Simplify\Form;
 use Simplify\Renderable;
@@ -31,9 +32,7 @@ use Simplify\URL;
 use Simplify\Menu;
 
 /**
- *
  * Abstract class for form actions such as list, edit, create...
- *
  */
 abstract class Action extends Renderable
 {
@@ -55,7 +54,13 @@ abstract class Action extends Renderable
    *
    * @var array
    */
-  protected $formData;
+  public $formData;
+
+  /**
+   *
+   * @var string
+   */
+  public $mode = Form::MODE_HTML;
 
   /**
    *
@@ -77,7 +82,8 @@ abstract class Action extends Renderable
 
   /**
    *
-   * @param string $name action name
+   * @param string $name
+   *          action name
    */
   public function __construct($name = null, $title = null)
   {
@@ -93,14 +99,14 @@ abstract class Action extends Renderable
   public function onExecute()
   {
     $elements = $this->getElements();
-
+    
     while ($elements->valid()) {
       $element = $elements->current();
       $elements->next();
-
+      
       $element->onExecute($this);
     }
-
+    
     foreach ($this->form->getFilters() as $filter) {
       $filter->onExecute($this);
     }
@@ -116,21 +122,36 @@ abstract class Action extends Renderable
     $this->set('action', $this);
     $this->set('elements', $this->getElements());
     $this->set('formData', $this->formData);
+    $this->set('formMode', $this->formMode());
+    $this->set('formUrl', $this->url());
+    $this->set('formAjaxUrl', $this->url()->format('json')->set('formMode', Form::MODE_AJAX));
     $this->set('title', $this->getTitle());
-
+    
     $filters = array();
     foreach ($this->form->getFilters() as $filter) {
       $filter->onRenderControls($this, $filters);
     }
     $this->set('filters', $filters);
-
+    
     $this->form->dispatch(Form::ON_RENDER, $this);
-
+    
     return $this;
   }
 
   /**
+   *
+   * @param string $mode          
+   * @return string boolean
+   */
+  public function formMode($mode = null)
+  {
+    return $mode ? \Simplify::request()->get('formMode', $this->mode) == $mode : \Simplify::request()->get('formMode', 
+        $this->mode);
+  }
+
+  /**
    * (non-PHPdoc)
+   *
    * @see Dictionary::jsonSerialize()
    */
   public function jsonSerialize()
@@ -145,6 +166,48 @@ abstract class Action extends Renderable
    */
   protected function onLoadData()
   {
+    $elements = $this->getElements();
+    
+    $id = $this->form->getId();
+    $pk = $this->form->getPrimaryKey();
+    
+    $params = array();
+    $params[QueryParameters::SELECT][] = $pk;
+    $params[QueryParameters::WHERE][] = QueryObject::buildIn($pk, $id);
+    
+    $this->onInjectQueryParams($params);
+    
+    $data = $this->repository()->findAll($params);
+    
+    $this->formData = array();
+    
+    foreach ($data as $index => &$row) {
+      $this->formData[$index] = array();
+      $this->formData[$index][Form::ID] = $row[$pk];
+      $this->formData[$index][$pk] = $row[$pk];
+      
+      $this->onExtractData($this->formData[$index], $row);
+      
+      $elements->rewind();
+      
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $element->onLoadData($this, $this->formData[$index], $row);
+        
+        $elements->next();
+      }
+    }
+  }
+
+  /**
+   *
+   * @param array $data
+   *          form data
+   * @param array $row
+   *          database row
+   */
+  protected function onExtractData(&$data, $row)
+  {
   }
 
   /**
@@ -152,24 +215,94 @@ abstract class Action extends Renderable
    */
   protected function onSave()
   {
+    $elements = $this->getElements();
+    
+    $filters = $this->form->getFilters();
+    
+    foreach ($this->formData as $index => &$data) {
+      // $row will be saved in the database
+      $row = array();
+      
+      $row[$this->form->getPrimaryKey()] = $data[Form::ID];
+      
+      $elements->rewind();
+      
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $element->onCollectTableData($this, $row, $data);
+        
+        $elements->next();
+      }
+      
+      foreach ($filters as &$filter) {
+        $filter->onCollectTableData($this, $row, $data);
+      }
+      
+      $this->repository()->save($row);
+      
+      // fill the primary key if this is a new record
+      $data[Form::ID] = $row[$this->form->getPrimaryKey()];
+      
+      $elements->rewind();
+      
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $element->onSave($this, $data);
+        
+        $elements->next();
+      }
+    }
   }
 
   /**
    * Create the action menu
    *
-   * @param Menu $menu
-   * @param Action $action
+   * @param Menu $menu          
+   * @param Action $action          
    */
   public function onCreateMenu(Menu $menu, Action $action)
   {
   }
 
   /**
+   * Delete data from repository
+   */
+  protected function onDelete()
+  {
+    $elements = $this->getElements();
+    
+    foreach ($this->formData as $row) {
+      while ($elements->valid()) {
+        $element = $elements->current();
+        $element->onBeforeDelete($this, $row);
+        
+        $elements->next();
+      }
+      
+      $elements->rewind();
+    }
+    
+    $id = $this->form->getId();
+    $pk = $this->form->getPrimaryKey();
+    
+    $params = array();
+    $params[\Simplify\Db\QueryParameters::WHERE][] = \Simplify\Db\QueryObject::buildIn($pk, $id);
+    
+    $this->repository()->deleteAll($params);
+    
+    foreach ($this->formData as $row) {
+      foreach ($elements as $element) {
+        $element->onAfterDelete($this, $row);
+      }
+    }
+  }
+
+  /**
    * Create the menu for each row in the form
    *
-   * @param Menu $menu
-   * @param Action $action
-   * @param array $row
+   * @param Menu $menu          
+   * @param Action $action          
+   * @param array $row          
    */
   public function onCreateItemMenu(Menu $menu, Action $action, $row)
   {
@@ -181,16 +314,18 @@ abstract class Action extends Renderable
    */
   public function url()
   {
-    return new URL(null, array('formAction' => $this->getName()));
+    return new URL(null, array(
+        'formAction' => $this->getName()
+    ));
   }
 
   /**
    * Add bulk actions to the bulk menu
    *
    * Ex.:
-   * 	$actions['action_name'] = 'Action Label';
+   * $actions['action_name'] = 'Action Label';
    *
-   * @param array $actions
+   * @param array $actions          
    */
   public function onCreateBulkOptions(array &$actions)
   {
@@ -199,10 +334,24 @@ abstract class Action extends Renderable
   /**
    * Inject query parameters for loading form data
    *
-   * @param array $params
+   * @param array $params          
    */
   public function onInjectQueryParams(&$params)
   {
+    $elements = $this->getElements();
+    
+    $elements->rewind();
+    
+    while ($elements->valid()) {
+      $element = $elements->current();
+      $element->onInjectQueryParams($this, $params);
+      
+      $elements->next();
+    }
+    
+    foreach ($this->form->getFilters() as $filter) {
+      $filter->onInjectQueryParams($this, $params);
+    }
   }
 
   /**
@@ -210,35 +359,26 @@ abstract class Action extends Renderable
    */
   public function onPostData()
   {
-    $post = Simplify::request()->post('formData');
-    $files = Simplify::request()->files('formData');
-
+    $post = $this->form->getPostData();
+    
     $id = $this->form->getId();
-
+    
     $elements = $this->getElements();
     $filters = $this->form->getFilters();
-
+    
     foreach ($this->formData as $index => &$row) {
       $row[Form::ID] = $id[$index];
-
-      if (!empty($files)) {
-        foreach ($files as $k => $file) {
-          foreach ($file[$index] as $field => $value) {
-            $post[$index][$field][$k] = $value['file'];
-          }
-        }
-      }
-
+      
       foreach ($filters as $filter) {
         $filter->onPostData($this, $row, $post[$index]);
       }
-
+      
       $elements->rewind();
-
+      
       while ($elements->valid()) {
         $element = $elements->current();
         $elements->next();
-
+        
         $element->onPostData($this, $row, $post[$index]);
       }
     }
@@ -250,31 +390,31 @@ abstract class Action extends Renderable
   public function onValidate()
   {
     $this->errors = array();
-
+    
     $elements = $this->getElements();
-
+    
     foreach ($this->formData as $index => $row) {
-
+      
       $elements->rewind();
-
+      
       while ($elements->valid()) {
         $element = $elements->current();
         $elements->next();
-
+        
         if ($this->show($element->validate)) {
-
+          
           try {
             $element->onValidate($this, $row);
           }
           catch (\Simplify\ValidationException $e) {
             $this->errors[$element->getName()] = $e->getErrors();
-
+            
             $element->state = 'has-error';
             $element->stateMessage = $this->errors[$element->getName()];
           }
         }
       }
-
+      
       try {
         $this->form->dispatch(Form::ON_VALIDATE, $this, $row);
       }
@@ -282,8 +422,8 @@ abstract class Action extends Renderable
         $this->errors = array_merge_recursive($this->errors, $e->getErrors());
       }
     }
-
-    if (!empty($this->errors)) {
+    
+    if (! empty($this->errors)) {
       throw new \Simplify\ValidationException($this->errors);
     }
   }
@@ -296,9 +436,9 @@ abstract class Action extends Renderable
   public function getName()
   {
     if (empty($this->name)) {
-      $this->name = strtolower(join('', array_slice(explode('\\', get_class($this)), -1)));
+      $this->name = strtolower(join('', array_slice(explode('\\', get_class($this)), - 1)));
     }
-
+    
     return $this->name;
   }
 
@@ -312,7 +452,7 @@ abstract class Action extends Renderable
     if (empty($this->title)) {
       $this->title = Inflector::titleize($this->getName());
     }
-
+    
     return $this->title;
   }
 
@@ -338,6 +478,7 @@ abstract class Action extends Renderable
 
   /**
    * (non-PHPdoc)
+   *
    * @see Renderable::getTemplateFilename()
    */
   public function getTemplateFilename()
@@ -347,13 +488,15 @@ abstract class Action extends Renderable
 
   /**
    * (non-PHPdoc)
+   *
    * @see Renderable::getTemplatesPath()
    */
-  /*public function getTemplatesPath()
-  {
-    return array(Simplify::config()->get('templates_dir') . '/form', FORM_DIR . '/templates');
-  }*/
-
+  /*
+   * public function getTemplatesPath() { return
+   * array(Simplify::config()->get('templates_dir') . '/form', FORM_DIR .
+   * '/templates'); }
+   */
+  
   /**
    *
    * @return Repository
@@ -370,13 +513,12 @@ abstract class Action extends Renderable
    */
   public function show($actionMask)
   {
-    if (is_bool($actionMask)) return $actionMask;
     return ($this->getActionMask() & $actionMask) == $actionMask;
   }
 
   /**
    *
-   * @param int $actionMask
+   * @param int $actionMask          
    */
   public function setActionMask($actionMask)
   {

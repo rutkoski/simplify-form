@@ -63,17 +63,9 @@ class Boolean extends \Simplify\Form\Element
    */
   public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
-    if (empty($this->trueLabel)) {
-      $this->trueLabel = __('Yes');
-    }
-
-    if (empty($this->falseLabel)) {
-      $this->falseLabel = __('No');
-    }
-
-    $this->set('trueLabel', $this->trueLabel);
+    $this->set('trueLabel', $this->getTrueLabel());
     $this->set('trueValue', $this->trueValue);
-    $this->set('falseLabel', $this->falseLabel);
+    $this->set('falseLabel', $this->getFalseLabel());
     $this->set('falseValue', $this->falseValue);
 
     return parent::onRender($action, $data, $index);
@@ -85,7 +77,25 @@ class Boolean extends \Simplify\Form\Element
    */
   public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
-    return $data[$this->getName()] == $this->trueValue ? $this->trueLabel : $this->falseLabel;
+    return $data[$this->getName()] == $this->trueValue ? $this->getTrueLabel() : $this->getFalseLabel();
+  }
+  
+  public function getTrueLabel()
+  {
+    if (empty($this->trueLabel)) {
+      $this->trueLabel = __('Sim');
+    }
+    
+    return $this->trueLabel;
   }
 
+  public function getFalseLabel()
+  {
+    if (empty($this->falseLabel)) {
+      $this->falseLabel = __('Não');
+    }
+  
+    return $this->falseLabel;
+  }
+  
 }

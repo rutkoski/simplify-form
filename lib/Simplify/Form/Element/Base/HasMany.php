@@ -23,6 +23,16 @@
 
 namespace Simplify\Form\Element\Base;
 
+use Simplify\Form;
+
+use Simplify\Form\Action\View;
+
+use Simplify\Form\Action;
+
+use Simplify\Menu;
+
+use Simplify\MenuItem;
+
 /**
  *
  * Base class for form elements that handle one to many associations
@@ -124,6 +134,24 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
   }
 
   /**
+   *
+   * @param Menu $menu
+   */
+  public function onCreateMenu(Menu $menu)
+  {
+    $menu->addItem(new MenuItem('create', __('Create'), 'plus'));
+  }
+  
+  /**
+   *
+   * @param Menu $menu
+   */
+  public function onCreateItemMenu(Menu $menu, $item)
+  {
+    $menu->addItem(new MenuItem('delete', __('Delete'), 'minus'));
+  }
+  
+  /**
    * (non-PHPdoc)
    * @see \Simplify\Form\Element::onRender()
    */
@@ -145,6 +173,9 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
         $line['baseName'] = "formData[" . implode('][', $__index) . "]";
         $line[\Simplify\Form::ID] = $_row[\Simplify\Form::ID];
         $line['elements'] = array();
+        $line['menu'] = new Menu('main');
+        
+        $this->onCreateItemMenu($line['menu'], $line);
 
         $elements->rewind();
         while ($elements->valid()) {
@@ -167,6 +198,9 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
     $dummy['name'] = "formData[" . implode('][', $__index) . "][" . \Simplify\Form::ID . "]";
     $dummy[\Simplify\Form::ID] = '';
     $dummy['elements'] = array();
+    $dummy['menu'] = new Menu('main');
+    
+    $this->onCreateItemMenu($dummy['menu'], $dummy);
 
     $elements->rewind();
     while ($elements->valid()) {
@@ -178,6 +212,12 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
 
     $this->set('data', $lines);
     $this->set('dummy', $dummy);
+    
+    $menu = new Menu('main');
+    
+    $this->onCreateMenu($menu);
+    
+    $this->set('menu', $menu);
 
     $this->set('sortable', $this->sortable);
 
@@ -186,6 +226,49 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
     return parent::onRender($action, $data, $index);
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Element::onRenderLine()
+   */
+  public function onRenderLine(Action $action, &$line, $data, $index)
+  {
+    if ($action->show(Form::ACTION_VIEW)) {
+      $_element = array();
+      
+      $_element['id'] = $this->getElementId($index);
+      $_element['name'] = $this->getInputName($index);
+      $_element['class'] = $this->getElementClass();
+      $_element['label'] = $this->getLabel();
+      
+      $elements = $this->getElements($action);
+      
+      $rows = (array) $this->getValue($data);
+  
+      $_lines = array();
+      
+      foreach ($rows as $row) {
+        $_line = array();
+        
+        $elements->rewind();
+        while ($elements->valid()) {
+          $element = $elements->current();
+          $element->onRenderLine($action, $_line, $row, $index);
+          $elements->next();
+        }
+        
+        $_lines[] = $_line;
+      }
+
+      $this->set('action', $action);
+      $this->set('data', $_lines);
+      $this->set('label', $this->getLabel());
+
+      $_element['controls'] = $this->getView();
+  
+      $line['elements'][$this->getName() . '_b'] = $_element;
+    }
+  }
+  
   /**
    * 
    * @param unknown_type $row
@@ -300,7 +383,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
   public function onSave(\Simplify\Form\Action $action, &$data)
   {
     $id = array();
-
+    
     $elements = $this->getElements($action);
 
     foreach ($data[$this->getName()] as &$row) {
@@ -319,6 +402,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
       $elements->rewind();
       while ($elements->valid()) {
         $elements->current()->onCollectTableData($action, $_row, $row);
+        $elements->next();
       }
 
       $this->onBeforeSave($action, $_row, $row);

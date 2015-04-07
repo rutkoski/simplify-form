@@ -33,14 +33,14 @@
     <tbody>
       {% for row in data %}
       <tr>
-        <td><input type="checkbox" name="<?= $row['name'] ?>" value="<?= $row['_id'] ?>"/></td>
+        <td><input type="checkbox" name="{{ row['name'] }}" value="{{ row['_id'] }}"/></td>
 
         {% for element in row['elements'] %}
         <td>{{ element['controls'] }}</td>
         {% endfor %}
 
         <td>
-          {% include 'form_menu.php' with { 'menu' : row['menu'].getItemAt(0) } %}
+          {% include 'form_menu.php' with { 'menu' : row['menu'], 'hideLabels' : true } %}
         </td>
       </tr>
       {% endfor %}

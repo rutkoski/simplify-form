@@ -71,7 +71,7 @@ class Wysiwyg extends \Simplify\Form\Element
    * (non-PHPdoc)
    * @see \Simplify\Form\Component::onExecuteServices()
    */
-  public function onExecuteServices(\Simplify\Form\Action $action, $serviceAction)
+  public function onExecuteServices($serviceAction)
   {
     switch ($serviceAction) {
       case \Simplify\Form::SERVICE_UPLOAD :

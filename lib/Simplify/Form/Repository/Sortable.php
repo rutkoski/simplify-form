@@ -74,7 +74,7 @@ class Sortable extends \Simplify\Form\Repository implements \Simplify\Db\Sortabl
    */
   public function findAll($params = null)
   {
-    $params[\Simplify\Db\QueryParameters::ORDER_BY] = array($this->sortColumn, $this->sortDirection);
+    $params[\Simplify\Db\QueryParameters::ORDER_BY][] = array($this->sortColumn, $this->sortDirection);
     return parent::findAll($params);
   }
 

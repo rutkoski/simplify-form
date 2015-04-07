@@ -196,8 +196,11 @@ abstract class Component extends Renderable
     if (!empty($this->style)) {
       return $this->style;
     }
+    elseif (empty($this->template)) {
+      $this->template = 'form_element_' . strtolower(join('', array_slice(explode('\\', get_class($this)), -1)));
+    }
 
-    return 'form_element_' . strtolower(join('', array_slice(explode('\\', get_class($this)), -1)));
+    return parent::getTemplateFilename();
   }
 
   /**
@@ -253,10 +256,9 @@ abstract class Component extends Renderable
   /**
    * On execute services callback. Component services called via AJAX.
    *
-   * @param Action $action current executing action
    * @param string $serviceAction the name of the service in the component being called
    */
-  public function onExecuteServices(Action $action, $serviceAction)
+  public function onExecuteServices($serviceAction)
   {
   }
 
@@ -350,7 +352,7 @@ abstract class Component extends Renderable
    */
   public function show($actionMask)
   {
-    return ((($this->add | $this->actionMask) ^ $this->remove) & $actionMask) == $actionMask;
+    return (($this->add | $this->actionMask & ~$this->remove) & $actionMask) == $actionMask;
   }
 
   public function onCollectRequirements($schema)

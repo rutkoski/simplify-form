@@ -156,15 +156,15 @@ class Image extends \Simplify\Form\Element
       }
     }
 
-    if (!empty($post[$name]['name']) || $this->required) {
+    if (!empty($post[$name]['file']['name']) || $this->required) {
       try {
-        $upload = new \Simplify\Upload($post[$name]);
+        $upload = new \Simplify\Upload($post[$name]['file']);
         $upload->uploadPath = $this->path;
         $upload->hashFilename = true;
         $upload->upload();
 
         $this->onDelete($data);
-
+        
         $data[$this->getName()] = $upload->getUploadedPath();
       }
       catch (\Simplify\UploadException $e) {
@@ -215,7 +215,7 @@ class Image extends \Simplify\Form\Element
    */
   protected function onDelete(&$data)
   {
-    $file = $data[$this->getFieldName()];
+    $file = sy_get_param($data, $this->getFieldName());
 
     if (!empty($file)) {
       $this->getThumbComponent($file)->cleanCached();

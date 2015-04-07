@@ -50,8 +50,11 @@ class Create extends Base\FormBase
    */
   public function onCreateMenu(Menu $menu)
   {
-    $menu->getItemByName('main')->addItem(new MenuItem($this->getName(), $this->getTitle(), null, 
-      $this->form->url()->extend(null, array('formAction' => $this->getName()))));
+    $url = $this->createUrl();
+
+    $item = new MenuItem($this->getName(), $this->getTitle(), 'plus', $url);
+    
+    $menu->getItemByName('main')->addItem($item);
   }
 
   /**

@@ -1,84 +1,118 @@
-<div class="tabbable">
-  <ul class="nav nav-tabs">
-    <?php foreach ($data as $i => $row) { ?>
-    <li class="<?= $i == 0 ? 'active' : '' ?>"><a href="#tab<?= $row[\Simplify\Form::ID] ?>" data-toggle="tab"><?= $label ?> (<?= $row[\Simplify\Form::ID] ?>)</a></li>
-    <?php } ?>
-
-    <li class="dummy"><a href="#tab-0" data-toggle="tab">+</a></li>
-  </ul>
-
-  <div class="tab-content well">
-    <?php foreach ($data as $i => $row) { ?>
-    <div class="tab-pane<?= $i == 0 ? ' active' : '' ?>" id="tab<?= $row[\Simplify\Form::ID] ?>">
-      <input type="hidden" name="<?= $row['name'] ?>" value="<?= $row[\Simplify\Form::ID] ?>" />
-
-      <?php foreach ($row['elements'] as $element) { ?>
-      <?= $element['controls'] ?>
-      <?php } ?>
-
-      <ul class="nav nav-pills">
-        <li><a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a></li>
-      </ul>
-    </div>
-    <?php } ?>
-
-    <div class="tab-pane dummy-pane" id="tab-0">
-      <input type="hidden" name="<?= $dummy['name'] ?>" value="" />
-
-      <?php foreach ($dummy['elements'] as $element) { ?>
-      <?= $element['controls'] ?>
-      <?php } ?>
-
-      <ul class="nav nav-pills">
-        <li><a href="#" class="btn-delete"><?= $this->icon->show('remove') ?></a></li>
-      </ul>
+{% if action.name == 'view' %}
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      {% for row in data %}
+      <li class="{{ loop.first ? 'active' : '' }}">
+        <a href="#tab{{ loop.index }}" data-toggle="tab"> {{ label }} ({{ loop.index }})</a>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="tab-content well">
+      {% for row in data %}
+      <div class="tab-pane{{ loop.first ? ' active' : '' }}" id="tab{{ loop.index }}">
+        {% for element in row['elements'] %}
+          {% include 'form_row.php' %}
+        {% endfor %}
+      </div>
+      {% endfor %}
     </div>
   </div>
-</div>
+{% else %}
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      {% for row in data %}
+      <li class="{{ loop.first ? 'active' : '' }}">
+        <a href="#tab{{ row['_id'] }}" data-toggle="tab"> {{ label }} ({{ row['_id'] }})</a>
+      </li>
+      {% endfor %}
+  
+      <li class="dummy">
+        <a href="#tab-0" class="btn-create" data-toggle="tab">
+          <span class="glyphicon glyphicon-plus"></span>
+        </a>
+      </li>
+    </ul>
+  
+    <div class="tab-content well">
+      {% for row in data %}
+      <div class="tab-pane{{ loop.first ? ' active' : '' }}" id="tab{{ row['_id'] }}">
+        <input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}" class="_id" />
+  
+        {% for element in row['elements'] %}
+          {% include 'form_row.php' %}
+        {% endfor %}
 
-<script>
-$(function() {
-  var label = '<?= $label ?>';
-  var n = 0;
-
-  $('.tabbable .dummy-pane :input').attr('disabled', 'disabled');
-
-  $('.tabbable .tab-pane .btn-delete').live('click', function() {
-    var div = $(this).parents('.tab-pane');
-    var li = $(this).parents('.tabbable').find('ul a[href=#'+div.attr('id')+']').parents('li');
-
-    if (li.prev().length) {
-      li.prev().find('a').tab('show');;
-    } else if ($(this).parents('.tabbable').find('ul:first li').length > 2) {
-      li.next().find('a').tab('show');;
+        {% include 'form_menu.php' with { 'menu' : row['menu'] } %}
+      </div>
+      {% endfor %}
+  
+      <div class="tab-pane dummy" id="tab-0">
+        <input type="hidden" name="{{ dummy['name'] }}" value="" />
+  
+        {% for element in dummy['elements'] %}
+          {% include 'form_row.php' %}
+        {% endfor %} {% include 'form_menu.php' with { 'menu' :
+        dummy['menu'] } %}
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  $(function() {
+    var n = 0, label = '{{ label }}', id = '{{ id }}', $elem = $('#' + id),
+        $dummyTab = $elem.find('.nav .dummy'); 
+        $dummyPane = $elem.find('.tab-content .dummy');
+  
+    $dummyPane.find(':input').attr('disabled', 'disabled');
+  
+    $elem.on('click', '.btn-delete', onDelete);
+  
+    $dummyTab.on('click', onCreate);
+  
+    function onDelete(event) {
+  	  event.preventDefault();
+  	  
+  	  var $this = $(this),
+  	      $pane = $this.parents('.tab-pane'),
+          $tab = $this.parents('.tabbable').find('ul a[href=#' + $pane.attr('id') + ']').parents('li');
+  
+      if ($tab.prev().length) {
+      	$tab.prev().find('a').tab('show');;
+      } else if ($this.parents('.tabbable').find('ul:first li').length > 2) {
+      	$tab.next().find('a').tab('show');;
+      }
+  
+      $pane.remove();
+      $tab.remove();
     }
-
-    div.remove();
-    li.remove();
-
-    return false;
+  
+    function onCreate(event) {
+  	  var $new;
+  
+  	  event.preventDefault();
+  	  
+      ++n;
+  
+      var $tab = $dummyTab.clone().removeClass('dummy');
+      var $pane = $dummyPane.clone().removeClass('dummy');
+  
+      $tab.insertBefore($dummyTab);
+      $tab.find('a').html(label + ' (+)');
+  
+      $pane.insertBefore($dummyPane);
+      $pane.attr('id', 'tab-' + n);
+  
+      $pane.find(':input').each(function() {
+        var $this = $(this);
+        $this.removeAttr('disabled');
+        $this.attr('name', $this.attr('name').replace(/dummy/, 'new-' + n));
+      });
+  
+      $tab.find('a').attr('href', '#tab-' + n).tab('show');
+  
+      return false;
+    }
+  
   });
-
-  $('.tabbable ul li.dummy a').click(function() {
-    ++n;
-
-    var li = $(this).parents('li').clone().removeClass('dummy');
-    var _div = $(this).parents('.tabbable').find('.tab-content .dummy-pane');
-    var div = _div.clone().removeClass('dummy-pane');
-
-    li.insertBefore($(this).parents('li'));
-    li.find('a').html(label + ' (+)');
-
-    div.insertBefore(_div);
-    div.attr('id', 'tab-' + n);
-
-    div.find(':input').removeAttr('disabled').each(function() {
-      $(this).attr('name', $(this).attr('name').replace(/dummy/, 'new-' + n));
-    });
-
-    li.find('a').attr('href', '#tab-' + n).tab('show');
-
-    return false;
-  });
-});
-</script>
+  </script>
+{% endif %}

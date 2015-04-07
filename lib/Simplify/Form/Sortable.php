@@ -99,15 +99,15 @@ class Sortable extends \Simplify\Form
   public function onCreateItemMenu(\Simplify\Menu $menu, \Simplify\Form\Action $action, $data)
   {
     if ($action->show(\Simplify\Form::ACTION_LIST)) {
-      $moveMenu = new \Simplify\Menu();
-      $moveMenu->addItem(new \Simplify\MenuItem('move_top', 'First', 'arrow_top', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'first', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
-      $moveMenu->addItem(new \Simplify\MenuItem('move_up', 'Previous', 'arrow_up', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'previous', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
-      $moveMenu->addItem(new \Simplify\MenuItem('move_down', 'Next', 'arrow_down', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'next', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
-      $moveMenu->addItem(new \Simplify\MenuItem('move_bottom', 'Last', 'arrow_bottom', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'last', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
+      $moveMenu = new \Simplify\Menu('move', null, 'Move');
+      $moveMenu->addItem(new \Simplify\MenuItem('move-first', __('Move to Top'), 'fast-backward', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'first', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
+      $moveMenu->addItem(new \Simplify\MenuItem('move-previous', __('Move Up'), 'backward', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'previous', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
+      $moveMenu->addItem(new \Simplify\MenuItem('move-next', __('Move Down'), 'forward', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'next', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
+      $moveMenu->addItem(new \Simplify\MenuItem('move-last', __('Move to Bottom'), 'fast-forward', $this->url()->extend(null, array('listAction' => self::LIST_ACTION_SORT, 'index' => 'last', \Simplify\Form::ID => $data[\Simplify\Form::ID]))));
 
       $moveItem = new \Simplify\MenuItem('move', 'Move', null, null, $moveMenu);
-
-      $menu->addItem(new \Simplify\Menu('sortable', array($moveItem)));
+      $menu->addItem(new \Simplify\Menu('sortable', array($moveItem), __('Move')));
+      //$menu->addItem($moveMenu);
     }
 
     parent::onCreateItemMenu($menu, $action, $data);

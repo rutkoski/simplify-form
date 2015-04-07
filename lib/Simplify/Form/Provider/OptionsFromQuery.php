@@ -12,35 +12,49 @@
  *
  * SimplifyPHP Framework is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
-
 namespace Simplify\Form\Provider;
 
 /**
- *
  * Base class for list providers
- *
  */
 class OptionsFromQuery extends \Simplify\Form\Provider
 {
 
   /**
    *
-   * @var \Simplify\Db\QueryObject
+   * @var \Simplify\Db\QueryObject \Simplify\Db\QueryParameters string
    */
   protected $query;
 
+  /**
+   *
+   * @var string
+   */
   protected $value;
 
+  /**
+   *
+   * @var string
+   */
   protected $label;
 
+  /**
+   *
+   * @param mixed $query
+   *          either query object, array with query parameters or table name
+   * @param string $value
+   *          value field
+   * @param string $label
+   *          label field
+   */
   public function __construct($query, $value, $label)
   {
     $this->query = $query;
@@ -50,19 +64,26 @@ class OptionsFromQuery extends \Simplify\Form\Provider
 
   /**
    * (non-PHPdoc)
+   *
    * @see \Simplify\Form\Provider::getData()
    */
   public function getData()
   {
     if ($this->data === false) {
-      if (is_array($this->query)) {
-        $this->query = \Simplify::db()->query()->select($this->value)->select($this->label)->setParams($this->query);
+      $query = $this->query;
+      
+      if (is_array($query)) {
+        $query = \Simplify::db()->query()->select($this->value)->select($this->label)->setParams($query);
       }
-
-      $data = $this->query->execute()->fetchAll();
+      elseif (is_string($query)) {
+        $query = \Simplify::db()->query()->select($this->value)->select($this->label)->from($query);
+      }
+      
+      $data = $query->execute()->fetchAll();
+      
       $this->data = sy_array_to_options($data, $this->value, $this->label);
     }
-
+    
     return $this->data;
   }
 

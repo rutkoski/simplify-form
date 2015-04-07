@@ -223,7 +223,7 @@ class Images extends \Simplify\Form\Element\Base\HasMany
    * (non-PHPdoc)
    * @see \Simplify\Form\Component::onExecuteServices()
    */
-  public function onExecuteServices(\Simplify\Form\Action $action, $serviceAction)
+  public function onExecuteServices($serviceAction)
   {
     switch ($serviceAction) {
       case \Simplify\Form::SERVICE_UPLOAD :
@@ -269,16 +269,14 @@ class Images extends \Simplify\Form\Element\Base\HasMany
 
       if (!empty($file)) {
         $this->getThumbComponent($file)->cleanCached();
-
-        $file = $this->path . $file;
-
+  
         if (!sy_path_is_absolute($file)) {
           $file = \Simplify::config()->get('www_dir') . $file;
         }
-
+  
         if (file_exists($file)) {
           $this->getThumbComponent($file)->cleanCached();
-
+  
           @unlink($file);
         }
       }
@@ -295,7 +293,7 @@ class Images extends \Simplify\Form\Element\Base\HasMany
   {
     return \Simplify\Thumb::factory()->load($file);
   }
-
+  
   /**
    * Get the url for a zoom cropped version of the imagem
    *
@@ -306,10 +304,15 @@ class Images extends \Simplify\Form\Element\Base\HasMany
    */
   protected function getThumbUrl($file, $width, $height)
   {
-    return \Simplify::config()->get('www_url') .
-       $this->getThumbComponent($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+    try {
+      return \Simplify::config()->get('www_url') .
+      \Simplify\Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+    }
+    catch (\Simplify\ThumbException $e) {
+      //
+    }
   }
-
+  
   /**
    * Get the url for the full image
    *
@@ -318,9 +321,9 @@ class Images extends \Simplify\Form\Element\Base\HasMany
    */
   protected function getImageUrl($file)
   {
-    return \Simplify::config()->get('www_url') . $this->path . $file;
+    return \Simplify::config()->get('www_url') . $file;
   }
-
+  
   /**
    * Check if the file exists
    *
@@ -329,8 +332,8 @@ class Images extends \Simplify\Form\Element\Base\HasMany
    */
   protected function fileExists($file)
   {
-    $file = \Simplify::config()->get('www_dir') . $this->path . $file;
-    return !empty($file) && file_exists($file) && !is_dir($file);
+    $file = \Simplify::config()->get('www_dir') . $file;
+    return ! empty($file) && file_exists($file) && ! is_dir($file);
   }
-
+  
 }

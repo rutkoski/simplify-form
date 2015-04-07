@@ -1,6 +1,9 @@
-<input type="text" name="{{ inputName }}" value="{{ formatedValue }}"/>
+<input id="{{ id }}" type="text" name="{{ inputName }}" value="{{ formatedValue }}"/>
+
 <script>
-(function() {
-  $('#{{ id }} input').datetimepicker();
-})();
+$(document).ready(function() {
+	$('input#{{ id }}').datetimepicker({
+		locale: 'pt-br'
+	});
+});
 </script>

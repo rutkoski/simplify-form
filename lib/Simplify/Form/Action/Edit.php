@@ -12,15 +12,14 @@
  *
  * SimplifyPHP Framework is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
-
 namespace Simplify\Form\Action;
 
 use Simplify;
@@ -30,28 +29,31 @@ use Simplify\Menu;
 use Simplify\MenuItem;
 
 /**
- *
  * Form action edit
- *
  */
-class Edit extends Base\FormBase {
+class Edit extends Base\FormBase
+{
 
-	/**
-	 *
-	 * @var int
-	 */
-	protected $actionMask = Form::ACTION_EDIT;
+  /**
+   *
+   * @var int
+   */
+  protected $actionMask = Form::ACTION_EDIT;
 
-	/**
-	 * (non-PHPdoc)
-	 * @see \Simplify\Form\Action::onCreateItemMenu()
-	 */
-	public function onCreateItemMenu(Menu $menu, Action $action, $data) {
-		if (!$action->show(Form::ACTION_CREATE) && !$action->show(Form::ACTION_EDIT)) {
-			$url = $this->form->url()->extend(null, array('formAction' => $this->getName(), Form::ID => $data[Form::ID]));
-			$menu->getItemByName('main')->addItem(
-				new MenuItem($this->getName(), $this->getTitle(), null, $url));
-		}
-	}
+  /**
+   * (non-PHPdoc)
+   *
+   * @see \Simplify\Form\Action::onCreateItemMenu()
+   */
+  public function onCreateItemMenu(Menu $menu, Action $action, $data)
+  {
+    if (! $action->show(Form::ACTION_CREATE) && ! $action->show(Form::ACTION_EDIT)) {
+      $url = $this->editUrl($data);
+      
+      $item = new MenuItem($this->getName(), $this->getTitle(), 'pencil', $url);
+      
+      $menu->getItemByName('main')->addItem($item);
+    }
+  }
 
 }

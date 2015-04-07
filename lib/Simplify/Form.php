@@ -75,6 +75,10 @@ class Form extends Renderable
   const ID = '_id';
 
   const SERVICE_UPLOAD = 'upload';
+  
+  const MODE_HTML = 'html';
+  
+  const MODE_AJAX = 'ajax';
 
   /**
    * Table name
@@ -142,7 +146,7 @@ class Form extends Renderable
    * @var boolean
    */
   public $showItemMenu = true;
-
+  
   /**
    * Default action name
    *
@@ -191,7 +195,7 @@ class Form extends Renderable
    * @var array
    */
   protected $hooks = array();
-
+  
   /**
    * Construct a new form object
    *
@@ -207,10 +211,11 @@ class Form extends Renderable
    * @param string $table
    * @param string $primaryKey
    */
-  public function setTable($table, $primaryKey = null)
+  public function setTable($table, $primaryKey = null, $label = null)
   {
     $this->table = $table;
     $this->primaryKey = $primaryKey;
+    $this->label = $label;
   }
 
   /**
@@ -221,10 +226,24 @@ class Form extends Renderable
    */
   public function execute($action = null)
   {
-    $Action = $this->getAction($action);
+    $action = $this->getActionName();
 
-    $result = $Action->onExecute();
+    if ($action === 'services') {
+      $result = $this->executeServices();
+    }
+    
+    else {
+      $Action = $this->getAction($action);
 
+      $result = $Action->onExecute();
+    }
+
+    //if ($Action->formMode('ajax')) {
+      //$this->setLayout('form_ajax_body');
+      
+      //\Simplify::response()->output($this->render($action));
+    //}
+    
     return $result;
   }
 
@@ -242,16 +261,31 @@ class Form extends Renderable
 
     $this->set('actionBody', $result);
 
-    if (!Simplify::request()->json()) {
-      $this->set('title', $this->getTitle());
-      $this->set('menu', $this->createMenu($Action));
-    }
+    if (\Simplify::request()->ajax()) {
+      $this->setLayout('form_ajax_body');
 
+     \Simplify::response()->output($this);
+    }
+    
+    $this->set('title', $this->getTitle());
+    $this->set('menu', $this->createMenu($Action));
     $this->set('showMenu', $this->showMenu);
 
     \Simplify\AssetManager::javascript('/assets/simplify-form.js');
 
     return $this;
+  }
+
+  public function executeServices()
+  {
+    $serviceName = \Simplify::request()->get('serviceName');
+    $serviceAction = \Simplify::request()->get('serviceAction');
+
+    $service = $this->getElementByName($serviceName);
+
+    $response = $service->onExecuteServices($serviceAction);
+
+    return $response;
   }
 
   public function jsonSerialize()
@@ -355,12 +389,26 @@ class Form extends Renderable
   public function getAction($action = null)
   {
     if (empty($action)) {
-      $action = Simplify::request()->get('formAction', $this->defaultAction, true);
+      $action = $this->getActionName();
+    }
+    
+    if (! isset($this->actions[$action])) {
+      throw new \Exception("Unknown action: <b>{$action}</b>");
     }
 
     return $this->actions[$action];
   }
 
+  /**
+   *
+   * @param string $action
+   * @return \Simplify\Form\Action
+   */
+  public function getActionName()
+  {
+    return Simplify::request()->get('formAction', $this->defaultAction, true);
+  }
+  
   /**
    *
    * @return \Simplify\Form\Action[]
@@ -413,9 +461,7 @@ class Form extends Renderable
   public function getId()
   {
     if (empty($this->id)) {
-      $this->id = array_filter(
-        (array) (Simplify::request()->method(Request::GET) ? Simplify::request()->get(Form::ID) : Simplify::request()->post(
-          Form::ID)));
+      $this->id = (array) (Simplify::request()->method(Request::GET) ? Simplify::request()->get(Form::ID) : Simplify::request()->post(Form::ID));
     }
 
     return $this->id;
@@ -477,6 +523,25 @@ class Form extends Renderable
     return $this->label;
   }
 
+  /**
+   * Get post/files
+   * 
+   * @return \Simplify\Simplify_Data_View>
+   */
+  public function getPostData()
+  {
+    $post = \Simplify::request()->post('formData');
+  
+    $files = \Simplify::request()->files('formData');
+  
+    if (! empty($files)) {
+      $files = sy_form_fix_files_array($files);
+      $post = sy_form_array_merge_recursive($post, $files);
+    }
+  
+    return $post;
+  }
+  
   /**
    *
    * @return string
@@ -549,10 +614,10 @@ class Form extends Renderable
   public function url()
   {
     if (empty($this->url)) {
-      $this->url = new URL(null, array('formAction' => Simplify::request()->get('formAction')));
+      $this->url = new URL(null, array('formAction' => \Simplify::request()->get('formAction')));
     }
 
-    return $this->url;
+    return $this->url->extend();
   }
 
   /**

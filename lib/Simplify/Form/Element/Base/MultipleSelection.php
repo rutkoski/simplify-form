@@ -75,9 +75,9 @@ abstract class MultipleSelection extends \Simplify\Form\Element
    * (non-PHPdoc)
    * @see \Simplify\Form\Component::onExecuteServices()
    */
-  public function onExecuteServices(\Simplify\Form\Action $action, $serviceAction)
+  public function onExecuteServices($serviceAction)
   {
-    parent::onExecuteServices($action, $serviceAction);
+    parent::onExecuteServices($serviceAction);
 
     switch ($serviceAction) {
       case 'toggle' :

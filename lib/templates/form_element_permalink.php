@@ -1,0 +1,1 @@
+<input type="text" class="form-control" name="{{ inputName }}" value="{{ value }}" maxlength="255">

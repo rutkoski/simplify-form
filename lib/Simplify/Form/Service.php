@@ -12,43 +12,53 @@
  *
  * SimplifyPHP Framework is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
+namespace Simplify\Form;
 
-namespace Simplify\Form\Element;
+use Simplify;
+use Simplify\Form;
 
-/**
- *
- * Hidden form element
- *
- */
-class Hidden extends \Simplify\Form\Element
+class Service
 {
 
   /**
    *
-   * @return void
+   * @var Form
    */
-  public function __construct($name, $label = null)
-  {
-    parent::__construct($name, $label);
+  public $form;
 
-    $this->remove = \Simplify\Form::ACTION_VIEW ^ \Simplify\Form::ACTION_LIST;
+  /**
+   *
+   * @var string
+   */
+  public $name;
+
+  /**
+   * Get the service name.
+   *
+   * @return string
+   */
+  public function getName()
+  {
+    return $this->name;
   }
 
   /**
-   * (non-PHPdoc)
-   * @see \Simplify\Form\Component::getLabel()
+   * On execute services callback.
+   * Component services called via AJAX.
+   *
+   * @param string $serviceAction
+   *          the name of the service in the component being called
    */
-  public function getLabel()
+  public function onExecuteServices($serviceAction)
   {
-    return false;
   }
 
 }

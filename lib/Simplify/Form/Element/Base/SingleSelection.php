@@ -111,6 +111,24 @@ abstract class SingleSelection extends \Simplify\Form\Element
   }
 
   /**
+   * 
+   * @param mixed[mixed] $options array with options
+   */
+  public function setOptions(array $options)
+  {
+    $this->options = $options;
+  }
+  
+  /**
+   * 
+   * @param \Simplify\Form\Provider $provider
+   */
+  public function setOptionsProvider(\Simplify\Form\Provider $provider)
+  {
+    $this->options = $provider;
+  }
+
+  /**
    *
    * @return mixed[string]
    */
