@@ -271,14 +271,17 @@ class Form extends Renderable
     $this->set('menu', $this->createMenu($Action));
     $this->set('showMenu', $this->showMenu);
 
+    \Simplify\AssetManager::load('moment/moment.min.js', 'vendor');
+    \Simplify\AssetManager::load('moment/lang/pt-br.js', 'vendor');
+    
     \Simplify\AssetManager::load('fullcalendar/fullcalendar.min.js', 'vendor');
     \Simplify\AssetManager::load('fullcalendar/fullcalendar.min.css', 'vendor');
     \Simplify\AssetManager::load('fullcalendar/lang/pt-br.js', 'vendor');
 
-    \Simplify\AssetManager::load('ckeditor/ckeditor.js', 'vendor');
-
     \Simplify\AssetManager::load('eonasdan-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css', 'vendor');
     \Simplify\AssetManager::load('eonasdan-bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', 'vendor');
+
+    \Simplify\AssetManager::load('ckeditor/ckeditor.js', 'vendor', 0, false);
     
     return $this;
   }
