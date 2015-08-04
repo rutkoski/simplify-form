@@ -35,7 +35,7 @@
   </div>
 </div>
 
-<script src="{{ config.get('theme_url') }}scripts/uploadify/jquery.uploadify.js"></script>
+{{ asset('uploadify/jquery.uploadify.min.js') }}
 
 <script>
 $(function() {
@@ -45,7 +45,7 @@ $(function() {
 		
     $('#{{ uploaderId }}').uploadify({
         'fileObjName' : '{{ name }}',
-        'swf'      : '{{ config.get('theme_url') }}scripts/uploadify/uploadify.swf',
+        'swf'      : "{{ asset('scripts/uploadify/uploadify.swf') }}",
         'uploader' : '{{ uploaderUrl }}',
         'onUploadSuccess' : function(file, data, response) {
             addImage($.parseJSON(data));
