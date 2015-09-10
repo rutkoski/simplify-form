@@ -2,6 +2,7 @@
 
 namespace Simplify\Form\Action;
 
+use Simplify\Inflector;
 class Config extends \Simplify\Form\Action
 {
 
@@ -101,7 +102,7 @@ class Config extends \Simplify\Form\Action
 
     while ($elements->valid()) {
       $element = $elements->current();
-
+      
       $line['index'] = $element->getName();
       //$line['menu'] = new \Simplify\Menu('actions');
       //$line['menu']->addItem(new \Simplify\Menu('main'));
@@ -235,7 +236,7 @@ class Config extends \Simplify\Form\Action
   public function getNameField()
   {
     if (empty($this->nameField)) {
-      $this->nameField = $this->getTable() . '_name';
+      $this->nameField = Inflector::singularize($this->getTable()) . '_name';
     }
 
     return $this->nameField;
@@ -248,7 +249,7 @@ class Config extends \Simplify\Form\Action
   public function getValueField()
   {
     if (empty($this->valueField)) {
-      $this->valueField = $this->getTable() . '_value';
+      $this->valueField = Inflector::singularize($this->getTable()) . '_value';
     }
 
     return $this->valueField;

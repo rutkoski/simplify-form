@@ -58,7 +58,8 @@ class ElementIterator implements \Iterator {
 	public function __construct($elements, $mask = Form::ACTION_ALL) {
 		$this->elements = $elements;
 		$this->mask     = $mask;
-		$this->index    = count($this->elements) ? 0 : -1;
+		$this->index    = -1;
+		$this->next();
 	}
 
 	/**
