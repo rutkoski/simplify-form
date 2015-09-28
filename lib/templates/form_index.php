@@ -39,7 +39,7 @@
         <td>{{ element['controls'] }}</td>
         {% endfor %}
 
-        <td>
+        <td class="sy-form-list-action-menu" nowrap>
           {% include 'form_menu.php' with { 'menu' : row['menu'], 'hideLabels' : true } %}
         </td>
       </tr>
@@ -68,3 +68,9 @@
   </div>
   {% endif %}
 </form>
+
+<style>
+.sy-form-list-action-menu .btn-group {
+  display: flex;
+}
+</style>

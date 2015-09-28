@@ -493,7 +493,7 @@ abstract class Action extends Renderable
    */
   /*
    * public function getTemplatesPath() { return
-   * array(Simplify::config()->get('templates_dir') . '/form', FORM_DIR .
+   * array(Simplify::config()->get('templates:dir') . '/form', FORM_DIR .
    * '/templates'); }
    */
   

@@ -153,7 +153,7 @@ class Wysiwyg extends \Simplify\Form\Element
    */
   protected function makeUrlsRelative($value)
   {
-    $base = \Simplify::config()->get('www_url');
+    $base = \Simplify::config()->get('www:url');
 
     $value = preg_replace('# src="' . preg_quote($base) . '#', ' src="', $value);
 
@@ -167,7 +167,7 @@ class Wysiwyg extends \Simplify\Form\Element
    */
   protected function makeUrlsAbsolute($value)
   {
-    $base = \Simplify::config()->get('www_url');
+    $base = \Simplify::config()->get('www:url');
 
     $value = preg_replace('# src="(?!(' . preg_quote($base) . '|http))#', ' src="' . $base, $value);
 

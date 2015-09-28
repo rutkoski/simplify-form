@@ -78,7 +78,7 @@ class Image extends \Simplify\Form\Element
   {
     parent::__construct($name, $label);
 
-    $this->path = \Simplify::config()->get('files_path');
+    $this->path = \Simplify::config()->get('files:path');
   }
 
   /**
@@ -221,7 +221,7 @@ class Image extends \Simplify\Form\Element
       $this->getThumbComponent($file)->cleanCached();
 
       if (!sy_path_is_absolute($file)) {
-        $file = \Simplify::config()->get('www_dir') . $file;
+        $file = \Simplify::config()->get('www:dir') . $file;
       }
 
       if (file_exists($file)) {
@@ -254,7 +254,7 @@ class Image extends \Simplify\Form\Element
   protected function getThumbUrl($file, $width, $height)
   {
     try {
-      return \Simplify::config()->get('www_url') .
+      return \Simplify::config()->get('www:url') .
         \Simplify\Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
     }
     catch (\Simplify\ThumbException $e) {
@@ -270,7 +270,7 @@ class Image extends \Simplify\Form\Element
    */
   protected function getImageUrl($file)
   {
-    return \Simplify::config()->get('www_url') . $file;
+    return \Simplify::config()->get('www:url') . $file;
   }
 
   /**
@@ -281,7 +281,7 @@ class Image extends \Simplify\Form\Element
    */
   protected function fileExists($file)
   {
-    $file = \Simplify::config()->get('www_dir') . $file;
+    $file = \Simplify::config()->get('www:dir') . $file;
     return ! empty($file) && file_exists($file) && ! is_dir($file);
   }
 

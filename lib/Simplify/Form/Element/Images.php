@@ -63,7 +63,7 @@ class Images extends \Simplify\Form\Element\Base\HasMany
   {
     parent::__construct($name, $label);
 
-    $this->path = \Simplify::config()->get('files_path');
+    $this->path = \Simplify::config()->get('files:path');
   }
 
   /**
@@ -271,7 +271,7 @@ class Images extends \Simplify\Form\Element\Base\HasMany
         $this->getThumbComponent($file)->cleanCached();
   
         if (!sy_path_is_absolute($file)) {
-          $file = \Simplify::config()->get('www_dir') . $file;
+          $file = \Simplify::config()->get('www:dir') . $file;
         }
   
         if (file_exists($file)) {
@@ -305,7 +305,7 @@ class Images extends \Simplify\Form\Element\Base\HasMany
   protected function getThumbUrl($file, $width, $height)
   {
     try {
-      return \Simplify::config()->get('www_url') .
+      return \Simplify::config()->get('www:url') .
       \Simplify\Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
     }
     catch (\Simplify\ThumbException $e) {
@@ -321,7 +321,7 @@ class Images extends \Simplify\Form\Element\Base\HasMany
    */
   protected function getImageUrl($file)
   {
-    return \Simplify::config()->get('www_url') . $file;
+    return \Simplify::config()->get('www:url') . $file;
   }
   
   /**
@@ -332,7 +332,7 @@ class Images extends \Simplify\Form\Element\Base\HasMany
    */
   protected function fileExists($file)
   {
-    $file = \Simplify::config()->get('www_dir') . $file;
+    $file = \Simplify::config()->get('www:dir') . $file;
     return ! empty($file) && file_exists($file) && ! is_dir($file);
   }
   

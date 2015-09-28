@@ -84,7 +84,7 @@ class Browser extends \Simplify\Renderable
    */
   public function getFileUrl()
   {
-    return \Simplify::config()->get('www_url') . $this->file;
+    return \Simplify::config()->get('www:url') . $this->file;
   }
 
   /**
@@ -95,7 +95,7 @@ class Browser extends \Simplify\Renderable
    */
   protected function getFilePath($absolute = false)
   {
-    return ($absolute ? \Simplify::config()->get('www_dir') : '') . $this->file;
+    return ($absolute ? \Simplify::config()->get('www:dir') : '') . $this->file;
   }
 
   /**
@@ -167,7 +167,7 @@ class Browser extends \Simplify\Renderable
   public function getTemplatesPath()
   {
     $path = array();
-    $path[] = \Simplify::config()->get('templates_dir') . '/form';
+    $path[] = \Simplify::config()->get('templates:dir') . '/form';
     $path[] = FORM_DIR . '/templates';
     return $path;
   }
@@ -194,10 +194,10 @@ class Browser extends \Simplify\Renderable
   protected function getThumbUrl($file, $width = null, $height = null)
   {
     if (empty($width) && empty($height)) {
-      return \Simplify::config()->get('www_url') . $file;
+      return \Simplify::config()->get('www:url') . $file;
     }
 
-    return \Simplify::config()->get('www_url') .
+    return \Simplify::config()->get('www:url') .
        $this->getThumbComponent($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
   }
 
@@ -207,8 +207,8 @@ class Browser extends \Simplify\Renderable
    */
   protected function findFiles()
   {
-    $baseUrl = \Simplify::config()->get('www_url');
-    $baseDir = \Simplify::config()->get('www_dir');
+    $baseUrl = \Simplify::config()->get('www:url');
+    $baseDir = \Simplify::config()->get('www:dir');
 
     $files = glob($baseDir . $this->path . '/' . '*.{' . implode(',', $this->extensions) . '}',
       GLOB_BRACE);

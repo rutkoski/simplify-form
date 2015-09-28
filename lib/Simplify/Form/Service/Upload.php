@@ -47,7 +47,7 @@ class Upload extends Service
   {
     parent::__construct();
     
-    $this->path = \Simplify::config()->get('files_path');
+    $this->path = \Simplify::config()->get('files:path');
   }
 
   /**

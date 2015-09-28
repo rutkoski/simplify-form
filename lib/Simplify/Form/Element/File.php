@@ -66,7 +66,7 @@ class File extends \Simplify\Form\Element
   {
     parent::__construct($name, $label);
 
-    $this->path = \Simplify::config()->get('files_path');
+    $this->path = \Simplify::config()->get('files:path');
   }
 
   /**
@@ -196,7 +196,7 @@ class File extends \Simplify\Form\Element
 
     if (!empty($file)) {
       if (!sy_path_is_absolute($file)) {
-        $file = \Simplify::config()->get('www_dir') . $file;
+        $file = \Simplify::config()->get('www:dir') . $file;
       }
 
       if (file_exists($file)) {
@@ -213,7 +213,7 @@ class File extends \Simplify\Form\Element
    */
   protected function getFileUrl($file)
   {
-    return \Simplify::config()->get('www_url') . $file;
+    return \Simplify::config()->get('www:url') . $file;
   }
 
   /**
@@ -224,7 +224,7 @@ class File extends \Simplify\Form\Element
    */
   protected function fileExists($file)
   {
-    $file = \Simplify::config()->get('www_dir') . $file;
+    $file = \Simplify::config()->get('www:dir') . $file;
     return ! empty($file) && file_exists($file) && ! is_dir($file);
   }
 
