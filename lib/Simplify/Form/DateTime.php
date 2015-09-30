@@ -64,7 +64,7 @@ class DateTime
    *
    * @var string
    */
-  public static $dateFormat = 'd/mY';
+  public static $dateFormat = 'd/m/Y';
 
   /**
    * Application time format

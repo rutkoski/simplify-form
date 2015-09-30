@@ -71,7 +71,16 @@
   
   	function init() {
   		$('.sy-form-calendar').each(function() {
-  			var $this = $(this), options = {lang:'pt-br'};
+  			var $this = $(this);
+
+  			var options = {
+  				header: {
+  					left: 'title',
+  					right: 'month,agendaWeek,agendaDay today prev,next'
+  				},
+  				lang:'pt-br',
+  				height: 'auto'
+  	  		};
   
   			$.extend(options, $this.data('calendar'));
   			$.extend(options, {
@@ -90,9 +99,10 @@
   		        },
   		        
   		        dayClick: function(date, jsEvent, view) {
+  	  		        var time = Math.floor(date.valueOf() / 1000);
   			        $.fancybox.open({
   				        type : 'ajax',
-  				        href: options.createUrl,
+  				        href: options.createUrl.replace(/__startTime__/, time),
   				        modal : true,
     				      scrolling : 'no',
     				      afterShow: function() {

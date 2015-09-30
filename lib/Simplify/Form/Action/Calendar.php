@@ -142,7 +142,7 @@ class Calendar extends Action
     $options = array();
     $options['dataUrl'] = $this->url()->set('calendarAction', 'data')->format('json')->build();
     
-    $options['createUrl'] = $this->url()->set('calendarAction', 'create')->build();
+    $options['createUrl'] = $this->url()->set('calendarAction', 'create')->set('calendarDate', '__startTime__')->build();
     
     $this->set('calendarOptions', json_encode($options));
     
