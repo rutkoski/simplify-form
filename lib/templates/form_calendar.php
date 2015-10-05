@@ -78,6 +78,7 @@
   					left: 'title',
   					right: 'month,agendaWeek,agendaDay today prev,next'
   				},
+  				timezone: 'America/Sao_Paulo',
   				lang:'pt-br',
   				height: 'auto'
   	  		};
@@ -99,7 +100,8 @@
   		        },
   		        
   		        dayClick: function(date, jsEvent, view) {
-  	  		        var time = Math.floor(date.valueOf() / 1000);
+  	  		        var time = Math.floor(date.local().unix());
+  	  		        
   			        $.fancybox.open({
   				        type : 'ajax',
   				        href: options.createUrl.replace(/__startTime__/, time),
