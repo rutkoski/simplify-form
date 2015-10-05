@@ -39,8 +39,10 @@
         <td>{{ element['controls'] }}</td>
         {% endfor %}
 
-        <td class="sy-form-list-action-menu" nowrap>
+        <td class="sy-form-list-action-menu">
+          <div class="nowrap-flex">
           {% include 'form_menu.php' with { 'menu' : row['menu'], 'hideLabels' : true } %}
+          </div>
         </td>
       </tr>
       {% endfor %}
@@ -70,7 +72,7 @@
 </form>
 
 <style>
-.sy-form-list-action-menu .btn-group {
+.sy-form-list-action-menu .nowrap-flex, .sy-form-list-action-menu .btn-group {
   display: flex;
 }
 </style>

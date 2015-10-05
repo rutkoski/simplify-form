@@ -40,7 +40,7 @@ class Index extends Action
    *
    * @var int
    */
-  public $limit = 10;
+  public $limit = 20;
 
   /**
    * Current page offset
