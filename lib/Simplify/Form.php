@@ -226,7 +226,9 @@ class Form extends Renderable
    */
   public function execute($action = null)
   {
-    $action = $this->getActionName();
+    if (empty($action)) {
+        $action = $this->getActionName();
+    }
 
     if ($action === 'services') {
       $result = $this->executeServices();
