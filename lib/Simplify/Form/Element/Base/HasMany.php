@@ -139,7 +139,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
    */
   public function onCreateMenu(Menu $menu)
   {
-    $menu->addItem(new MenuItem('create', __('Create'), 'plus'));
+    $menu->getItemByName('main')->addItem(new MenuItem('create', __('Create'), 'plus'));
   }
   
   /**
@@ -148,7 +148,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
    */
   public function onCreateItemMenu(Menu $menu, $item)
   {
-    $menu->addItem(new MenuItem('delete', __('Delete'), 'minus'));
+    $menu->getItemByName('main')->addItem(new MenuItem('delete', __('Delete'), 'minus'));
   }
   
   /**
@@ -173,7 +173,8 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
         $line['baseName'] = "formData[" . implode('][', $__index) . "]";
         $line[\Simplify\Form::ID] = $_row[\Simplify\Form::ID];
         $line['elements'] = array();
-        $line['menu'] = new Menu('main');
+        $line['menu'] = new Menu('actions');
+        $line['menu']->addItem(new Menu('main'));
         
         $this->onCreateItemMenu($line['menu'], $line);
 
@@ -198,7 +199,8 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
     $dummy['name'] = "formData[" . implode('][', $__index) . "][" . \Simplify\Form::ID . "]";
     $dummy[\Simplify\Form::ID] = '';
     $dummy['elements'] = array();
-    $dummy['menu'] = new Menu('main');
+    $dummy['menu'] = new Menu('actions');
+    $dummy['menu']->addItem(new Menu('main'));
     
     $this->onCreateItemMenu($dummy['menu'], $dummy);
 
@@ -213,7 +215,8 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
     $this->set('data', $lines);
     $this->set('dummy', $dummy);
     
-    $menu = new Menu('main');
+    $menu = new Menu('actions');
+    $menu->addItem(new Menu('main'));
     
     $this->onCreateMenu($menu);
     
