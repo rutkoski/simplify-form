@@ -66,6 +66,8 @@ class Sortable extends \Simplify\Form
      */
 
     if ($Action->show(\Simplify\Form::ACTION_LIST)) {
+      $Action->limit = false;
+
       $listAction = \Simplify::request()->get('listAction');
 
       if ($listAction == self::LIST_ACTION_SORT) {
