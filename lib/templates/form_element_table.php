@@ -36,8 +36,10 @@
         {% for element in row['elements'] %}
         <td>{{ element['controls'] }}</td> {% endfor %}
   
-        <td><input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}" class="_id" />
-        {% include 'form_menu.php' with { 'menu' : row['menu'] } %}
+        <td>
+          <input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}" class="_id" />
+          {% include 'form_menu.php' with { 'menu' : row['menu'] } %}
+        </td>
       </tr>
       {% endfor %}
   

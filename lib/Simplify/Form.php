@@ -226,7 +226,9 @@ class Form extends Renderable
    */
   public function execute($action = null)
   {
-    $action = $this->getActionName();
+    if (empty($action)) {
+        $action = $this->getActionName();
+    }
 
     if ($action === 'services') {
       $result = $this->executeServices();
@@ -360,7 +362,7 @@ class Form extends Renderable
    * @param unknown_type $actionMask a bit mask of the actions the filter applies to
    * @return \Simplify\Form\Filter
    */
-  public function addFilter(Filter $filter, $actionMask = Form::ACTION_ALL)
+  public function addFilter(\Simplify\Form\Filter $filter, $actionMask = Form::ACTION_ALL)
   {
     $filter->form = $this;
     $filter->actionMask = $actionMask;
