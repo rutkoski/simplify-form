@@ -169,7 +169,7 @@ class Config extends \Simplify\Form\Action
 
       $data = array();
       $data[$this->getNameField()] = $element->getFieldName();
-      $data[$this->getValueField()] = $row[$element->getFieldName()];
+      $data[$this->getValueField()] = sy_get_param($row, $element->getFieldName(), $element->getDefaultValue());
 
       if (empty($this->formData[$element->getName()]['found'])) {
         \Simplify::db()->insert($this->getTable(), $data)->execute();
