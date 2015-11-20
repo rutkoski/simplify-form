@@ -23,6 +23,7 @@
 
 namespace Simplify\Form\Element;
 
+use Simplify\Form\Action;
 /**
  *
  * Hidden form element
@@ -30,17 +31,6 @@ namespace Simplify\Form\Element;
  */
 class Hidden extends \Simplify\Form\Element
 {
-
-  /**
-   *
-   * @return void
-   */
-  public function __construct($name, $label = null)
-  {
-    parent::__construct($name, $label);
-
-    $this->remove = \Simplify\Form::ACTION_VIEW ^ \Simplify\Form::ACTION_LIST;
-  }
 
   /**
    * (non-PHPdoc)
@@ -51,4 +41,22 @@ class Hidden extends \Simplify\Form\Element
     return false;
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Element::onRenderLine()
+   */
+  public function onRenderLine(Action $action, &$line, $data, $index)
+  {
+      //
+  }
+
+  /**
+   * (non-PHPdoc)
+   * @see \Simplify\Form\Element::onRenderHeaders()
+   */
+  public function onRenderHeaders(Action $action, &$headers)
+  {
+      //
+  }
+  
 }

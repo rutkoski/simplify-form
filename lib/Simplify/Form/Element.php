@@ -64,6 +64,12 @@ abstract class Element extends Component
    * @var string[]
    */
   public $errors;
+  
+  /**
+   * 
+   * @var bool
+   */
+  public $disabled;
 
   /**
    * (non-PHPdoc)
@@ -208,6 +214,7 @@ abstract class Element extends Component
     $this->set('label', $this->getLabel());
     $this->set('value', $this->getValue($data));
     $this->set('action', $action);
+    $this->set('disabled', $this->disabled);
 
     return parent::onRender($action);
   }

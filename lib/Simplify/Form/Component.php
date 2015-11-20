@@ -358,5 +358,10 @@ abstract class Component extends Renderable
   public function onCollectRequirements($schema)
   {
   }
+  
+  public function setOption($name, $value = null)
+  {
+      $this->$name = $value;
+  }
 
 }

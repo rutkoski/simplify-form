@@ -23,6 +23,8 @@
 
 namespace Simplify\Form\Element\Base;
 
+use Simplify\Form\Action;
+use Simplify\Form;
 /**
  *
  * Base class for form elements that handle one to many associations
@@ -102,28 +104,36 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
    */
   public function onRender(\Simplify\Form\Action $action, $data, $index)
   {
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     $pk = $this->getPrimaryKey();
 
     $line = array();
 
-    $__index = array_merge((array) $index, array($this->getName()));
+    $__index = array_merge((array) $index, (array)$this->getName());
+
+    $row = sy_get_param($data, $this->getName(), array());
 
     $line['id'] = "formData_" . implode('_', $__index);
     $line['name'] = "formData[" . implode('][', $__index) . "][" . \Simplify\Form::ID . "]";
     $line['baseName'] = "formData[" . implode('][', $__index) . "]";
-    $line[\Simplify\Form::ID] = $data[$this->getName()][\Simplify\Form::ID];
+    $line[\Simplify\Form::ID] = sy_get_param($row, \Simplify\Form::ID);
     $line['elements'] = array();
 
     while ($elements->valid()) {
       $element = $elements->current();
-      $line['elements'][] = array('label' => $element->getLabel(),
-        'controls' => $element->onRender($action, $data[$this->getName()], array($index, $this->getName()))->render());
+      
+      if ($action->show(Form::ACTION_VIEW)) {
+        $element->onRenderLine($action, $line, $row, $__index);
+      } else {
+        $line['elements'][] = array('label' => $element->getLabel(),
+          'controls' => $element->onRender($action, $row, $__index)->render());
+      }
+      
       $elements->next();
     }
 
-    $this->onRenderRow($line, $data[$this->getName()], array($index, $this->getName()));
+    $this->onRenderRow($line, $row, array($index, $this->getName()));
 
     $this->set('data', $line);
 
@@ -140,13 +150,24 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
   {
   }
 
+  public function onRenderLine(Action $action, &$line, $data, $index)
+  {
+      $element['id'] = $this->getElementId($index);
+      $element['name'] = $this->getInputName($index);
+      $element['class'] = $this->getElementClass();
+      $element['label'] = $this->getLabel();
+      $element['controls'] = $this->onRender($action, $data, $index);
+      
+      $line['elements'][$this->getName()] = $element;
+  }
+  
   /**
    * (non-PHPdoc)
    * @see \Simplify\Form\Element::onLoadData()
    */
   public function onLoadData(\Simplify\Form\Action $action, &$data, $row)
   {
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     $pk = $this->getPrimaryKey();
     $fk = $this->getForeignKeyColumn();
@@ -157,7 +178,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
     $params[\Simplify\Db\QueryParameters::SELECT][] = $pk;
     $params[\Simplify\Db\QueryParameters::SELECT][] = $fk;
     $params[\Simplify\Db\QueryParameters::WHERE][] = \Simplify\Db\QueryObject::buildIn($fk, $id);
-    $params[\Simplify\Db\QueryParameters::DATA][$fk] = $id;
+    //$params[\Simplify\Db\QueryParameters::DATA][$fk] = $id;
 
     if (!empty($this->id)) {
       $params[\Simplify\Db\QueryParameters::WHERE][] = \Simplify\Db\QueryObject::buildIn($pk, $this->id);
@@ -171,6 +192,10 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
 
     $this->onBeforeLoadData($params);
 
+    foreach ($this->getFilters() as $filter) {
+        $filter->onInjectQueryParams($action, $params);
+    }
+    
     $row = $this->repository()->find(null, $params);
 
     $data[$this->getName()][\Simplify\Form::ID] = $row[$pk];
@@ -178,6 +203,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
     $elements->rewind();
     while ($elements->valid()) {
       $elements->current()->onLoadData($action, $data[$this->getName()], $row);
+      $elements->next();
     }
 
     $this->onAfterLoadData($data[$this->getName()], $row, null);
@@ -217,7 +243,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
       $data[$this->getName()][\Simplify\Form::ID] = sy_get_param($post[$this->getName()], \Simplify\Form::ID);
       $data[$this->getName()][$this->getForeignKeyColumn()] = $id;
 
-      $elements = $this->getElements();
+      $elements = $this->getElements($action);
       while ($elements->valid()) {
         $elements->current()->onPostData($action, $data[$this->getName()], $post[$this->getName()]);
         $elements->next();
@@ -233,7 +259,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
   {
     $id = array();
 
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     if (!empty($data[$this->getName()])) {
       $_row = array();
@@ -249,6 +275,10 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
 
       $this->onBeforeSave($action, $_row, $data[$this->getName()]);
 
+      foreach ($this->getFilters() as $filter) {
+          $filter->onCollectTableData($action, $_row, $data[$this->getName()]);
+      }
+      
       $this->repository()->save($_row);
 
       $id[] = $row[\Simplify\Form::ID] = $_row[$this->getPrimaryKey()];
@@ -284,7 +314,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
     if (empty($data[$this->getName()]))
       return;
 
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     foreach ($data[$this->getName()] as $index => $row) {
       $elements->rewind();
@@ -308,7 +338,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
 
     $id = $data[$this->getReferenceColumn()];
 
-    $elements = $this->getElements();
+    $elements = $this->getElements($action);
 
     if ($this->deletePolicy == self::CASCADE) {
       $params = array();
@@ -347,7 +377,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
    */
   public function onCollectTableData(\Simplify\Form\Action $action, &$row, $data)
   {
-    // nothing to see here! move along!
+      // nothing to see here! move along!
   }
 
   /**

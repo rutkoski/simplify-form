@@ -38,6 +38,13 @@ class Composite extends \Simplify\Form\Element
   protected $elements = array();
 
   /**
+   * Form filters
+   *
+   * @var Simplify\Form\Filter[]
+   */
+  protected $filters = array();
+  
+  /**
    *
    * @param \Simplify\Form\Element $element
    * @return \Simplify\Form\Element
@@ -57,6 +64,32 @@ class Composite extends \Simplify\Form\Element
     return $element;
   }
 
+  /**
+   * Add a filter to the form
+   *
+   * @param \Simplify\Form\Filter $filter the filter
+   * @param unknown_type $actionMask a bit mask of the actions the filter applies to
+   * @return \Simplify\Form\Filter
+   */
+  public function addFilter(\Simplify\Form\Filter $filter, $actionMask = \Simplify\Form::ACTION_ALL)
+  {
+      $filter->form = $this->form;
+      $filter->actionMask = $actionMask;
+  
+      $this->filters[] = $filter;
+  
+      return $filter;
+  }
+
+  /**
+   *
+   * @return \Simplify\Form\Filter[]
+   */
+  public function getFilters()
+  {
+      return $this->filters;
+  }
+  
   /**
    *
    * @return \Simplify\Form\ElementIterator

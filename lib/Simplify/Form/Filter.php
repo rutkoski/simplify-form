@@ -102,7 +102,7 @@ abstract class Filter extends Component
    */
   public function onCollectTableData(Action $action, &$row, $data)
   {
-    $row[$this->getFieldName()] = $data[$this->getName()];
+    $row[$this->getFieldName()] = sy_get_param($data, $this->getName(), $this->getDefaultValue());
   }
 
 }

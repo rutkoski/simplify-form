@@ -25,8 +25,6 @@ namespace Simplify\Form\Element\Base;
 
 use Simplify\Form;
 
-use Simplify\Form\Action\View;
-
 use Simplify\Form\Action;
 
 use Simplify\Menu;
@@ -203,7 +201,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
     $dummy['menu']->addItem(new Menu('main'));
     
     $this->onCreateItemMenu($dummy['menu'], $dummy);
-
+    
     $elements->rewind();
     while ($elements->valid()) {
       $element = $elements->current();
@@ -404,7 +402,9 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
 
       $elements->rewind();
       while ($elements->valid()) {
-        $elements->current()->onCollectTableData($action, $_row, $row);
+        $element = $elements->current();
+        $element->onSave($action, $row);
+        $element->onCollectTableData($action, $_row, $row);
         $elements->next();
       }
 

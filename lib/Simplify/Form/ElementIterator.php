@@ -59,7 +59,7 @@ class ElementIterator implements \Iterator {
 		$this->elements = $elements;
 		$this->mask     = $mask;
 		$this->index    = -1;
-		$this->next();
+		$this->rewind();
 	}
 
 	/**
@@ -78,7 +78,7 @@ class ElementIterator implements \Iterator {
 	public function next() {
 		do {
 			$this->index++;
-		} while ($this->index < count($this->elements) && !$this->elements[$this->index]->show($this->mask));
+		} while ($this->valid() && !$this->elements[$this->index]->show($this->mask));
 	}
 
 	/**
@@ -102,7 +102,8 @@ class ElementIterator implements \Iterator {
 	 * @see Iterator::rewind()
 	 */
 	public function rewind() {
-		$this->index = count($this->elements) ? 0 : -1;
+		$this->index = -1;
+		$this->next();
 	}
 
 }
