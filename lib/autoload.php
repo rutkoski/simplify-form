@@ -1,7 +1,5 @@
 <?php
 
-use Simplify as s;
-
 $config = Simplify::config();
 
 define('FORM_DIR', preg_replace('#[\\\/]+#', '/', __dir__ . '/'));

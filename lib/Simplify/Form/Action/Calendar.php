@@ -22,7 +22,6 @@
  */
 namespace Simplify\Form\Action;
 
-use Simplify\Form\Action\Base\FormBase;
 use Simplify;
 use Simplify\Db\QueryParameters;
 use Simplify\Form;

@@ -25,7 +25,6 @@ namespace Simplify;
 
 use Simplify;
 use Simplify\Inflector;
-use Simplify\View;
 use Simplify\URL;
 use Simplify\Renderable;
 use Simplify\Menu;
