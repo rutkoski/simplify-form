@@ -20,14 +20,18 @@
  *
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
-
 namespace Simplify\Form\Element;
 
 /**
- *
  * Form radio buttons
- *
  */
 class Radios extends \Simplify\Form\Element\Base\SingleSelection
 {
+
+    /**
+     * Show option for empty value
+     *
+     * @var boolean
+     */
+    public $showEmpty = false;
 }

@@ -1,5 +1,5 @@
-<?php foreach($options as $option => $label) { ?>
+{% for option, label in options %}
 <label class="radio">
-  <input type="radio" name="<?= $inputName ?>" value="<?= $option ?>"<?= $option == $value ? ' checked' : '' ?>/> <?= $label ?>
+  <input type="radio" name="{{ inputName }}" value="{{ option }}" {{ option == value ? ' checked' : '' }}/> {{ label }}
 </label>
-<?php } ?>
+{% endfor %}
