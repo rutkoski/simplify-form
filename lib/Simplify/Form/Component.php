@@ -362,6 +362,7 @@ abstract class Component extends Renderable
   public function setOption($name, $value = null)
   {
       $this->$name = $value;
+      return $this;
   }
 
 }

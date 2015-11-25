@@ -284,6 +284,8 @@ class Form extends Renderable
 
     \Simplify\AssetManager::load('ckeditor/ckeditor.js', 'vendor', 0, false);
     
+    \Simplify\AssetManager::load('simplify-form.js', 'vender');
+    
     return $this;
   }
 
