@@ -76,7 +76,7 @@ class Password extends \Simplify\Form\Element
   public function getLabel()
   {
     if (empty($this->label)) {
-      $this->label = $this->matchOriginal ? 'Current password' : 'Password';
+      $this->label = $this->matchOriginal ? __('Senha atual') : __('Senha');
     }
     return $this->label;
   }
@@ -92,7 +92,7 @@ class Password extends \Simplify\Form\Element
     if ($this->matchOriginal) {
       $label = __('Current password');
     } else {
-      $label = $action->show(\Simplify\Form::ACTION_CREATE) ? __('Password') : __('New password');
+      $label = $action->show(\Simplify\Form::ACTION_CREATE) ? __('Senha') : __('Nova senha');
     }
 
     $this->set('inputNameSufix', '[a]');
@@ -116,7 +116,7 @@ class Password extends \Simplify\Form\Element
       $element['id'] = $this->getElementId($index);
       $element['name'] = $this->getInputName($index);
       $element['class'] = $this->getElementClass();
-      $element['label'] = 'Repeat password';
+      $element['label'] = __('Confirmação de senha');
       $element['controls'] = $this->onRender($action, $data, $index)->render();
 
       $element['state'] = $this->state;
@@ -160,14 +160,14 @@ class Password extends \Simplify\Form\Element
     $required = ($this->required || !$exists);
 
     if ($this->askForConfirmation && $a != $b) {
-      $this->errors['_'][] = $this->getError('match', __('Passwords do not match'));
+      $this->errors['_'][] = $this->getError('match', __('As senhas não conferem'));
     }
     elseif ($required && $a == $empty) {
-      $this->errors['_'][] = $this->getError('empty', __('Inform your password'));
+      $this->errors['_'][] = $this->getError('empty', __('Informe a senha'));
     }
     elseif ($this->matchOriginal) {
       if ($a != $data[$this->getName()]) {
-        $this->errors['_'][] = $this->getError('original', __('Wrong password'));
+        $this->errors['_'][] = $this->getError('original', __('Senha incorreta'));
       }
     }
     elseif ($a != $empty) {

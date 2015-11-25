@@ -26,7 +26,7 @@
         <th>{{ header }}</th>
         {% endfor %}
 
-        <th>Actions</th>
+        <th>Ações</th>
       </tr>
     </thead>
 
@@ -54,7 +54,7 @@
   {% if bulk %}
   <div class="form-group">
     <div class="input-group col-sm-4">
-      <span class="input-group-addon">Actions</span>
+      <span class="input-group-addon">Ações</span>
 
       <select name="formAction" class="form-control">
         <option value=""></option>
@@ -72,6 +72,9 @@
 </form>
 
 <style>
+.sy-form-list-action-menu {
+	width:1%;
+}
 .sy-form-list-action-menu .nowrap-flex, .sy-form-list-action-menu .btn-group {
   display: flex;
 }

@@ -200,9 +200,10 @@ class Form extends Renderable
    *
    * @param string $name a $name that identifies the form
    */
-  public function __construct($name)
+  public function __construct($name, $title = null)
   {
     $this->name = $name;
+    $this->title = $title;
   }
 
   /**

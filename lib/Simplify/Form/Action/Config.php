@@ -46,9 +46,9 @@ class Config extends \Simplify\Form\Action
    * @param string $nameField
    * @param string $valueField
    */
-  public function __construct($name = null, $table = null, $nameField = null, $valueField = null)
+  public function __construct($name = null, $title = null, $table = null, $nameField = null, $valueField = null)
   {
-    parent::__construct($name);
+    parent::__construct($name, $title);
 
     $this->table = $table;
     $this->nameField = $nameField;
