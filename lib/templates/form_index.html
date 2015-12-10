@@ -15,7 +15,7 @@
 {% endif %}
 
 <form action="" method="GET">
-  {% include 'form_pagination.php' with { 'pager' : pager } %}
+  {% include 'form_pagination.html' with { 'pager' : pager } %}
 
   <table class="table table-condensed">
     <thead>
@@ -41,7 +41,7 @@
 
         <td class="sy-form-list-action-menu">
           <div class="nowrap-flex">
-          {% include 'form_menu.php' with { 'menu' : row['menu'], 'hideLabels' : true } %}
+          {% include 'form_menu.html' with { 'menu' : row['menu'], 'hideLabels' : true } %}
           </div>
         </td>
       </tr>
@@ -49,7 +49,7 @@
     </tbody>
   </table>
 
-  {% include 'form_pagination.php' with { 'pager' : pager } %}
+  {% include 'form_pagination.html' with { 'pager' : pager } %}
 
   {% if bulk %}
   <div class="form-group">

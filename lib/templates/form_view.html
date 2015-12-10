@@ -18,7 +18,7 @@
   {% endfor %}
 
   {% if row['menu'] %}
-    {% include 'form_menu.php' with { 'menu' : row['menu'].getItemAt(0) } %}
+    {% include 'form_menu.html' with { 'menu' : row['menu'].getItemAt(0) } %}
   {% endif %}
 {% endfor %}
 </form>

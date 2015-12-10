@@ -11,7 +11,7 @@
       {% for row in data %}
       <div class="tab-pane{{ loop.first ? ' active' : '' }}" id="tab{{ loop.index }}">
         {% for element in row['elements'] %}
-          {% include 'form_row.php' %}
+          {% include 'form_row.html' %}
         {% endfor %}
       </div>
       {% endfor %}
@@ -39,10 +39,10 @@
         <input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}" class="_id" />
   
         {% for element in row['elements'] %}
-          {% include 'form_row.php' %}
+          {% include 'form_row.html' %}
         {% endfor %}
 
-        {% include 'form_menu.php' with { 'menu' : row['menu'] } %}
+        {% include 'form_menu.html' with { 'menu' : row['menu'] } %}
       </div>
       {% endfor %}
   
@@ -50,8 +50,8 @@
         <input type="hidden" name="{{ dummy['name'] }}" value="" />
   
         {% for element in dummy['elements'] %}
-          {% include 'form_row.php' %}
-        {% endfor %} {% include 'form_menu.php' with { 'menu' :
+          {% include 'form_row.html' %}
+        {% endfor %} {% include 'form_menu.html' with { 'menu' :
         dummy['menu'] } %}
       </div>
     </div>

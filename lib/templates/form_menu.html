@@ -20,7 +20,7 @@
             <span class="caret"></span>
           </button>
           
-          {% include 'form_menu.php' with { 'menu' : item.submenu, 'display' : 'dropdown' } %}
+          {% include 'form_menu.html' with { 'menu' : item.submenu, 'display' : 'dropdown' } %}
         {% else %}
         
           <a href="{{ item.url }}" title="{{ item.label }}" class="btn btn-default btn-sm btn-{{item.name}}">

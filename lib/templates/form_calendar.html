@@ -5,9 +5,9 @@
     {% for row in data %}
     <input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}" class="_id" />
   
-    {% for element in row['elements'] %} {% include 'form_row.php' %} {% endfor %} {% if row['menu'] %}
+    {% for element in row['elements'] %} {% include 'form_row.html' %} {% endfor %} {% if row['menu'] %}
     <div class="form-group">
-      <div class="col-sm-12 text-right">{% include 'form_menu.php' with { 'menu' : row['menu'].getItemAt(0) } %}</div>
+      <div class="col-sm-12 text-right">{% include 'form_menu.html' with { 'menu' : row['menu'].getItemAt(0) } %}</div>
     </div>
     {% endif %} {% endfor %}
   

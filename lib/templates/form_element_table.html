@@ -38,7 +38,7 @@
   
         <td>
           <input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}" class="_id" />
-          {% include 'form_menu.php' with { 'menu' : row['menu'] } %}
+          {% include 'form_menu.html' with { 'menu' : row['menu'] } %}
         </td>
       </tr>
       {% endfor %}
@@ -48,13 +48,13 @@
         <td>{{ element['controls'] }}</td> {% endfor %}
   
         <td><input type="hidden" name="{{ dummy['name'] }}" value="" class="_id" />
-        {% include 'form_menu.php' with { 'menu' : dummy['menu'] } %}
+        {% include 'form_menu.html' with { 'menu' : dummy['menu'] } %}
         </td>
       </tr>
     </tbody>
   </table>
   
-  {% include 'form_menu.php' with { 'menu' : menu } %}
+  {% include 'form_menu.html' with { 'menu' : menu } %}
   
   <script>
   $(function() {
