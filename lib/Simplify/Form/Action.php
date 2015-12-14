@@ -54,7 +54,7 @@ abstract class Action extends Renderable
    *
    * @var array
    */
-  public $formData;
+  public $formData = array();
 
   /**
    *
@@ -102,9 +102,8 @@ abstract class Action extends Renderable
     
     while ($elements->valid()) {
       $element = $elements->current();
-      $elements->next();
-      
       $element->onExecute($this);
+      $elements->next();
     }
     
     foreach ($this->form->getFilters() as $filter) {
@@ -219,36 +218,32 @@ abstract class Action extends Renderable
     
     $filters = $this->form->getFilters();
     
-    foreach ($this->formData as $index => &$data) {
-      // $row will be saved in the database
-      $row = array();
-      
-      $row[$this->form->getPrimaryKey()] = $data[Form::ID];
+    foreach ($this->formData as $index => &$formRow) {
+      $databaseRow = array();
+      $databaseRow[$this->form->getPrimaryKey()] = $formRow[Form::ID];
       
       $elements->rewind();
-      
       while ($elements->valid()) {
         $element = $elements->current();
-        $element->onCollectTableData($this, $row, $data);
-        
+        $element->onCollectTableData($this, $databaseRow, $formRow);
         $elements->next();
       }
       
       foreach ($filters as &$filter) {
-        $filter->onCollectTableData($this, $row, $data);
+        $filter->onCollectTableData($this, $databaseRow, $formRow);
       }
       
-      $this->repository()->save($row);
+      $this->repository()->save($databaseRow);
       
       // fill the primary key if this is a new record
-      $data[Form::ID] = $row[$this->form->getPrimaryKey()];
+      if (empty($formRow[Form::ID])) {
+        $formRow[$this->form->getPrimaryKey()] = $formRow[Form::ID] = $databaseRow[$this->form->getPrimaryKey()];
+      }
       
       $elements->rewind();
-      
       while ($elements->valid()) {
         $element = $elements->current();
-        $element->onSave($this, $data);
-        
+        $element->onSave($this, $formRow);
         $elements->next();
       }
     }
@@ -272,14 +267,12 @@ abstract class Action extends Renderable
     $elements = $this->getElements();
     
     foreach ($this->formData as $row) {
+      $elements->rewind();
       while ($elements->valid()) {
         $element = $elements->current();
         $element->onBeforeDelete($this, $row);
-        
         $elements->next();
       }
-      
-      $elements->rewind();
     }
     
     $id = $this->form->getId();
@@ -291,8 +284,11 @@ abstract class Action extends Renderable
     $this->repository()->deleteAll($params);
     
     foreach ($this->formData as $row) {
-      foreach ($elements as $element) {
+      $elements->rewind();
+      while ($elements->valid()) {
+        $element = $elements->current();
         $element->onAfterDelete($this, $row);
+        $elements->next();
       }
     }
   }
@@ -374,12 +370,10 @@ abstract class Action extends Renderable
       }
       
       $elements->rewind();
-      
       while ($elements->valid()) {
         $element = $elements->current();
-        $elements->next();
-        
         $element->onPostData($this, $row, $post[$index]);
+        $elements->next();
       }
     }
   }
