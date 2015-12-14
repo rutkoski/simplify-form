@@ -20,7 +20,7 @@
   {% if row['menu'] %}
     <div class="form-group">
       <div class="col-sm-12 text-right">
-      {% include 'form_menu.php' with { 'menu' : row['menu'] } %}
+      {% include 'form_menu.html' with { 'menu' : row['menu'] } %}
       </div>
     </div>
   {% endif %}
