@@ -3,15 +3,15 @@
     <ul class="nav nav-tabs">
       {% for row in data %}
       <li class="{{ loop.first ? 'active' : '' }}">
-        <a href="#tab{{ loop.index }}" data-toggle="tab"> {{ label }} ({{ loop.index }})</a>
+        <a href="#tab{{ row['_id'] }}" data-toggle="tab"> {{ label }} ({{ loop.index }})</a>
       </li>
       {% endfor %}
     </ul>
     <div class="tab-content well">
       {% for row in data %}
-      <div class="tab-pane{{ loop.first ? ' active' : '' }}" id="tab{{ loop.index }}">
+      <div class="tab-pane{{ loop.first ? ' active' : '' }}" id="tab{{ row['_id'] }}">
         {% for element in row['elements'] %}
-          {% include 'form_row.html' %}
+          {% include 'form_row.php' %}
         {% endfor %}
       </div>
       {% endfor %}
@@ -22,7 +22,7 @@
     <ul class="nav nav-tabs">
       {% for row in data %}
       <li class="{{ loop.first ? 'active' : '' }}">
-        <a href="#tab{{ row['_id'] }}" data-toggle="tab"> {{ label }} ({{ row['_id'] }})</a>
+        <a href="#tab{{ row['_id'] }}" data-toggle="tab"> {{ label }} ({{ loop.index }})</a>
       </li>
       {% endfor %}
   
@@ -39,10 +39,10 @@
         <input type="hidden" name="{{ row['name'] }}" value="{{ row['_id'] }}" class="_id" />
   
         {% for element in row['elements'] %}
-          {% include 'form_row.html' %}
+          {% include 'form_row.php' %}
         {% endfor %}
 
-        {% include 'form_menu.html' with { 'menu' : row['menu'] } %}
+        {% include 'form_menu.php' with { 'menu' : row['menu'] } %}
       </div>
       {% endfor %}
   
@@ -50,8 +50,8 @@
         <input type="hidden" name="{{ dummy['name'] }}" value="" />
   
         {% for element in dummy['elements'] %}
-          {% include 'form_row.html' %}
-        {% endfor %} {% include 'form_menu.html' with { 'menu' :
+          {% include 'form_row.php' %}
+        {% endfor %} {% include 'form_menu.php' with { 'menu' :
         dummy['menu'] } %}
       </div>
     </div>

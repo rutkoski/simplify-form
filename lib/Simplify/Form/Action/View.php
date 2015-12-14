@@ -99,7 +99,7 @@ class View extends Action
    */
   public function onCreateItemMenu(Menu $menu, Action $action, $data)
   {
-    if (! $action->show(Form::ACTION_CREATE)) {
+    if (! $action->show(Form::ACTION_VIEW)) {
       $url = $this->form->url()->extend(null, 
           array(
               'formAction' => $this->getName(),

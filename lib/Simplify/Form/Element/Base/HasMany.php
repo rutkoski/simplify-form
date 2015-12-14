@@ -249,6 +249,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
       
       foreach ($rows as $row) {
         $_line = array();
+        $_line[\Simplify\Form::ID] = sy_get_param($row, \Simplify\Form::ID);
         
         $elements->rewind();
         while ($elements->valid()) {
@@ -403,7 +404,6 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
       $elements->rewind();
       while ($elements->valid()) {
         $element = $elements->current();
-        $element->onSave($action, $row);
         $element->onCollectTableData($action, $_row, $row);
         $elements->next();
       }
@@ -413,6 +413,13 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
       $this->repository()->save($_row);
 
       $id[] = $row[\Simplify\Form::ID] = $_row[$this->getPrimaryKey()];
+
+      $elements->rewind();
+      while ($elements->valid()) {
+          $element = $elements->current();
+          $element->onSave($action, $row);
+          $elements->next();
+      }
     }
 
     $params = array();
