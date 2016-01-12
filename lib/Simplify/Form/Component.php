@@ -204,27 +204,6 @@ abstract class Component extends Renderable
   }
 
   /**
-   * (non-PHPdoc)
-   * @see Renderable::getTemplatesPath()
-   */
-  /*public function getTemplatesPath()
-  {
-    return array(Simplify::config()->get('templates:dir') . '/form', FORM_DIR . '/templates');
-  }*/
-
-  /**
-   * (non-PHPdoc)
-   * @see Renderable::getLayoutsPath()
-   */
-  public function getLayoutsPath()
-  {
-    $path = (array) parent::getLayoutsPath();
-    $path[] = AMP_DIR . '/templates/layouts';
-    $path[] = FORM_DIR . '/templates';
-    return $path;
-  }
-
-  /**
    * Get the value for the component passed via GET.
    *
    * @return mixed

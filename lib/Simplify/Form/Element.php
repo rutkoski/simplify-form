@@ -20,7 +20,6 @@
  *
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
-
 namespace Simplify\Form;
 
 use Simplify\Db\QueryParameters;
@@ -28,242 +27,287 @@ use Simplify\Form;
 use Simplify\Inflector;
 
 /**
- *
  * Form elements
- *
  */
 abstract class Element extends Component
 {
 
-  /**
-   *
-   * @var int|boolean
-   */
-  public $validate = true;
+    /**
+     *
+     * @var int|boolean
+     */
+    public $allowEdit = true;
 
-  /**
-   *
-   * @var int|boolean
-   */
-  public $unique = false;
+    /**
+     *
+     * @var int|boolean
+     */
+    public $validate = true;
 
-  /**
-   *
-   * @var string
-   */
-  public $state;
+    /**
+     *
+     * @var int|boolean
+     */
+    public $unique = false;
 
-  /**
-   *
-   * @var string
-   */
-  public $stateMessage;
+    /**
+     *
+     * @var string
+     */
+    public $state;
 
-  /**
-   *
-   * @var string[]
-   */
-  public $errors;
-  
-  /**
-   * 
-   * @var bool
-   */
-  public $disabled;
+    /**
+     *
+     * @var string
+     */
+    public $stateMessage;
 
-  /**
-   * (non-PHPdoc)
-   * @see Component::getValue()
-   */
-  public function getValue($data)
-  {
-    return sy_get_param($data, $this->getName(), $this->getDefaultValue());
-  }
+    /**
+     *
+     * @var string[]
+     */
+    public $errors;
 
-  /**
-   * Get the display value for the element.
-   *
-   * @param Action $action current action
-   * @param array $data form data
-   * @param mixed $index
-   * @return string the display value
-   */
-  public function getDisplayValue(Action $action, $data, $index)
-  {
-    return sy_get_param($data, $this->getName());
-  }
+    /**
+     *
+     * @var bool
+     */
+    public $disabled;
 
-  /**
-   * Get the input name for a given row $index.
-   *
-   * @param mixed $index
-   * @return string
-   */
-  public function getInputName($index)
-  {
-    return "formData[" . implode('][', (array) $index) . "][" . $this->getName() . "]";
-  }
+    /**
+     *
+     * @var mixed
+     */
+    public $viewTemplate;
 
-  /**
-   *
-   * @return string
-   */
-  public function getElementClass()
-  {
-    return Inflector::underscore(get_class($this));
-  }
-
-  /**
-   *
-   * @param mixed[] $index
-   * @return string
-   */
-  public function getElementId($index)
-  {
-    return "form_data_" . implode('_', (array) $index) . "_" . $this->getName();
-  }
-
-  /**
-   * On validate callback.
-   *
-   * @param Action $action current action
-   * @param array $data form data
-   */
-  public function onValidate(Action $action, $data)
-  {
-    if ($this->unique && $action->show($this->unique)) {
-      $unique = $this->getError('unique', __('Value must be unique'));
-
-      $rule = new \Simplify\Form\Validation\Unique($unique, $this, sy_get_param($data, $this->form->getPrimaryKey()));
-      $rule->validate($this->getValue($data));
+    /**
+     * (non-PHPdoc)
+     *
+     * @see Component::getValue()
+     */
+    public function getValue($data)
+    {
+        return sy_get_param($data, $this->getName(), $this->getDefaultValue());
     }
-  }
 
-  /**
-   *
-   * @param Action $action
-   * @param string[] $headers
-   */
-  public function onRenderHeaders(Action $action, &$headers)
-  {
-    $headers[$this->getName()] = $this->getLabel();
-  }
-
-  /**
-   * Get the display value for the element.
-   *
-   * @param Action $action current action
-   * @param array $line the table row
-   * @param array $data form data
-   * @param mixed $index
-   * @return string the display value
-   */
-  public function onRenderLine(Action $action, &$line, $data, $index)
-  {
-    $element = array();
-
-    $element['id'] = $this->getElementId($index);
-    $element['name'] = $this->getInputName($index);
-    $element['class'] = $this->getElementClass();
-    $element['label'] = $this->getLabel();
-    $element['controls'] = $this->getDisplayValue($action, $data, $index);
-
-    $line['elements'][$this->getName()] = $element;
-  }
-
-  /**
-   *
-   * @param Action $action current action
-   * @param array $line the form line
-   * @param array $data form data
-   * @param mixed $index
-   */
-  public function onRenderControls(Action $action, &$line, $data, $index)
-  {
-    $element = array();
-
-    $element['id'] = $this->getElementId($index);
-    $element['name'] = $this->getInputName($index);
-    $element['class'] = $this->getElementClass();
-    $element['label'] = $this->getLabel();
-    $element['controls'] = $this->onRender($action, $data, $index)->render();
-
-    $element['state'] = $this->state;
-    $element['stateMessage'] = $this->stateMessage;
-
-    $line['elements'][$this->getName()] = $element;
-  }
-
-  /**
-   * (non-PHPdoc)
-   * @see Component::onRender()
-   */
-  public function onRender(Action $action, $data, $index)
-  {
-    $exists = (!empty($data[Form::ID]));
-
-    $this->set('state', $this->state);
-    $this->set('stateMessage', $this->stateMessage);
-    $this->set('exists', $exists);
-    $this->set(Form::ID, sy_get_param($data, Form::ID));
-    $this->set('id', $this->getElementId($index));
-    $this->set('inputName', $this->getInputName($index));
-    $this->set('name', $this->getName());
-    $this->set('class', $this->getElementClass());
-    $this->set('index', $index);
-    $this->set('label', $this->getLabel());
-    $this->set('value', $this->getValue($data));
-    $this->set('action', $action);
-    $this->set('disabled', $this->disabled);
-
-    return parent::onRender($action);
-  }
-
-  /**
-   * (non-PHPdoc)
-   * @see Component::onInjectQueryParams()
-   */
-  public function onInjectQueryParams(Action $action, &$params)
-  {
-    if ($this->getFieldName()) {
-      $params[QueryParameters::SELECT][] = $this->getFieldName();
+    /**
+     * Get the display value for the element.
+     *
+     * @param Action $action
+     *            current action
+     * @param array $data
+     *            form data
+     * @param mixed $index            
+     * @return string the display value
+     */
+    public function getDisplayValue(Action $action, $data, $index)
+    {
+        return sy_get_param($data, $this->getName());
     }
-  }
 
-  /**
-   * (non-PHPdoc)
-   * @see \Simplify\Form\Component::onLoadData()
-   */
-  public function onLoadData(Action $action, &$data, $row)
-  {
-    if (isset($row[$this->getFieldName()])) {
-      $data[$this->getName()] = $row[$this->getFieldName()];
+    /**
+     * Get the input name for a given row $index.
+     *
+     * @param mixed $index            
+     * @return string
+     */
+    public function getInputName($index)
+    {
+        return "formData[" . implode('][', (array) $index) . "][" . $this->getName() . "]";
     }
-  }
 
-  /**
-   * (non-PHPdoc)
-   * @see Component::onPostData()
-   */
-  public function onPostData(Action $action, &$data, $post)
-  {
-    $data[$this->getName()] = sy_get_param($post, $this->getName(), $this->getDefaultValue());
-  }
-
-  /**
-   * (non-PHPdoc)
-   * @see Component::onCollectTableData()
-   */
-  public function onCollectTableData(Action $action, &$row, $data)
-  {
-    if (isset($data[$this->getName()])) {
-      $row[$this->getFieldName()] = $data[$this->getName()];
+    /**
+     *
+     * @return string
+     */
+    public function getElementClass()
+    {
+        return Inflector::underscore(get_class($this));
     }
-  }
 
-  public function getError($id, $default = null)
-  {
-    return sy_get_param($this->errors, $id, $default);
-  }
+    /**
+     *
+     * @param mixed[] $index            
+     * @return string
+     */
+    public function getElementId($index)
+    {
+        return "form_data_" . implode('_', (array) $index) . "_" . $this->getName();
+    }
 
+    /**
+     *
+     * @return string
+     */
+    public function getViewTemplate()
+    {
+        if ($this->viewTemplate === false) {
+            return false;
+        } elseif (is_string($this->viewTemplate)) {
+            return $this->viewTemplate;
+        }
+        
+        return 'base/form_control_static';
+    }
+
+    /**
+     * On validate callback.
+     *
+     * @param Action $action
+     *            current action
+     * @param array $data
+     *            form data
+     */
+    public function onValidate(Action $action, $data)
+    {
+        if ($this->unique && $action->show($this->unique)) {
+            $unique = $this->getError('unique', __('Value must be unique'));
+            
+            $rule = new \Simplify\Form\Validation\Unique($unique, $this, sy_get_param($data, $this->form->getPrimaryKey()));
+            $rule->validate($this->getValue($data));
+        }
+    }
+
+    /**
+     *
+     * @param Action $action            
+     * @param string[] $headers            
+     */
+    public function onRenderHeaders(Action $action, &$headers)
+    {
+        $headers[$this->getName()] = $this->getLabel();
+    }
+
+    /**
+     * Get the display value for the element.
+     *
+     * @param Action $action
+     *            current action
+     * @param array $line
+     *            the table row
+     * @param array $data
+     *            form data
+     * @param mixed $index            
+     * @return string the display value
+     */
+    public function onRenderLine(Action $action, &$line, $data, $index)
+    {
+        $element = array();
+        
+        $element['id'] = $this->getElementId($index);
+        $element['name'] = $this->getInputName($index);
+        $element['class'] = $this->getElementClass();
+        $element['label'] = $this->getLabel();
+        $element['controls'] = $this->getDisplayValue($action, $data, $index);
+        
+        $line['elements'][$this->getName()] = $element;
+    }
+
+    /**
+     *
+     * @param Action $action
+     *            current action
+     * @param array $line
+     *            the form line
+     * @param array $data
+     *            form data
+     * @param mixed $index            
+     */
+    public function onRenderControls(Action $action, &$line, $data, $index)
+    {
+        $element = array();
+        
+        $element['id'] = $this->getElementId($index);
+        $element['name'] = $this->getInputName($index);
+        $element['class'] = $this->getElementClass();
+        $element['label'] = $this->getLabel();
+        $element['controls'] = $this->onRender($action, $data, $index)->render();
+        $element['state'] = $this->state;
+        $element['stateMessage'] = $this->stateMessage;
+        
+        $line['elements'][$this->getName()] = $element;
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @see Component::onRender()
+     */
+    public function onRender(Action $action, $data, $index)
+    {
+        if (($action->show(Form::ACTION_EDIT) && ! $this->allowEdit) || $action->show(Form::ACTION_VIEW)) {
+            $this->set('displayValue', $this->getDisplayValue($action, $data, $index));
+            $this->set('showView', true);
+            $this->setTemplate($this->getViewTemplate());
+        } else {
+            $exists = (! empty($data[Form::ID]));
+            
+            $this->set('state', $this->state);
+            $this->set('stateMessage', $this->stateMessage);
+            $this->set('exists', $exists);
+            $this->set(Form::ID, sy_get_param($data, Form::ID));
+            $this->set('id', $this->getElementId($index));
+            $this->set('inputName', $this->getInputName($index));
+            $this->set('name', $this->getName());
+            $this->set('class', $this->getElementClass());
+            $this->set('index', $index);
+            $this->set('label', $this->getLabel());
+            $this->set('action', $action);
+            $this->set('value', $this->getValue($data));
+            $this->set('disabled', $this->disabled);
+        }
+        
+        return parent::onRender($action);
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @see Component::onInjectQueryParams()
+     */
+    public function onInjectQueryParams(Action $action, &$params)
+    {
+        if ($this->getFieldName()) {
+            $params[QueryParameters::SELECT][] = $this->getFieldName();
+        }
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @see \Simplify\Form\Component::onLoadData()
+     */
+    public function onLoadData(Action $action, &$data, $row)
+    {
+        if (isset($row[$this->getFieldName()])) {
+            $data[$this->getName()] = $row[$this->getFieldName()];
+        }
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @see Component::onPostData()
+     */
+    public function onPostData(Action $action, &$data, $post)
+    {
+        $data[$this->getName()] = sy_get_param($post, $this->getName(), $this->getDefaultValue());
+    }
+
+    /**
+     * (non-PHPdoc)
+     *
+     * @see Component::onCollectTableData()
+     */
+    public function onCollectTableData(Action $action, &$row, $data)
+    {
+        if (isset($data[$this->getName()])) {
+            $row[$this->getFieldName()] = $data[$this->getName()];
+        }
+    }
+
+    public function getError($id, $default = null)
+    {
+        return sy_get_param($this->errors, $id, $default);
+    }
 }

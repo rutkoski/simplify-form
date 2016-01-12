@@ -6,12 +6,12 @@
     {% if element['label'] != false %}
       <div class="form-group {{ element['class'] }} {{ element['state'] }}" id="{{ element['id'] }}">
         <label class="col-sm-2 control-label" for="{{ element['name'] }}">{{ element['label'] }}</label>
-        <div class="col-sm-10 help-block">
+        <div class="col-sm-10">
           {{ element['controls'] }}
         </div>
       </div>
     {% else %}
-      <div class="col-sm-12 help-block">
+      <div class="col-sm-12">
         {{ element['controls'] }}
       </div>
     {% endif %}

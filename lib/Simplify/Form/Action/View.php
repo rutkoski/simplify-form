@@ -57,10 +57,52 @@ class View extends Action
 
   /**
    * (non-PHPdoc)
+   * @see \Simplify\Form\Action::onRender()
+   */
+  public function onRender()
+  {
+      $elements = $this->getElements();
+  
+      $data = array();
+      foreach ($this->formData as $index => $row) {
+          $line = array();
+          $line['name'] = Form::ID . "[]";
+          $line[Form::ID] = $row[Form::ID];
+          $line['elements'] = array();
+          $line['index'] = $index;
+          $line['menu'] = new Menu('actions');
+          $line['menu']->addItem(new Menu('main'));
+  
+          $elements->rewind();
+  
+          while ($elements->valid()) {
+              $element = $elements->current();
+              
+//               if ($element->renderControlsForView) {
+                  $element->onRenderControls($this, $line, $this->formData[$index], $index);
+//               } else {
+//                   $element->onRenderLine($this, $line, $row, $index);
+//               }
+              
+              $elements->next();
+          }
+  
+          $this->form->onCreateItemMenu($line['menu'], $this, $row);
+  
+          $data[] = $line;
+      }
+  
+      $this->set('data', $data);
+  
+      return parent::onRender();
+  }
+  
+  /**
+   * (non-PHPdoc)
    *
    * @see Simplify\Form\Action::onRender()
    */
-  public function onRender()
+  public function _onRender()
   {
     $elements = $this->getElements();
     
