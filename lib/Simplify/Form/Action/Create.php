@@ -61,7 +61,15 @@ class Create extends Base\FormBase
    */
   public function onLoadData()
   {
-    $this->formData = array(array(Form::ID => null));
+    $row = array(Form::ID => null);
+    
+    $filters = $this->form->getFilters();
+
+    foreach ($filters as $filter) {
+        $filter->onLoadData($this, $row, array());
+    }
+
+    $this->formData = array($row);
   }
 
 }

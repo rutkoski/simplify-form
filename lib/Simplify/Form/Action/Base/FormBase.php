@@ -47,7 +47,7 @@ abstract class FormBase extends Action
    */
   public function editUrl($data)
   {
-    $url = $this->form->url();
+    $url = $this->form->url()->extend();
     $url->set('formAction', 'edit');
     $url->set(Form::ID, $data[Form::ID]);
     return $url;
@@ -59,7 +59,7 @@ abstract class FormBase extends Action
    */
   public function createUrl()
   {
-    return $this->form->url()->set('formAction', 'create');
+    return $this->form->url()->extend()->set('formAction', 'create');
   }
 
   /**

@@ -1,18 +1,6 @@
 <h3>{{ title }}</h3>
 
-{% if filters %}
-<form action="" method="GET" class="form-inline">
-  <fieldset>
-    <legend>Filters</legend>
-
-    {% for filter in filters %}
-      {{ filter['controls'] }}
-    {% endfor %}
-
-    <input type="submit" value="Apply" class="btn"/>
-  </fieldset>
-</form>
-{% endif %}
+{% include 'base/form_filters.html' %}
 
 <form action="" method="GET">
   {% include 'form_pagination.html' with { 'pager' : pager } %}

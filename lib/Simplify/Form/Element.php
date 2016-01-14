@@ -235,11 +235,11 @@ abstract class Element extends Component
      */
     public function onRender(Action $action, $data, $index)
     {
-        if (($action->show(Form::ACTION_EDIT) && ! $this->allowEdit) || $action->show(Form::ACTION_VIEW)) {
+//         if (($action->show(Form::ACTION_EDIT) && ! $this->allowEdit) || $action->show(Form::ACTION_VIEW)) {
             $this->set('displayValue', $this->getDisplayValue($action, $data, $index));
-            $this->set('showView', true);
-            $this->setTemplate($this->getViewTemplate());
-        } else {
+//             $this->set('showView', true);
+//             $this->setTemplate($this->getViewTemplate());
+//         } else {
             $exists = (! empty($data[Form::ID]));
             
             $this->set('state', $this->state);
@@ -255,7 +255,7 @@ abstract class Element extends Component
             $this->set('action', $action);
             $this->set('value', $this->getValue($data));
             $this->set('disabled', $this->disabled);
-        }
+//         }
         
         return parent::onRender($action);
     }

@@ -1,0 +1,20 @@
+{% if filters %}
+<form action="" method="GET" class="form-inline">
+  <fieldset>
+    <legend>Filtrar</legend>
+
+    {% for filter in filters %}
+      {% if filter['label'] != false %}
+      <div class="form-group">
+        <label for="{{ filter['name'] }}">{{ filter['label'] }}</label>
+        {{ filter['controls'] }}
+      </div>
+      {% else %}
+        {{ filter['controls'] }}
+      {% endif %}
+    {% endfor %}
+
+    <input type="submit" value="Apply" class="btn"/>
+  </fieldset>
+</form>
+{% endif %}

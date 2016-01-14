@@ -30,4 +30,7 @@ namespace Simplify\Form\Element;
  */
 class Tabbed extends \Simplify\Form\Element\Composite
 {
+    
+    public $viewTemplate = 'form_element_tabbed';
+    
 }

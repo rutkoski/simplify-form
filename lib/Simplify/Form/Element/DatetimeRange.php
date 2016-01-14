@@ -109,11 +109,13 @@ class DatetimeRange extends \Simplify\Form\Element
      */
     public function onPostData(\Simplify\Form\Action $action, &$data, $post)
     {
-        $begin = $post[$this->getName()]['begin'];
-        $end = $post[$this->getName()]['end'];
-        
-        $data[$this->getBeginField()] = \Simplify\Form\DateTime::database($begin);
-        $data[$this->getEndField()] = \Simplify\Form\DateTime::database($end);
+        if (isset($post[$this->getName()])) {
+            $begin = $post[$this->getName()]['begin'];
+            $end = $post[$this->getName()]['end'];
+            
+            $data[$this->getBeginField()] = \Simplify\Form\DateTime::database($begin);
+            $data[$this->getEndField()] = \Simplify\Form\DateTime::database($end);
+        }
     }
 
     /**

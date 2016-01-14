@@ -59,6 +59,15 @@ class Select extends \Simplify\Form\Filter
 
   /**
    *
+   * @param \Simplify\Form\Provider $provider
+   */
+  public function setOptionsProvider(\Simplify\Form\Provider $provider)
+  {
+      $this->options = $provider;
+  }
+  
+  /**
+   *
    * @param string|boolean $label
    * @param mixed $value
    */
@@ -127,28 +136,49 @@ class Select extends \Simplify\Form\Filter
    *
    * @return mixed[string]
    */
+//   public function getOptions()
+//   {
+//     if ($this->options === false) {
+//       $options = \Simplify::db()
+//         ->query()
+//         ->from($this->form->getTable())
+//         ->select($this->getFieldName())
+//         ->orderBy($this->getFieldName())
+//         ->execute()
+//         ->fetchCol();
+
+//       $options = array_combine($options, $options);
+//     } else {
+//       $options = (array) $this->options;
+//     }
+
+//     if ($this->showEmpty) {
+//       $empty = array($this->emptyValue => $this->emptyLabel);
+//       $options = $empty + $options;
+//     }
+
+//     return $options;
+//   }
+
+  /**
+   *
+   * @return mixed[string]
+   */
   public function getOptions()
   {
-    if ($this->options === false) {
-      $options = \Simplify::db()
-        ->query()
-        ->from($this->form->getTable())
-        ->select($this->getFieldName())
-        ->orderBy($this->getFieldName())
-        ->execute()
-        ->fetchCol();
-
-      $options = array_combine($options, $options);
-    } else {
-      $options = (array) $this->options;
-    }
-
-    if ($this->showEmpty) {
-      $empty = array($this->emptyValue => $this->emptyLabel);
-      $options = $empty + $options;
-    }
-
-    return $options;
+      if ($this->options instanceof \Simplify\Form\Provider) {
+          $options = $this->options->getData();
+      }
+      else {
+          $options = (array) $this->options;
+      }
+  
+      if ($this->showEmpty) {
+          $empty = array($this->emptyValue => $this->emptyLabel);
+          $options = $empty + $options;
+      }
+  
+      return $options;
   }
-
+  
 }

@@ -43,6 +43,10 @@ abstract class Filter extends Component
    */
   public $editable = true;
 
+  public $setOnLoad = true;
+  
+  public $setOnPost = false;
+  
   /**
    * (non-PHPdoc)
    * @see Component::getValue()
@@ -52,6 +56,22 @@ abstract class Filter extends Component
     return $this->editable ? \Simplify::request()->get($this->getName(), $this->getDefaultValue()) : $this->getDefaultValue();
   }
 
+  /**
+   * (non-PHPdoc)
+   * @see Renderable::getTemplateFilename()
+   */
+  public function getTemplateFilename()
+  {
+      if (!empty($this->style)) {
+          return $this->style;
+      }
+      elseif (empty($this->template)) {
+          $this->template = 'form_filter_' . strtolower(join('', array_slice(explode('\\', get_class($this)), -1)));
+      }
+  
+      return parent::getTemplateFilename();
+  }
+  
   /**
    * (non-PHPdoc)
    * @see Component::onExecute()
@@ -69,10 +89,16 @@ abstract class Filter extends Component
   public function onRenderControls(Action $action, &$filters)
   {
     if ($this->visible) {
-      $filters[$this->getName()]['controls'] = $this->onRender($action);
+      $filter = array();
+      
+      $filter['name'] = $this->getName();
+      $filter['label'] = $this->getLabel();
+      $filter['controls'] = $this->onRender($action)->render();
+      
+      $filters[$this->getName()] = $filter;
     }
   }
-
+  
   /**
    * (non-PHPdoc)
    * @see Component::onRender()
@@ -89,11 +115,24 @@ abstract class Filter extends Component
 
   /**
    * (non-PHPdoc)
+   * @see \Simplify\Form\Component::onLoadData()
+   */
+  public function onLoadData(Action $action, &$data, $row)
+  {
+    if ($this->setOnLoad) {
+      $data[$this->getName()] = $this->getValue();
+    }
+  }
+  
+  /**
+   * (non-PHPdoc)
    * @see Component::onPostData()
    */
   public function onPostData(Action $action, &$data, $post)
   {
-    $data[$this->getName()] = $this->getValue();
+    if ($this->setOnPost) {
+      $data[$this->getName()] = $this->getValue();
+    }
   }
 
   /**

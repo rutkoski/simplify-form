@@ -22,6 +22,7 @@
  */
 namespace Simplify\Form\Action;
 
+use Simplify\Form;
 /**
  * Form action delete
  */
@@ -41,6 +42,8 @@ class Delete extends \Simplify\Form\Action
    */
   public function onExecute()
   {
+    parent::onExecute();
+    
     $this->onLoadData();
     
     $this->onValidate();
@@ -88,11 +91,9 @@ class Delete extends \Simplify\Form\Action
   public function onCreateItemMenu(\Simplify\Menu $menu,\Simplify\Form\Action $action, $data)
   {
     if (! $action->show(\Simplify\Form::ACTION_CREATE)) {
-      $url = new \Simplify\URL(null, 
-          array(
-              'formAction' => $this->getName(),
-              \Simplify\Form::ID => $data[\Simplify\Form::ID]
-          ));
+      $url = $this->form->url()->extend();
+      $url->set('formAction', $this->getName());
+      $url->set($this->form->getName() . Form::ID, $data[Form::ID]);
       
       $item = new \Simplify\MenuItem($this->getName(), $this->getTitle(), 'trash', $url);
       

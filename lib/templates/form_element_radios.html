@@ -1,5 +1,9 @@
+{% if action.name == 'view' %}
+<p class="form-control-static">{{ displayValue }}</p>
+{% else %}
 {% for option, label in options %}
 <label class="radio">
   <input type="radio" name="{{ inputName }}" value="{{ option }}" {{ option == value ? ' checked' : '' }}/> {{ label }}
 </label>
 {% endfor %}
+{% endif %}

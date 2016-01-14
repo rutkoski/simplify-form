@@ -123,7 +123,7 @@ abstract class Action extends Renderable
     $this->set('formData', $this->formData);
     $this->set('formMode', $this->formMode());
     $this->set('formUrl', $this->url());
-    $this->set('formAjaxUrl', $this->url()->format('json')->set('formMode', Form::MODE_AJAX));
+    $this->set('formAjaxUrl', $this->url()->extend()->format('json')->set('formMode', Form::MODE_AJAX));
     $this->set('title', $this->getTitle());
     
     $filters = array();
@@ -166,6 +166,7 @@ abstract class Action extends Renderable
   protected function onLoadData()
   {
     $elements = $this->getElements();
+    $filters = $this->form->getFilters();
     
     $id = $this->form->getId();
     $pk = $this->form->getPrimaryKey();
@@ -188,12 +189,15 @@ abstract class Action extends Renderable
       $this->onExtractData($this->formData[$index], $row);
       
       $elements->rewind();
-      
+
       while ($elements->valid()) {
         $element = $elements->current();
         $element->onLoadData($this, $this->formData[$index], $row);
-        
         $elements->next();
+      }
+
+      foreach ($filters as $filter) {
+          $filter->onLoadData($this, $this->formData[$index], $row);
       }
     }
   }
@@ -306,13 +310,14 @@ abstract class Action extends Renderable
 
   /**
    *
-   * @return URL
+   * @return \Simplify\URL
    */
   public function url()
   {
-    return new URL(null, array(
+    /*return new URL(null, array(
         'formAction' => $this->getName()
-    ));
+    ));*/
+    return $this->form->url()->set('formAction', $this->getName());
   }
 
   /**
@@ -363,17 +368,17 @@ abstract class Action extends Renderable
     $filters = $this->form->getFilters();
     
     foreach ($this->formData as $index => &$row) {
-      $row[Form::ID] = $id[$index];
-      
-      foreach ($filters as $filter) {
-        $filter->onPostData($this, $row, $post[$index]);
-      }
+      $row[Form::ID] = sy_get_param($id, $index);
       
       $elements->rewind();
       while ($elements->valid()) {
         $element = $elements->current();
         $element->onPostData($this, $row, $post[$index]);
         $elements->next();
+      }
+
+      foreach ($filters as $filter) {
+          $filter->onPostData($this, $row, $post[$index]);
       }
     }
   }

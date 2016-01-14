@@ -1,2 +1,6 @@
+{% if action.name == 'view' %}
+<p class="form-control-static">{{ displayValue }}</p>
+{% else %}
 <textarea name="{{ inputName }}" class="form-control" {{ disabled ? 'disabled' : '' }} 
   {{ maxLength > 0 ? ' maxlength="' ~ maxLength ~ '"' : '' }}>{{ value }}</textarea>
+{% endif %}

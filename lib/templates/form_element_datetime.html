@@ -1,3 +1,6 @@
+{% if action.name == 'view' %}
+<p class="form-control-static">{{ displayValue }}</p>
+{% else %}
 <input id="{{ id }}" type="text" name="{{ inputName }}" value="{{ formatedValue }}" class="form-control" {{ disabled ? 'disabled' : '' }}/>
 
 <script>
@@ -7,3 +10,4 @@ $(document).ready(function() {
 	});
 });
 </script>
+{% endif %}

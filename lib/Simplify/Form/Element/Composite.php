@@ -67,7 +67,7 @@ class Composite extends \Simplify\Form\Element\Base\Composite
    * (non-PHPdoc)
    * @see \Simplify\Form\Element::onRenderControls()
    */
-  public function onRenderControls(\Simplify\Form\Action $action, &$line, $data, $index)
+  public function __onRenderControls(\Simplify\Form\Action $action, &$line, $data, $index)
   {
     parent::onRenderControls($action, $line, $data, $index);
     $line['elements'][$this->getName()]['label'] = false;

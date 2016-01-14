@@ -1,1 +1,5 @@
+{% if action.name == 'view' %}
+<p class="form-control-static">{{ displayValue }}</p>
+{% else %}
 <input type="email" class="form-control" name="{{ inputName }}" value="{{ value }}" />
+{% endif %}

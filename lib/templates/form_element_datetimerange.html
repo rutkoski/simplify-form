@@ -1,3 +1,6 @@
+{% if action.name == 'view' %}
+<p class="form-control-static">{{ displayValue }}</p>
+{% else %}
 <div class="form-inline">
   <div class="input-group col-sm-5" id="{{ id }}_begin">
     <input type="text" name="{{ inputName }}[begin]" value="{{ formatedBeginValue }}" class="form-control"/>
@@ -39,3 +42,4 @@ $(document).ready(function() {
 	});
 });
 </script>
+{% endif %}
