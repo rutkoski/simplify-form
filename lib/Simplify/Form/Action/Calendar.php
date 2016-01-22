@@ -190,7 +190,7 @@ class Calendar extends Action
   public function onCreateMenu(Menu $menu, Action $action)
   {
     if ($action !== $this) {
-      $menu->getItemByName('main')->addItem(new MenuItem($this->getName(), $this->getTitle(), null, $this->url()));
+      $menu->getItemByName('main')->addItem(new MenuItem($this->getName(), $this->getTitle(), 'calendar', $this->url()));
     }
   }
 

@@ -23,6 +23,7 @@
 
 namespace Simplify\Form\Element\Base;
 
+use Simplify\Form\Action;
 /**
  * Base class for miltiple selection elements
  */

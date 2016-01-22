@@ -49,6 +49,8 @@ class Text extends \Simplify\Form\Element
    */
   public function onValidate(\Simplify\Form\Action $action, $data)
   {
+    parent::onValidate($action, $data);
+    
     if ($this->minLength !== false || $this->maxLength !== false) {
       if ($this->minLength === $this->maxLength) {
         $msg = _n('%1$s must have exactly %2$s character', '%1$s must have exactly %2$s characters', $this->minLength);
