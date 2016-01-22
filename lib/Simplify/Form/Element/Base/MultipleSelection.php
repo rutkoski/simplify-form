@@ -135,6 +135,23 @@ abstract class MultipleSelection extends \Simplify\Form\Element
 
   /**
    * (non-PHPdoc)
+   * @see \Simplify\Form\Element::onRenderLine()
+   */
+  public function onRenderLine(\Simplify\Form\Action $action, &$line, $data, $index)
+  {
+      $element = array();
+  
+      $element['id'] = $this->getElementId($index);
+      $element['name'] = $this->getInputName($index);
+      $element['class'] = $this->getElementClass();
+      $element['label'] = $this->getLabel();
+      $element['controls'] = $this->onRender($action, $data, $index);
+  
+      $line['elements'][$this->getName()] = $element;
+  }
+  
+  /**
+   * (non-PHPdoc)
    * @see \Simplify\Form\Element::onPostData()
    */
   public function onPostData(\Simplify\Form\Action $action, &$data, $post)
@@ -190,15 +207,6 @@ abstract class MultipleSelection extends \Simplify\Form\Element
    */
   public function onInjectQueryParams(\Simplify\Form\Action $action, &$params)
   {
-  }
-
-  /**
-   * (non-PHPdoc)
-   * @see \Simplify\Form\Element::getDisplayValue()
-   */
-  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
-  {
-    return $this->onRender($action, $data, $index)->render();
   }
 
   /**

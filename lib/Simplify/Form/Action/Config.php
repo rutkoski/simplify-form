@@ -143,7 +143,7 @@ class Config extends \Simplify\Form\Action
         }
       }
 
-      $element->onPostData($this, $this->formData[$element->getName()]['data'], $post[$element->getName()]);
+      $element->onPostData($this, $this->formData[$element->getName()]['data'], sy_get_param($post, $element->getName()));
 
       $elements->next();
     }
