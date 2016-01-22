@@ -77,7 +77,7 @@ class Boolean extends \Simplify\Form\Element
    */
   public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
-    return $data[$this->getName()] == $this->trueValue ? $this->getTrueLabel() : $this->getFalseLabel();
+    return $this->getValue($data) == $this->trueValue ? $this->getTrueLabel() : $this->getFalseLabel();
   }
   
   public function getTrueLabel()

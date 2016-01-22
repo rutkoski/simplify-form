@@ -20,49 +20,66 @@
  *
  * @author Rodrigo Rutkoski Rodrigues <rutkoski@gmail.com>
  */
-
 namespace Simplify\Form\Element;
 
+use Simplify\Form\Action;
+
 /**
- *
  * Textarea form element
- *
  */
 class Textarea extends \Simplify\Form\Element\Text
 {
 
-  /**
-   * Truncate data on list actions
-   *
-   * @var boolean|int
-   */
-  public $truncate = 80;
+    /**
+     * Truncate data on list actions
+     *
+     * @var boolean|int
+     */
+    public $truncate = 80;
 
-  /**
-   *
-   * @var int|boolean
-   */
-  public $minLength = false;
+    /**
+     *
+     * @var int|boolean
+     */
+    public $minLength = false;
 
-  /**
-   *
-   * @var int
-   */
-  public $maxLength = false;
+    /**
+     *
+     * @var int
+     */
+    public $maxLength = false;
 
-  /**
-   * (non-PHPdoc)
-   * @see \Simplify\Form\Element::getDisplayValue()
-   */
-  public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
-  {
-    $value = parent::getDisplayValue($action, $data, $index);
+    /**
+     *
+     * @var int
+     */
+    public $rows = 20;
 
-    if ($this->truncate) {
-      $value = sy_truncate($value, $this->truncate);
+    /**
+     * (non-PHPdoc)
+     * 
+     * @see \Simplify\Form\Element::getDisplayValue()
+     */
+    public function getDisplayValue(Action $action, $data, $index)
+    {
+        $value = parent::getDisplayValue($action, $data, $index);
+        
+        if ($this->truncate) {
+            $value = sy_truncate($value, $this->truncate);
+        }
+        
+        return $value;
     }
 
-    return $value;
-  }
-
+    /**
+     * (non-PHPdoc)
+     * 
+     * @see \Simplify\Form\Element\Text::onRender()
+     */
+    public function onRender(Action $action, $data, $index)
+    {
+        $this->set('rows', $this->rows);
+        
+        return parent::onRender($action, $data, $index);
+    }
 }

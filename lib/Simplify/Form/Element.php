@@ -161,7 +161,7 @@ abstract class Element extends Component
     public function onValidate(Action $action, $data)
     {
         if ($this->unique && $action->show($this->unique)) {
-            $unique = $this->getError('unique', __('Value must be unique'));
+            $unique = $this->getError('unique', __('Valor duplicado'));
             
             $rule = new \Simplify\Form\Validation\Unique($unique, $this, sy_get_param($data, $this->form->getPrimaryKey()));
             $rule->validate($this->getValue($data));

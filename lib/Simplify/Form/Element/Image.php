@@ -131,7 +131,7 @@ class Image extends \Simplify\Form\Element
         $value .= "</a>";
       }
       else {
-        $value = '<i class="icon-warning-sign"></i> File is missing';
+        $value = '<span class="glyphicon glyphicon-remove"></span> Arquivo não encontrado';
       }
     }
 

@@ -400,7 +400,7 @@ abstract class Action extends Renderable
         $element = $elements->current();
         $elements->next();
         
-        if ($this->show($element->validate)) {
+        if ($element->validate === true || $this->show($element->validate)) {
           
           try {
             $element->onValidate($this, $row);
@@ -512,7 +512,7 @@ abstract class Action extends Renderable
    */
   public function show($actionMask)
   {
-    return ($this->getActionMask() & $actionMask) == $actionMask;
+    return ($this->getActionMask() | $actionMask) == $actionMask;
   }
 
   /**
