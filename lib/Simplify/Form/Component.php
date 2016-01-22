@@ -46,7 +46,7 @@ abstract class Component extends Renderable
 
   /**
    *
-   * @var Form
+   * @var \Simplify\Form
    */
   public $form;
 
@@ -100,6 +100,13 @@ abstract class Component extends Renderable
    */
   protected $remove = Form::ACTION_NONE;
 
+  /**
+   * Form hooks
+   *
+   * @var array
+   */
+  protected $hooks = array();
+  
   /**
    * Constructor
    *
@@ -342,6 +349,30 @@ abstract class Component extends Renderable
   {
       $this->$name = $value;
       return $this;
+  }
+
+  /**
+   *
+   */
+  public function addListener($hook, callable $listener)
+  {
+      $this->hooks[$hook][] = $listener;
+  }
+
+  /**
+   *
+   */
+  public function dispatch($hook)
+  {
+      if (isset($this->hooks[$hook])) {
+          $args = func_get_args();
+  
+          unset($args[0]);
+  
+          foreach ($this->hooks[$hook] as $listener) {
+              call_user_func_array($listener, $args);
+          }
+      }
   }
 
 }

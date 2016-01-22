@@ -50,7 +50,7 @@ class Create extends Base\FormBase
   {
     $url = $this->createUrl();
 
-    $item = new MenuItem($this->getName(), $this->getTitle(), 'plus', $url);
+    $item = new MenuItem($this->getName(), $this->getTitle(), Form::ICON_CREATE, $url);
     
     $menu->getItemByName('main')->addItem($item);
   }

@@ -137,16 +137,18 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
      */
     public function onCreateMenu(Menu $menu)
     {
-        $menu->getItemByName('main')->addItem(new MenuItem('create', __('Create'), 'plus'));
+        $menu->getItemByName('main')->addItem(new MenuItem('create', __('Criar'), 'plus'));
     }
 
     /**
      *
      * @param Menu $menu            
      */
-    public function onCreateItemMenu(Menu $menu, $item)
+    public function onCreateItemMenu(Action $action, Menu $menu, $item)
     {
-        $menu->getItemByName('main')->addItem(new MenuItem('delete', __('Delete'), 'minus'));
+        $menu->getItemByName('main')->addItem(new MenuItem('delete', __('Remover'), 'minus'));
+        
+        $this->dispatch('onCreateItemMenu', $action, $this, $menu, $item);
     }
 
     /**
@@ -178,7 +180,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
                 $line['menu'] = new Menu('actions');
                 $line['menu']->addItem(new Menu('main'));
                 
-                $this->onCreateItemMenu($line['menu'], $line);
+                $this->onCreateItemMenu($action, $line['menu'], $_row);
                 
                 $elements->rewind();
                 while ($elements->valid()) {
@@ -222,7 +224,7 @@ class HasMany extends \Simplify\Form\Element\Base\Composite
         $dummy['menu'] = new Menu('actions');
         $dummy['menu']->addItem(new Menu('main'));
         
-        $this->onCreateItemMenu($dummy['menu'], $dummy);
+        $this->onCreateItemMenu($action, $dummy['menu'], array());
         
         $elements->rewind();
         while ($elements->valid()) {

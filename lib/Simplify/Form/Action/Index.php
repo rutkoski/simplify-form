@@ -208,7 +208,7 @@ class Index extends Action
    */
   public function onCreateMenu(Menu $menu)
   {
-    $item = new MenuItem($this->getName(), $this->getTitle(), 'list', $this->url());
+    $item = new MenuItem($this->getName(), $this->getTitle(), Form::ICON_LIST, $this->url());
     
     $menu->getItemByName('main')->addItem($item);
   }

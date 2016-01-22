@@ -317,7 +317,7 @@ abstract class Action extends Renderable
     /*return new URL(null, array(
         'formAction' => $this->getName()
     ));*/
-    return $this->form->url()->set('formAction', $this->getName());
+    return $this->form->url()->extend()->set('formAction', $this->getName());
   }
 
   /**

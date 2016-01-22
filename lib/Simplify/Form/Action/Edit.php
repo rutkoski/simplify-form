@@ -50,7 +50,7 @@ class Edit extends Base\FormBase
     if (! $action->show(Form::ACTION_CREATE) && ! $action->show(Form::ACTION_EDIT)) {
       $url = $this->editUrl($data);
       
-      $item = new MenuItem($this->getName(), $this->getTitle(), 'pencil', $url);
+      $item = new MenuItem($this->getName(), $this->getTitle(), Form::ICON_EDIT, $url);
       
       $menu->getItemByName('main')->addItem($item);
     }

@@ -79,6 +79,14 @@ class Form extends Renderable
   
   const MODE_AJAX = 'ajax';
 
+  const ICON_LIST = 'list';
+  
+  const ICON_EDIT = 'pencil';
+
+  const ICON_CREATE = 'plus';
+
+  const ICON_DELETE = 'trash';
+  
   /**
    * Table name
    *
@@ -631,7 +639,7 @@ class Form extends Renderable
       $this->url = new URL(null, array('formAction' => \Simplify::request()->get('formAction')));
     }
 
-    return $this->url->extend();
+    return $this->url;
   }
 
   /**

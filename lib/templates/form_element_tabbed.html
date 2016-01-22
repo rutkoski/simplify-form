@@ -1,4 +1,4 @@
-<div class="tabbable">
+<div class="{{ class }} tabbable">
   <ul class="nav nav-tabs">
     {% for i, header in headers %}
     <li class="{{ i == active ? 'active' : '' }}"><a href="#tab{{ i }}" data-toggle="tab">{{ header }}</a></li>
