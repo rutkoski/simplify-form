@@ -93,7 +93,7 @@ class Delete extends \Simplify\Form\Action
     if (! $action->show(\Simplify\Form::ACTION_CREATE)) {
       $url = $this->form->url()->extend();
       $url->set('formAction', $this->getName());
-      $url->set($this->form->getName() . Form::ID, $data[Form::ID]);
+      $url->set(Form::ID, $data[Form::ID]);
       
       $item = new \Simplify\MenuItem($this->getName(), $this->getTitle(), Form::ICON_DELETE, $url);
       
