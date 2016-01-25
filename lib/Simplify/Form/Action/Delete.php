@@ -143,7 +143,7 @@ class Delete extends \Simplify\Form\Action
     foreach ($data as $index => $row) {
       $this->formData[$index] = array();
       $this->formData[$index][\Simplify\Form::ID] = $row[$pk];
-      $this->formData[$index]['label'] = $row[$label];
+      $this->formData[$index]['label'] = $label == $pk ? $row[$label] : $row[$label] . ' (' . $row[$pk] . ')';
       
       $elements->rewind();
       

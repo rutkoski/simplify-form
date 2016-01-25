@@ -146,8 +146,8 @@ abstract class MultipleSelection extends \Simplify\Form\Element
       $element['name'] = $this->getInputName($index);
       $element['class'] = $this->getElementClass();
       $element['label'] = $this->getLabel();
-      $element['controls'] = $this->onRender($action, $data, $index);
-  
+      $element['controls'] = $this->onRender($action, $data, $index)->render();
+
       $line['elements'][$this->getName()] = $element;
   }
   

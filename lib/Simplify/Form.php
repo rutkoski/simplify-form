@@ -265,8 +265,16 @@ class Form extends Renderable
    */
   public function render($action = null)
   {
+    if (empty($action)) {
+        $action = $this->getActionName();
+    }
+    
+    if ($action === 'services') {
+        return $this;
+    }
+    
     $Action = $this->getAction($action);
-
+    
     $result = $Action->onRender();
 
     $this->set('actionBody', $result);
@@ -304,7 +312,7 @@ class Form extends Renderable
     $serviceAction = \Simplify::request()->get('serviceAction');
 
     $service = $this->getElementByName($serviceName);
-
+    
     $response = $service->onExecuteServices($serviceAction);
 
     return $response;
