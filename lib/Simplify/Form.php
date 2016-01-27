@@ -467,12 +467,29 @@ class Form extends Renderable
 
   /**
    *
+   * @return \Simplify\Form\Element
+   */
+  public function getElementByType($type)
+  {
+      foreach ($this->elements as $element) {
+          $found = $element->getElementByType($type);
+  
+          if ($found) {
+              return $found;
+          }
+      }
+  
+      return null;
+  }
+  
+  /**
+   *
    * @param \Simplify\Form\Action $action
    * @return \Simplify\Form\Element[]
    */
-  public function getElements(Action $action)
+  public function getElements(Action $action = null)
   {
-    return new ElementIterator($this->elements, $action->getActionMask());
+    return new ElementIterator($this->elements, $action ? $action->getActionMask() : Form::ACTION_ALL);
   }
 
   /**

@@ -1,0 +1,57 @@
+<div class="simplify_form_gallery">
+  <h3>{{ title }}</h3>
+
+  {% include 'base/form_filters.html' %}
+
+  <form action="" method="GET">
+  	<div class="row">
+      {% for row in data %}
+  	  <div class="col-sm-3 col-md-3">
+  	    <div class="thumbnail active">
+          <input type="checkbox" name="{{ row['name'] }}" value="{{ row['_id'] }}">
+          
+          <a href="{{ row['imageUrl'] }}" class="lightbox">
+            <img src="{{ row['thumbUrl'] }}" alt="{{ row['caption'] }}">
+          </a>
+  	      
+  	      <div class="caption">
+  	        <p>{{ row['caption'] }}</p>
+
+            {% include 'form_menu.html' with { 'menu' : row['menu'], 'hideLabels' : true } %}
+  	      </div>
+  	    </div>
+  	  </div>
+      {% endfor %}
+  	</div>
+
+    {% if bulk %}
+    <div class="form-group">
+      <div class="input-group col-sm-4">
+        <span class="input-group-addon">Ações</span>
+
+        <select name="formAction" class="form-control">
+          <option value=""></option>
+          {% for value, label in bulk %}
+          <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+
+        <span class="input-group-btn">
+          <input type="submit" value="Ok" class="btn" />
+        </span>
+      </div>  
+    </div>
+    {% endif %}
+  </form>
+</div>
+
+<style type="text/css">
+.simplify_form_gallery .thumbnail {
+  position: relative;
+}
+.simplify_form_gallery .thumbnail input[type=checkbox] {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+}
+</style>

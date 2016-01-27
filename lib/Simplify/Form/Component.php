@@ -143,6 +143,15 @@ abstract class Component extends Renderable
   }
 
   /**
+   *
+   * @return Component
+   */
+  public function getElementByType($type)
+  {
+      return ($this instanceof $type) ? $this : null;
+  }
+
+  /**
    * Get the html id for this component.
    *
    * @return string

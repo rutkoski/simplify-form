@@ -251,7 +251,7 @@ class Image extends \Simplify\Form\Element
    * @param int $height
    * @return string
    */
-  protected function getThumbUrl($file, $width, $height)
+  public function getThumbUrl($file, $width, $height)
   {
     try {
       return \Simplify::config()->get('www:url') .
@@ -268,7 +268,7 @@ class Image extends \Simplify\Form\Element
    * @param string $file
    * @return string
    */
-  protected function getImageUrl($file)
+  public function getImageUrl($file)
   {
     return \Simplify::config()->get('www:url') . $file;
   }
