@@ -43,7 +43,7 @@ class Password extends \Simplify\Form\Element
    *
    * @var boolean
    */
-  public $required = false;
+  public $required = true;
 
   /**
    *
@@ -157,7 +157,7 @@ class Password extends \Simplify\Form\Element
 
     $empty = $this->hash('');
     $exists = (!empty($data[\Simplify\Form::ID]));
-    $required = ($this->required || !$exists);
+    $required = ($this->required && !$exists);
 
     if ($this->askForConfirmation && $a != $b) {
       $this->errors['_'][] = $this->getError('match', __('As senhas não conferem'));
