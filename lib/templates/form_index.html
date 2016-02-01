@@ -20,7 +20,7 @@
 
     <tbody>
       {% for row in data %}
-      <tr>
+      <tr class="{{ row.state }}">
         <td><input type="checkbox" name="{{ row['name'] }}" value="{{ row['_id'] }}"/></td>
 
         {% for element in row['elements'] %}

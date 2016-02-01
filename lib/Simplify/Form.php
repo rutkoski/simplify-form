@@ -86,6 +86,12 @@ class Form extends Renderable
   const ICON_CREATE = 'plus';
 
   const ICON_DELETE = 'trash';
+
+  const STATE_SUCCESS = 'success';
+
+  const STATE_WARNING = 'warning';
+
+  const STATE_DANGER = 'danger';
   
   /**
    * Table name
@@ -686,7 +692,11 @@ class Form extends Renderable
       unset($args[0]);
 
       foreach ($this->hooks[$hook] as $listener) {
-        call_user_func_array(array($listener, $hook), $args);
+          if (is_callable($listener)) {
+              call_user_func_array($listener, $args);
+          } else {
+              call_user_func_array(array($listener, $hook), $args);
+          }
       }
     }
   }

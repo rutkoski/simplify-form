@@ -23,6 +23,7 @@
 
 namespace Simplify\Form;
 
+use Simplify\Db\QueryParameters;
 /**
  *
  * Base class for form filters
@@ -121,6 +122,19 @@ abstract class Filter extends Component
   {
     if ($this->setOnLoad) {
       $data[$this->getName()] = $this->getValue();
+    }
+  }
+
+  /**
+   * On inject query params callback.
+   *
+   * @param Action $action current action
+   * @param array $params query parameters
+   */
+  public function onInjectQueryParams(Action $action, &$params)
+  {
+    if ($this->setOnLoad) {
+      $params[QueryParameters::SELECT][] = $this->getFieldName();
     }
   }
   

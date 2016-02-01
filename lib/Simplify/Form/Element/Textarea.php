@@ -23,6 +23,7 @@
 namespace Simplify\Form\Element;
 
 use Simplify\Form\Action;
+use Simplify\Form;
 
 /**
  * Textarea form element
@@ -64,7 +65,9 @@ class Textarea extends \Simplify\Form\Element\Text
     {
         $value = parent::getDisplayValue($action, $data, $index);
         
-        if ($this->truncate) {
+        $value = nl2br($value);
+        
+        if ($this->truncate && !$action->show(Form::ACTION_VIEW)) {
             $value = sy_truncate($value, $this->truncate);
         }
         

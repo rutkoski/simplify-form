@@ -168,12 +168,12 @@ class Index extends Action
     
     $data = array();
     foreach ($this->formData as $index => $row) {
-      $line = array();
+      $line = new \ArrayObject();
       $line[Form::ID] = $row[Form::ID];
       $line['name'] = Form::ID . "[]";
       $line['menu'] = new Menu('actions');
       $line['menu']->addItem(new Menu('main'));
-      
+      //$line['state'] = Form::STATE_WARNING;
       $line['elements'] = array();
       
       $elements->rewind();
@@ -185,6 +185,8 @@ class Index extends Action
       }
       
       $this->form->onCreateItemMenu($line['menu'], $this, $row);
+      
+      $this->form->dispatch('onRenderListRow', $this, $line, $row);
       
       $data[] = $line;
     }
@@ -230,19 +232,20 @@ class Index extends Action
     $params[QueryParameters::OFFSET] = $this->getOffset();
     $params[QueryParameters::ORDER_BY] = $this->getOrderBy();
     
-    while ($elements->valid()) {
-      $element = $elements->current();
-      $element->onInjectQueryParams($this, $params);
+//     beying done twice...
+//     while ($elements->valid()) {
+//       $element = $elements->current();
+//       $element->onInjectQueryParams($this, $params);
       
-      $elements->next();
-    }
+//       $elements->next();
+//     }
     
-    foreach ($this->form->getFilters() as $filter) {
-      $filter->onInjectQueryParams($this, $params);
-    }
+//     foreach ($this->form->getFilters() as $filter) {
+//       $filter->onInjectQueryParams($this, $params);
+//     }
     
     $this->onInjectQueryParams($params);
-    
+
     $data = $this->repository()->findAll($params);
     
     $this->formData = array();
@@ -259,6 +262,10 @@ class Index extends Action
         $element->onLoadData($this, $this->formData[$index], $row);
         
         $elements->next();
+      }
+
+      foreach ($this->form->getFilters() as $filter) {
+          $filter->onLoadData($this, $this->formData[$index], $row);
       }
     }
     
