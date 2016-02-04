@@ -1,3 +1,4 @@
+{% if pager and pager.getTotalPages() > 1 %}
 <ul class="pagination pagination-sm">
   <li><a href="{{ pager.getFirstPage() == pager.getCurrentPage() ? '#' : makeUrl(null, { 'formAction' : action.getName(), 'offset' : pager.getFirstOffset() }) }}"
     class="{{ pager.getFirstPage() == pager.getCurrentPage() ? 'disabled' : '' }}">&laquo;</a></li>
@@ -16,3 +17,4 @@
   <li><a href="{{ pager.getLastPage() == pager.getCurrentPage() ? '#' : makeUrl(null, { 'formAction' : action.getName(), 'offset' : pager.getLastOffset() }) }}"
     class="{{ pager.getLastPage() == pager.getCurrentPage() ? 'disabled' : '' }}">&raquo;</a></li>
 </ul>
+{% endif %}

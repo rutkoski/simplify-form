@@ -247,13 +247,17 @@ class Index extends Action
     $this->onInjectQueryParams($params);
 
     $data = $this->repository()->findAll($params);
-    
+      
     $this->formData = array();
     
     foreach ($data as $index => $row) {
       $this->formData[$index] = array();
       $this->formData[$index][Form::ID] = $row[$pk];
       $this->formData[$index][$pk] = $row[$pk];
+
+      foreach ($this->form->getFilters() as $filter) {
+          $filter->onLoadData($this, $this->formData[$index], $row);
+      }
       
       $elements->rewind();
       
@@ -263,13 +267,11 @@ class Index extends Action
         
         $elements->next();
       }
-
-      foreach ($this->form->getFilters() as $filter) {
-          $filter->onLoadData($this, $this->formData[$index], $row);
-      }
     }
     
-    $this->pager = $this->repository()->findPager($params);
+    if ($this->getLimit()) {
+        $this->pager = $this->repository()->findPager($params);
+    }
   }
 
 }

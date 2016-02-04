@@ -41,6 +41,12 @@ use Simplify\Form\Repository;
 class Form extends Renderable
 {
 
+  const FORM_TYPE_DEFAULT = 'default';
+
+  const FORM_TYPE_SORTABLE = 'sortable';
+
+  const FORM_TYPE_MPTT = 'mptt';
+
   const ON_BEFORE_DELETE = 'onBeforeDelete';
 
   const ON_RENDER = 'onRender';
@@ -570,7 +576,13 @@ class Form extends Renderable
   public function getLabel()
   {
     if (empty($this->label)) {
-      $this->label = $this->getPrimaryKey();
+      $label = $this->getElementByType('\Simplify\Form\Element\Text');
+      
+      if (! empty($label)) {
+          $this->label = $label->getFieldName();
+      } else {
+        $this->label = $this->getPrimaryKey();
+      }
     }
 
     return $this->label;
