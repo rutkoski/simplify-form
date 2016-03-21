@@ -35,7 +35,7 @@ class Password extends \Simplify\Form\Element
    *
    * @var unknown_type
    */
-  public $hashCallback = 'md5';
+  public $hashCallback = array('\Simplify\Password', 'hash');
 
   /**
    * Password is required for existing records
@@ -151,11 +151,11 @@ class Password extends \Simplify\Form\Element
    */
   public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
-    $a = $this->hash(sy_get_param(sy_get_param($post, $this->getName(), array()), 'a'));
-    $b = $this->hash(sy_get_param(sy_get_param($post, $this->getName(), array()), 'b'));
-    $c = $this->hash(sy_get_param(sy_get_param($post, $this->getName(), array()), 'c'));
+    $a = sy_get_param(sy_get_param($post, $this->getName(), array()), 'a');
+    $b = sy_get_param(sy_get_param($post, $this->getName(), array()), 'b');
+    $c = sy_get_param(sy_get_param($post, $this->getName(), array()), 'c');
 
-    $empty = $this->hash('');
+    $empty = '';
     $exists = (!empty($data[\Simplify\Form::ID]));
     $required = ($this->required && !$exists);
 
@@ -171,7 +171,7 @@ class Password extends \Simplify\Form\Element
       }
     }
     elseif ($a != $empty) {
-      $data[$this->getName()] = $a;
+      $data[$this->getName()] = $this->hash($a);
     }
     else {
       unset($data[$this->getName()]);

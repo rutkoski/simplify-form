@@ -520,10 +520,10 @@ class Form extends Renderable
   public function getId()
   {
     if (empty($this->id)) {
-      $this->id = (array) (Simplify::request()->method(Request::GET) ? Simplify::request()->get(Form::ID) : Simplify::request()->post(Form::ID));
+      $this->id = (Simplify::request()->method(Request::GET) ? Simplify::request()->get(Form::ID) : Simplify::request()->post(Form::ID));
     }
 
-    return $this->id;
+    return (array) $this->id;
   }
 
   /**
