@@ -44,6 +44,12 @@ class Images extends \Simplify\Form\Element\Base\HasMany
 
   /**
    *
+   * @var boolean
+   */
+  public $deleteFile = false;
+  
+  /**
+   *
    * @var array[]
    */
   protected $fields = array();
@@ -264,20 +270,22 @@ class Images extends \Simplify\Form\Element\Base\HasMany
    */
   protected function onDelete(&$data)
   {
-    foreach ($this->fields as $field) {
-      $file = $data[$field[self::FIELD_FILENAME]];
+    if ($this->deleteFile) {
+      foreach ($this->fields as $field) {
+        $file = $data[$field[self::FIELD_FILENAME]];
 
-      if (!empty($file)) {
-        $this->getThumbComponent($file)->cleanCached();
-  
-        if (!sy_path_is_absolute($file)) {
-          $file = \Simplify::config()->get('www:dir') . $file;
-        }
-  
-        if (file_exists($file)) {
+        if (!empty($file)) {
           $this->getThumbComponent($file)->cleanCached();
   
-          @unlink($file);
+          if (!sy_path_is_absolute($file)) {
+            $file = \Simplify::config()->get('www:dir') . $file;
+          }
+  
+          if (file_exists($file)) {
+            $this->getThumbComponent($file)->cleanCached();
+  
+            @unlink($file);
+          }
         }
       }
     }

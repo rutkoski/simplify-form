@@ -96,7 +96,7 @@ class Gallery extends Action
         }
         return $this->captionElement;
     }
-    
+
     /**
      * (non-PHPdoc)
      *
@@ -126,6 +126,16 @@ class Gallery extends Action
         $caption = $this->getCaptionElement();
         $image = $this->getImageElement();
         
+        /*
+         * if (! $caption) {
+         * throw new \Exception(__('A galeria necessita de um campo de tipo texto'));
+         * }
+         */
+        
+        if (! $image) {
+            throw new \Exception(__('A galeria necessita de um campo de tipo imagem'));
+        }
+        
         $data = array();
         foreach ($this->formData as $index => $row) {
             $line = array();
@@ -134,11 +144,11 @@ class Gallery extends Action
             $line['menu'] = new Menu('actions');
             $line['menu']->addItem(new Menu('main'));
             
-            $line['caption'] = $caption->getDisplayValue($this, $row, $index);
+            $line['caption'] = $caption ? $caption->getDisplayValue($this, $row, $index) : false;
             
             $imageFile = $image->getValue($row);
             $line['imageUrl'] = $image->getImageUrl($imageFile);
-            $line['thumbUrl'] = $image->getThumbUrl($imageFile, 240, 240);
+            $line['thumbUrl'] = $image->getThumbUrl($imageFile, 340, 340);
             
             $line['elements'] = array();
             

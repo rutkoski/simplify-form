@@ -56,6 +56,12 @@ class Image extends \Simplify\Form\Element
   public $thumbHeight = null;
 
   /**
+   *
+   * @var boolean
+   */
+  public $deleteFile = false;
+  
+  /**
    * Always add the object to these actions
    *
    * @var int
@@ -215,19 +221,21 @@ class Image extends \Simplify\Form\Element
    */
   protected function onDelete(&$data)
   {
-    $file = sy_get_param($data, $this->getFieldName());
+    if ($this->deleteFile) {
+      $file = sy_get_param($data, $this->getFieldName());
 
-    if (!empty($file)) {
-      $this->getThumbComponent($file)->cleanCached();
-
-      if (!sy_path_is_absolute($file)) {
-        $file = \Simplify::config()->get('www:dir') . $file;
-      }
-
-      if (file_exists($file)) {
+      if (!empty($file)) {
         $this->getThumbComponent($file)->cleanCached();
 
-        @unlink($file);
+        if (!sy_path_is_absolute($file)) {
+          $file = \Simplify::config()->get('www:dir') . $file;
+        }
+
+        if (file_exists($file)) {
+          $this->getThumbComponent($file)->cleanCached();
+
+          @unlink($file);
+        }
       }
     }
   }
@@ -255,7 +263,7 @@ class Image extends \Simplify\Form\Element
   {
     try {
       return \Simplify::config()->get('www:url') .
-        \Simplify\Thumb::factory()->load($file)->zoomCrop($width, $height)->cache()->getCacheFilename();
+        \Simplify\Thumb::factory()->load($file)->zoomCrop($width, $height)->quality(60)->cache()->getCacheFilename();
     }
     catch (\Simplify\ThumbException $e) {
       //

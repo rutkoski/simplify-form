@@ -42,6 +42,12 @@ class File extends \Simplify\Form\Element
    * @var string
    */
   public $path;
+  
+  /**
+   * 
+   * @var boolean
+   */
+  public $deleteFile = false;
 
   /**
    * Always add the object to these actions
@@ -84,9 +90,11 @@ class File extends \Simplify\Form\Element
       else {
         $fileUrl = false;
       }
-    }
 
-    $this->set('fileUrl', $fileUrl);
+      $this->set('fileUrl', $fileUrl);
+    }
+    
+    $this->set('maxSize', sy_get_max_upload_size());
 
     return parent::onRender($action, $data, $index);
   }
@@ -105,7 +113,7 @@ class File extends \Simplify\Form\Element
       if ($this->fileExists($file)) {
         $fileUrl = $this->getFileUrl($file);
 
-        $value = "<a href=\"{$fileUrl}\">{$file}</a>";
+        $value = "<a href=\"{$fileUrl}\" target=\"_blank\">{$file}</a>";
       }
       else {
         $value = '<i class="icon-warning-sign"></i> File is missing';
@@ -124,7 +132,7 @@ class File extends \Simplify\Form\Element
     $name = $this->getName();
 
     $file = $this->getValue($data);
-
+    
     if (!empty($file)) {
       if (!$this->fileExists($file) || $post[$name]['delete']) {
         $this->onDelete($data);
@@ -132,14 +140,14 @@ class File extends \Simplify\Form\Element
         $data[$this->getName()] = '';
       }
     }
-
-    if (!empty($post[$name]['name']) || $this->required) {
+    
+    if (!empty($post[$name]['file']['name']) || $this->required) {
       try {
-        $upload = new \Simplify\Upload($post[$name]);
+        $upload = new \Simplify\Upload($post[$name]['file']);
         $upload->uploadPath = $this->path;
         $upload->hashFilename = true;
         $upload->upload();
-
+        
         $this->onDelete($data);
 
         $data[$this->getName()] = $upload->getUploadedPath();
@@ -192,15 +200,17 @@ class File extends \Simplify\Form\Element
    */
   protected function onDelete(&$data)
   {
-    $file = $data[$this->getFieldName()];
+    if ($this->deleteFile) {
+      $file = sy_get_param($data, $this->getFieldName());
 
-    if (!empty($file)) {
-      if (!sy_path_is_absolute($file)) {
-        $file = \Simplify::config()->get('www:dir') . $file;
-      }
+      if (!empty($file)) {
+        if (!sy_path_is_absolute($file)) {
+          $file = \Simplify::config()->get('www:dir') . $file;
+        }
 
-      if (file_exists($file)) {
-        @unlink($file);
+        if (file_exists($file)) {
+          @unlink($file);
+        }
       }
     }
   }
