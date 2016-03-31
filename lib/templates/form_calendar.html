@@ -65,6 +65,18 @@
 {% else %}
   <div class="sy-form-calendar" data-calendar='{{ calendarOptions }}'></div>
   
+  <div style="height:20px;"></div>
+  
+  <style>
+  @media (max-width: 480px) {
+  	.fc-toolbar .fc-left { width: 100%; margin-bottom:5px; }
+  	.fc-toolbar .fc-center { width: 100%; margin-bottom:0px; }  	
+  	.fc-toolbar .fc-right { width: 100%; margin-bottom:0px; }
+  	.fc-toolbar h2 { font-size: 20px; }  	
+  	.fc-button { font-size: 12px !important; }
+  }
+  </style>
+
   <script>
   (function() {
   	$(document).ready(init);
@@ -106,7 +118,7 @@
   				        type : 'ajax',
   				        href: options.createUrl.replace(/__startTime__/, time),
   				        modal : true,
-    				      scrolling : 'no',
+    				      scrolling : 'auto',
     				      afterShow: function() {
     				    	  $('#calendarForm').on('sy-form-calendar-save', function() {
     				    		  $this.fullCalendar('refetchEvents');
@@ -120,7 +132,7 @@
   				        type : 'ajax',
   				        href: event.editUrl,
   				        modal : true,
-    				      scrolling : 'no',
+    				      scrolling : 'auto',
     				      afterShow: function() {
     				    	  $('#calendarForm').on('sy-form-calendar-save', function() {
     				    		  $this.fullCalendar('refetchEvents');
