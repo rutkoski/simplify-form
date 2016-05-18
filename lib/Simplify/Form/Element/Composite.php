@@ -39,12 +39,10 @@ class Composite extends \Simplify\Form\Element\Base\Composite
   {
     if ($action->show(\Simplify\Form::ACTION_LIST)) {
       $elements = $this->getElements($action);
-      $elements->rewind();
       while ($elements->valid()) {
         $element = $elements->current();
-        $elements->next();
-
         $element->onRenderHeaders($action, $headers);
+        $elements->next();
       }
     }
     else {
@@ -58,9 +56,12 @@ class Composite extends \Simplify\Form\Element\Base\Composite
    */
   public function onRenderLine(\Simplify\Form\Action $action, &$line, $data, $index)
   {
-    foreach ($this->getElements($action) as $element) {
-      $element->onRenderLine($action, $line, $data, $index);
-    }
+      $elements = $this->getElements($action);
+      while ($elements->valid()) {
+          $element = $elements->current();
+          $element->onRenderLine($action, $line, $data, $index);
+          $elements->next();
+      }
   }
 
   /**

@@ -187,6 +187,10 @@ abstract class Action extends Renderable
       $this->formData[$index][$pk] = $row[$pk];
       
       $this->onExtractData($this->formData[$index], $row);
+
+      foreach ($filters as $filter) {
+          $filter->onLoadData($this, $this->formData[$index], $row);
+      }
       
       $elements->rewind();
 
@@ -194,10 +198,6 @@ abstract class Action extends Renderable
         $element = $elements->current();
         $element->onLoadData($this, $this->formData[$index], $row);
         $elements->next();
-      }
-
-      foreach ($filters as $filter) {
-          $filter->onLoadData($this, $this->formData[$index], $row);
       }
     }
   }
