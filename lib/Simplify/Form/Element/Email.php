@@ -45,8 +45,8 @@ class Email extends \Simplify\Form\Element
   {
     parent::onValidate($action, $data);
 
-    $required = $action->show($this->required) ? $this->getError('required', __('Invalid email address')) : false;
-    $invalid = $this->getError('invalid', __('Invalid email address'));
+    $required = $action->show($this->required) ? $this->getError('required', __('Campo obrigatório')) : false;
+    $invalid = $this->getError('invalid', __('Email inválido'));
 
     $rule = new \Simplify\Validation\Email($invalid, $required);
     $rule->validate($this->getValue($data));

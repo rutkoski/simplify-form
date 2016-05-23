@@ -183,7 +183,7 @@ abstract class Component extends Renderable
    */
   public function getFieldName()
   {
-    if (empty($this->fieldName)) {
+    if (is_null($this->fieldName)) {
       $this->fieldName = $this->getName();
     }
 

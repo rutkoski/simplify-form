@@ -59,6 +59,12 @@ class Password extends \Simplify\Form\Element
 
   /**
    *
+   * @var boolean
+   */
+  public $exists = null;
+  
+  /**
+   *
    * @param string $name
    * @param string $label
    */
@@ -92,7 +98,7 @@ class Password extends \Simplify\Form\Element
     if ($this->matchOriginal) {
       $label = __('Current password');
     } else {
-      $label = $action->show(\Simplify\Form::ACTION_CREATE) ? __('Senha') : __('Nova senha');
+      $label = $action->show(\Simplify\Form::ACTION_CREATE) || $this->exists === false ? __('Senha') : __('Nova senha');
     }
 
     $this->set('inputNameSufix', '[a]');
@@ -156,7 +162,7 @@ class Password extends \Simplify\Form\Element
     $c = sy_get_param(sy_get_param($post, $this->getName(), array()), 'c');
 
     $empty = '';
-    $exists = (!empty($data[\Simplify\Form::ID]));
+    $exists = (!empty($data[\Simplify\Form::ID])) || $this->exists === true;
     $required = ($this->required && !$exists);
 
     if ($this->askForConfirmation && $a != $b) {
@@ -217,5 +223,5 @@ class Password extends \Simplify\Form\Element
   {
     return $this->hashCallback ? call_user_func($this->hashCallback, $s) : $s;
   }
-
+  
 }

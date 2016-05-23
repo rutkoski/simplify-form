@@ -42,6 +42,12 @@ class Text extends \Simplify\Form\Element
    * @var int
    */
   public $maxLength = 255;
+  
+  /**
+   * 
+   * @var string
+   */
+  public $mask;
 
   /**
    * (non-PHPdoc)
@@ -53,18 +59,18 @@ class Text extends \Simplify\Form\Element
     
     if ($this->minLength !== false || $this->maxLength !== false) {
       if ($this->minLength === $this->maxLength) {
-        $msg = _n('%1$s must have exactly %2$s character', '%1$s must have exactly %2$s characters', $this->minLength);
+        $msg = _n('%1$s deve ter exatamente %2$s caracteres', '%1$s deve ter exatamente %2$s caracteres', $this->minLength);
       }
       elseif ($this->minLength !== false) {
         if ($this->maxLength !== false) {
-          $msg = __('%1$s must have between %2$s and %3$s characters');
+          $msg = __('%1$s deve ter entre %2$s e %3$s caracteres');
         }
         else {
-          $msg = __('%1$s must have %2$s or more characters');
+          $msg = __('%1$s deve ter %2$s ou mais caracteres');
         }
       }
       elseif ($this->maxLength !== false) {
-        $msg = __('%1$s must have %3$s or less characters');
+        $msg = __('%1$s deve ter %3$s ou menos caracteres');
       }
 
       $msg = sprintf($msg, $this->getLabel(), $this->minLength, $this->maxLength);
@@ -82,6 +88,7 @@ class Text extends \Simplify\Form\Element
   {
     $this->set('minLength', $this->minLength);
     $this->set('maxLength', $this->maxLength);
+    $this->set('mask', $this->mask);
 
     return parent::onRender($action, $data, $index);
   }

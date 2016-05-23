@@ -158,7 +158,7 @@ class HasOne extends \Simplify\Form\Element\Base\Composite
       $element['label'] = $this->getLabel();
       $element['controls'] = $this->onRender($action, $data, $index);
       
-      $line['elements'][$this->getName()] = $element;
+      $line['elements'][$this->getId()] = $element;
   }
   
   /**

@@ -39,7 +39,7 @@ abstract class Action extends Renderable
 
   /**
    *
-   * @var Form
+   * @var \Simplify\Form
    */
   public $form;
 
@@ -199,6 +199,8 @@ abstract class Action extends Renderable
         $element->onLoadData($this, $this->formData[$index], $row);
         $elements->next();
       }
+      
+      $this->form->dispatch(Form::ON_LOAD, $this, $row);
     }
   }
 
@@ -393,7 +395,13 @@ abstract class Action extends Renderable
     $elements = $this->getElements();
     
     foreach ($this->formData as $index => $row) {
-
+      try {
+        $this->form->dispatch(Form::ON_BEFORE_VALIDATE, $this, $row);
+      }
+      catch (\Simplify\ValidationException $e) {
+        $this->errors = array_merge_recursive($this->errors, $e->getErrors());
+      }
+      
       $elements->rewind();
       
       while ($elements->valid()) {
