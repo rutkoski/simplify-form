@@ -49,9 +49,13 @@ class Form extends Renderable
 
   const ON_BEFORE_DELETE = 'onBeforeDelete';
 
+  const ON_LOAD = 'onLoad';
+  
   const ON_RENDER = 'onRender';
 
   const ON_VALIDATE = 'onValidate';
+
+  const ON_BEFORE_VALIDATE = 'onBeforeValidate';
 
   const ACTION_NONE = 0;
 

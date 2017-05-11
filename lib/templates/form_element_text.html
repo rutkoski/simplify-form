@@ -3,5 +3,6 @@
 {% else %}
 <input type="text" class="form-control" name="{{ inputName }}" value="{{ value }}"
     {{ maxLength > 0 ? ' maxlength="' ~ maxLength ~ '"' : '' }}
-    {{ disabled ? 'disabled' : '' }}>
+    {{ disabled ? 'disabled' : '' }}
+    {{ mask ? ' data-mask="' ~ mask ~ '"' }}>
 {% endif %}

@@ -25,31 +25,42 @@ namespace Simplify\Form\Element;
 
 /**
  *
- * Form element with email validation
+ * Text form element
  *
  */
-class Email extends \Simplify\Form\Element
+class CNPJ extends \Simplify\Form\Element\Text
 {
+    
+    /**
+     * 
+     * @var boolean
+     */
+    public $required = true;
 
-  /**
-   *
-   * @var boolean
-   */
-  public $required = false;
+    /**
+     *
+     * @var string
+     */
+    public $mask = '99.999.999/9999-99';
 
-  /**
-   * (non-PHPdoc)
-   * @see \Simplify\Form\Element::onValidate()
-   */
-  public function onValidate(\Simplify\Form\Action $action, $data)
-  {
-    parent::onValidate($action, $data);
+    /**
+     * @var string
+     */
+    protected $template = 'form_element_text';
+    
+    /**
+     * (non-PHPdoc)
+     * @see \Simplify\Form\Element::onValidate()
+     */
+    public function onValidate(\Simplify\Form\Action $action, $data)
+    {
+        parent::onValidate($action, $data);
 
-    $required = $action->show($this->required) ? $this->getError('required', __('Campo obrigatório')) : false;
-    $invalid = $this->getError('invalid', __('Email inválido'));
+        $invalid = sprintf(__('O valor informado para o campo %1$s é inválido'), $this->getLabel());
+        $required = $this->required ? sprintf(__('O campo %1$s é obrigatório'), $this->getLabel()) : false;
 
-    $rule = new \Simplify\Validation\Email($invalid, $required);
-    $rule->validate($this->getValue($data));
-  }
+        $rule = new \Simplify\Validation\Cnpj($invalid, $required);
+        $rule->validate($this->getValue($data));
+    }
 
 }

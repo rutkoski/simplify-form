@@ -48,9 +48,9 @@ class Datetime extends \Simplify\Form\Element
    */
   public function onPostData(\Simplify\Form\Action $action, &$data, $post)
   {
-    $date = $post[$this->getName()];
+    $date = sy_get_param($post, $this->getName());
 
-    $data[$this->getName()] = \Simplify\Form\DateTime::database($date);
+    $data[$this->getName()] = $date ? \Simplify\Form\DateTime::database($date) : null;
   }
 
   /**
@@ -59,7 +59,9 @@ class Datetime extends \Simplify\Form\Element
    */
   public function getDisplayValue(\Simplify\Form\Action $action, $data, $index)
   {
-    return \Simplify\Form\DateTime::datetime($this->getValue($data));
+    $value = empty(sy_get_param($data, $this->getName())) ? '-' : \Simplify\Form\DateTime::datetime($this->getValue($data));
+    
+    return $value;
   }
 
   /**

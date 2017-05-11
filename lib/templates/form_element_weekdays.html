@@ -1,3 +1,6 @@
+{% if action.name == 'view' %}
+<p class="form-control-static">{{ displayValue }}</p>
+{% else %}
 <div class="form-inline" id="{{ id }}" data-ajax="{{ useAjax ? true : false }}" data-id="{{ _id }}" data-name="{{ name }}" data-ajax-url="{{ ajaxUrl }}">
 	{% for option, label in options['options'] %}
 	<div class="checkbox">
@@ -8,3 +11,4 @@
 	</div>
 	{% endfor %}
 </div>
+{% endif %}

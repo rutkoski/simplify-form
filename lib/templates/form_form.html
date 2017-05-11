@@ -31,7 +31,7 @@
 <script>
 (function() {
 	$(document).ready(init);
-
+	
 	function init() {
 		  $('form').submit(onSubmit);
 	}
@@ -42,7 +42,11 @@
 		e.preventDefault();
 
 		url = '{{ formAjaxUrl }}';
-		data = $this.find(':input');
+  		data = $this.find(':input').serialize();
+
+		$this.find(':radio:checked').each(function() {
+			data[$(this).attr('name')] = $(this).val();
+		});
 		
 		$.post(url, data, function(response) {
 			if (response.data) {

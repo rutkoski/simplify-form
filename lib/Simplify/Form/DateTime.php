@@ -50,7 +50,7 @@ class DateTime
    *
    * @var string
    */
-  const FORMAT_DB_DATETIME = 'Y/m/d H:i:s';
+  const FORMAT_DB_DATETIME = 'Y-m-d H:i:s';
 
   /**
    * Application datetime format
