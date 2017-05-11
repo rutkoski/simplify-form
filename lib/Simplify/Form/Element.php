@@ -132,7 +132,7 @@ abstract class Element extends Component
      */
     public function getElementId($index)
     {
-        return "form_data_" . implode('_', (array) $index) . "_" . $this->getName();
+        return "form_data_" . implode('_', (array) $index) . "_" . $this->getId();
     }
 
     /**
@@ -225,7 +225,7 @@ abstract class Element extends Component
         $element['state'] = $this->state;
         $element['stateMessage'] = $this->stateMessage;
         
-        $line['elements'][$this->getName()] = $element;
+        $line['elements'][$this->getId()] = $element;
     }
 
     /**
